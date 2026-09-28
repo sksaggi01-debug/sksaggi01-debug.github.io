@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Dr.Sarabjeet Bedi">
+<title>Elasticity Live Deck</title>
+<style>
+:root{
+  --ground:#E9EFF1; --paper:#FFFFFF; --paper-2:#F4F7F8; --ink:#14202A; --muted:#51616C; --rule:#C7D2D8; --grid:#E3E9EC;
+  --accent:#1B5DA6; --accent-soft:rgba(27,93,166,.12); --supply:#B04E0C;
+  --elastic:#0A7457; --inelastic:#9C5B06; --unit:#6A3DC0; --neutral:#51616C;
+  --gain:#1B7F45; --loss:#BC3328;
+  --shade-common:rgba(27,93,166,.16); --shade-gain:rgba(27,127,69,.30); --shade-loss:rgba(188,51,40,.26);
+  --display:Georgia,"Times New Roman",Times,serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Consolas,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E151A; --paper:#162028; --paper-2:#1C2831; --ink:#E4ECF0; --muted:#98A9B4; --rule:#2F3E48; --grid:#23313A;
+    --accent:#72A9EA; --accent-soft:rgba(114,169,234,.14); --supply:#F09550;
+    --elastic:#3FC79D; --inelastic:#E6A541; --unit:#AC8FF2; --neutral:#98A9B4;
+    --gain:#52CB84; --loss:#F2766B;
+    --shade-common:rgba(114,169,234,.18); --shade-gain:rgba(82,203,132,.28); --shade-loss:rgba(242,118,107,.26);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E151A; --paper:#162028; --paper-2:#1C2831; --ink:#E4ECF0; --muted:#98A9B4; --rule:#2F3E48; --grid:#23313A;
+  --accent:#72A9EA; --accent-soft:rgba(114,169,234,.14); --supply:#F09550;
+  --elastic:#3FC79D; --inelastic:#E6A541; --unit:#AC8FF2; --neutral:#98A9B4;
+  --gain:#52CB84; --loss:#F2766B;
+  --shade-common:rgba(114,169,234,.18); --shade-gain:rgba(82,203,132,.28); --shade-loss:rgba(242,118,107,.26);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.shell{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:12px 24px;display:flex;flex-direction:column;gap:12px;min-height:100%}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-size:1.05rem;letter-spacing:.01em}
+.brand b{font-weight:700}
+.brand span{color:var(--muted);font-family:var(--body);font-size:.85rem;margin-left:.5rem}
+.top-actions{display:flex;gap:8px;align-items:center}
+.counter{font-family:var(--mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:.4rem .8rem;font-size:.9rem}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.progress{height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+
+.stage{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:clamp(18px,3vw,36px);flex:1;min-height:560px}
+.slide{display:flex;flex-direction:column;gap:18px;animation:in .25s ease-out}
+@keyframes in{from{transform:translateY(6px)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.slide{animation:none}.progress i{transition:none}}
+.eyebrow{margin:0;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;line-height:1.15}
+h2{font-size:clamp(1.6rem,3vw,2.3rem)}
+h3{font-size:1.15rem}
+.lede{margin:0;color:var(--muted);max-width:68ch;font-size:1.02rem}
+.head{display:flex;flex-direction:column;gap:6px}
+
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;align-items:start}
+@media (max-width:860px){.split{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+
+.inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:.8rem;color:var(--muted);font-weight:600}
+.field input{font-family:var(--mono);font-size:1.05rem;padding:.45rem .6rem;border:1px solid var(--rule);border-radius:6px;background:var(--paper-2);color:var(--ink);width:100%;font-variant-numeric:tabular-nums}
+.field input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.pt-tag{display:inline-block;font-family:var(--mono);font-weight:700;color:var(--accent);margin-right:4px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.presets .lbl{font-size:.8rem;color:var(--muted);margin-right:2px}
+.chip{background:var(--paper-2);border:1px solid var(--rule);border-radius:999px;padding:.25rem .7rem;font-size:.85rem}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+
+.work{background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.92rem;font-variant-numeric:tabular-nums;overflow-x:auto}
+.work .row{display:flex;justify-content:space-between;gap:12px;padding:3px 0;white-space:nowrap}
+.work .row + .row{border-top:1px dashed var(--rule)}
+.work .row span:first-child{color:var(--muted)}
+.work .row.total{font-weight:700;font-size:1.05rem}
+.result{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.big{font-family:var(--display);font-size:clamp(2.2rem,5vw,3.2rem);line-height:1;font-variant-numeric:tabular-nums}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:.3rem .75rem;border-radius:999px;font-weight:700;font-size:.9rem;border:1.5px solid currentColor}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.k-elastic{color:var(--elastic)} .k-inelastic{color:var(--inelastic)} .k-unit{color:var(--unit)} .k-neutral{color:var(--neutral)}
+.k-gain{color:var(--gain)} .k-loss{color:var(--loss)}
+.say{margin:0;max-width:60ch}
+.warn{margin:0;padding:8px 12px;border-left:3px solid var(--loss);background:var(--paper-2);color:var(--ink);font-size:.9rem}
+
+.meter{display:flex;flex-direction:column;gap:4px}
+.meter-bar{position:relative;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--inelastic) 0 25%,var(--elastic) 25% 100%);opacity:.85}
+.meter-mark{position:absolute;top:-5px;width:4px;height:24px;background:var(--ink);border-radius:2px;transform:translateX(-2px);transition:left .25s}
+.meter-scale{position:relative;height:1.1em;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.meter-scale span{position:absolute;top:0}
+.meter-scale span:nth-child(1){left:0}.meter-scale span:nth-child(2){left:25%;transform:translateX(-50%)}.meter-scale span:nth-child(3){right:0}
+
+figure.graph{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.graph svg{width:100%;height:auto;max-width:100%;display:block;background:var(--paper);border:1px solid var(--rule);border-radius:8px}
+figcaption{font-size:.82rem;color:var(--muted)}
+.two-graphs{display:grid;grid-template-columns:1fr;gap:12px}
+svg text{font-family:var(--body);font-size:12px;fill:var(--muted)}
+svg .axis{stroke:var(--ink);stroke-width:1.5;fill:none}
+svg .gridl{stroke:var(--grid);stroke-width:1;fill:none}
+svg .tick{font-family:var(--mono);font-size:11px}
+svg .alabel{font-size:13px;fill:var(--ink);font-weight:600}
+svg .dem{stroke:var(--accent);stroke-width:3;fill:none;stroke-linecap:round}
+svg .sup{stroke:var(--supply);stroke-width:3;fill:none;stroke-linecap:round}
+svg .ext{stroke-dasharray:6 5;stroke-width:2;opacity:.7}
+svg .guide{stroke:var(--muted);stroke-dasharray:3 4;stroke-width:1.2;fill:none}
+svg .dot{stroke:var(--paper);stroke-width:2}
+svg .dotA{fill:var(--ink)} svg .dotB{fill:var(--accent)} svg .dotS{fill:var(--supply)}
+svg .ptlabel{font-family:var(--mono);font-weight:700;font-size:14px;fill:var(--ink)}
+svg .arrow{stroke:var(--ink);stroke-width:2;fill:none}
+svg .arrowhead{fill:var(--ink)}
+svg .el-line{stroke:var(--elastic);stroke-width:4;fill:none;stroke-linecap:round}
+svg .in-line{stroke:var(--inelastic);stroke-width:4;fill:none;stroke-linecap:round}
+svg .un-line{stroke:var(--unit);stroke-width:4;fill:none;stroke-linecap:round}
+svg .t-el{fill:var(--elastic);font-weight:700} svg .t-in{fill:var(--inelastic);font-weight:700} svg .t-un{fill:var(--unit);font-weight:700}
+svg .r-common{fill:var(--shade-common)} svg .r-gain{fill:var(--shade-gain);stroke:var(--gain);stroke-width:1} svg .r-loss{fill:var(--shade-loss);stroke:var(--loss);stroke-width:1}
+svg .tr-curve{stroke:var(--unit);stroke-width:3;fill:none}
+svg .dlabel{font-family:var(--mono);font-weight:700;font-size:13px;fill:var(--accent)}
+svg .slabel{font-family:var(--mono);font-weight:700;font-size:13px;fill:var(--supply)}
+svg .note{font-size:12px;fill:var(--ink)}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.85rem;font-variant-numeric:tabular-nums}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* title slide */
+.title-grid{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:32px;align-items:center}
+@media (max-width:860px){.title-grid{grid-template-columns:1fr}}
+.title-grid h1{font-size:clamp(2.8rem,7vw,5rem);letter-spacing:-.01em}
+.title-grid h1 em{font-style:italic;color:var(--accent)}
+.byline{font-size:1.1rem;margin:0}
+.byline b{font-family:var(--display);font-size:1.3rem;font-weight:700}
+.agenda{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:a}
+.agenda li{display:flex;gap:10px;align-items:baseline;padding:5px 0;border-bottom:1px solid var(--grid)}
+.agenda li button{background:none;border:0;padding:0;text-align:left;color:var(--ink);font-size:.95rem}
+.agenda li button:hover{color:var(--accent);text-decoration:underline}
+.agenda li span{font-family:var(--mono);color:var(--muted);font-size:.8rem;min-width:2ch;font-variant-numeric:tabular-nums}
+.keys{font-size:.85rem;color:var(--muted);margin:0}
+kbd{font-family:var(--mono);font-size:.8rem;border:1px solid var(--rule);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--paper-2);color:var(--ink)}
+
+/* formula */
+.formula{font-family:var(--display);font-size:1.15rem;background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;overflow-x:auto}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;text-align:center}
+.frac > span:first-child{border-bottom:1.5px solid var(--ink);padding:0 6px 2px}
+.frac > span:last-child{padding:2px 6px 0}
+.compare{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.compare th,.compare td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+.compare th{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.compare td.n{font-family:var(--mono);text-align:right;white-space:nowrap}
+.compare tr.win td{background:var(--accent-soft);font-weight:700}
+.tablewrap{overflow-x:auto}
+
+/* spectrum */
+.spec-btns{display:grid;grid-template-columns:1fr;gap:6px}
+.spec-btns button{text-align:left;background:var(--paper-2);border:1px solid var(--rule);border-radius:6px;padding:.5rem .75rem;display:flex;justify-content:space-between;gap:10px}
+.spec-btns button b{font-family:var(--mono);font-weight:700}
+.spec-btns button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+
+/* checks */
+.quiz{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.quiz{grid-template-columns:1fr}}
+.q{border:1px solid var(--rule);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.q p{margin:0}
+.q .qn{font-family:var(--mono);font-size:.78rem;color:var(--muted);letter-spacing:.08em}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button{background:var(--paper-2);border:1px solid var(--rule);border-radius:6px;padding:.35rem .75rem;font-size:.92rem}
+.opts button:hover{border-color:var(--accent)}
+.opts button.right{background:var(--elastic);border-color:var(--elastic);color:var(--paper)}
+.opts button.wrong{border-color:var(--loss);color:var(--loss);text-decoration:line-through}
+.explain{font-size:.9rem;padding:8px 10px;border-radius:6px;background:var(--paper-2);border-left:3px solid var(--elastic)}
+.explain.no{border-left-color:var(--loss)}
+.explain code{font-family:var(--mono);font-size:.88rem}
+.scorebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule)}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:.5rem .9rem;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+/* summary */
+.sum{width:100%;border-collapse:collapse;font-size:.95rem}
+.sum th,.sum td{padding:9px 10px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.sum th{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.sum td:first-child{font-weight:700;white-space:nowrap}
+.sum td.f{font-family:var(--mono);font-size:.88rem;white-space:nowrap}
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.rules{grid-template-columns:1fr}}
+.rule{border-top:3px solid var(--accent);padding-top:8px}
+.rule p{margin:4px 0 0;font-size:.92rem}
+.credit{margin:0;font-size:.9rem;color:var(--muted)}
+.credit b{color:var(--ink);font-family:var(--display)}
+
+/* nav */
+.navbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.dots button{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--muted);background:transparent;padding:0}
+.dots button[aria-current="true"]{background:var(--accent);border-color:var(--accent)}
+.notes{background:var(--paper);border:1px dashed var(--unit);border-radius:8px;padding:12px 16px;font-size:.92rem}
+.notes h3{font-size:1rem;color:var(--unit);margin-bottom:4px}
+.notes ul{margin:0;padding-left:18px}
+
+@media print{
+  body{background:#fff}
+  .topbar .top-actions,.navbar,.progress,.notes{display:none!important}
+  .slide[hidden]{display:flex!important}
+  .stage{border:0;padding:0}
+  .slide{break-after:page;page-break-after:always;padding:12px 0;animation:none}
+}
+</style>
+</head>
+<body>
+
+
+<div class="shell">
+  <div class="topbar">
+    <div class="brand"><b>Elasticity Live</b><span>Dr.Sarabjeet Bedi · ECON 2302 Principles of Microeconomics</span></div>
+    <div class="top-actions">
+      <span class="counter" id="counter">1 / 12</span>
+      <button class="btn" id="notes-btn" type="button" hidden>Notes</button>
+      <button class="btn" id="fs-btn" type="button" title="Full screen (F)">Full screen</button>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="prog" style="width:8.33%"></i></div>
+
+  <main class="stage" id="stage">
+
+  <!-- 1 TITLE -->
+  <section class="slide" data-title="Title">
+    <div class="title-grid">
+      <div class="col" style="gap:18px">
+        <p class="eyebrow">Chapter · Elasticity</p>
+        <h1>How much do people <em>respond</em> when prices change?</h1>
+        <p class="lede">Twelve live slides. Type in your own numbers and the calculations and graphs update as you go.</p>
+        <p class="byline">Prepared by <b>Dr.Sarabjeet Bedi</b><br><span style="color:var(--muted)">Austin Community College · Principles of Microeconomics</span></p>
+        <p class="keys">Move between slides with <kbd>←</kbd> <kbd>→</kbd> (click outside an input box first) · Press <kbd>F</kbd> for full screen · <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>P</kbd> prints every slide</p>
+      </div>
+      <div class="col">
+        <h3>Today's route</h3>
+        <ol class="agenda" id="agenda"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 MIDPOINT -->
+  <section class="slide" data-title="Why the midpoint method" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 1 · Price elasticity of demand</p>
+      <h2>Why we use the midpoint method</h2>
+      <p class="lede">A plain percentage change depends on which point you start from. The midpoint method divides by the average, so you get the same answer in both directions.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <div class="formula" aria-label="Midpoint elasticity formula">
+          <span>E<sub>d</sub> =</span>
+          <span class="frac"><span>%ΔQ</span><span>%ΔP</span></span>
+          <span>, where %ΔQ =</span>
+          <span class="frac"><span>Q<sub>2</sub> − Q<sub>1</sub></span><span>(Q<sub>1</sub> + Q<sub>2</sub>) ÷ 2</span></span>
+          <span>× 100</span>
+        </div>
+        <p class="say" style="font-size:.92rem;color:var(--muted)">%ΔP is calculated the same way using P<sub>1</sub> and P<sub>2</sub>. We report the absolute value, because for demand the sign is always negative.</p>
+        <div class="inputs">
+          <div class="field"><label for="m-p1"><span class="pt-tag">A</span>Price P₁ ($)</label><input id="m-p1" type="number" step="0.01" value="4"></div>
+          <div class="field"><label for="m-q1"><span class="pt-tag">A</span>Quantity Q₁</label><input id="m-q1" type="number" step="1" value="100"></div>
+          <div class="field"><label for="m-p2"><span class="pt-tag">B</span>Price P₂ ($)</label><input id="m-p2" type="number" step="0.01" value="5"></div>
+          <div class="field"><label for="m-q2"><span class="pt-tag">B</span>Quantity Q₂</label><input id="m-q2" type="number" step="1" value="80"></div>
+        </div>
+      </div>
+      <div class="col">
+        <h3>Same two points, three ways to calculate</h3>
+        <div class="tablewrap"><table class="compare" id="m-table"></table></div>
+        <p class="say" id="m-say"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 PED CALCULATOR -->
+  <section class="slide" data-title="Price elasticity of demand calculator" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 1 · Price elasticity of demand</p>
+      <h2>The demand elasticity calculator</h2>
+      <p class="lede">Enter two points on a demand curve. The calculator shows every step, classifies the result, and plots the move from A to B.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <div class="presets" id="d-presets"><span class="lbl">Examples:</span></div>
+        <div class="inputs">
+          <div class="field"><label for="d-p1"><span class="pt-tag">A</span>Price P₁ ($)</label><input id="d-p1" type="number" step="0.01"></div>
+          <div class="field"><label for="d-q1"><span class="pt-tag">A</span>Quantity Q₁</label><input id="d-q1" type="number" step="1"></div>
+          <div class="field"><label for="d-p2"><span class="pt-tag">B</span>Price P₂ ($)</label><input id="d-p2" type="number" step="0.01"></div>
+          <div class="field"><label for="d-q2"><span class="pt-tag">B</span>Quantity Q₂</label><input id="d-q2" type="number" step="1"></div>
+        </div>
+        <div class="work" id="d-work"></div>
+        <div class="result"><span class="big" id="d-E"></span><span id="d-badge"></span></div>
+        <div class="meter" aria-hidden="true"><div class="meter-bar"><div class="meter-mark" id="d-mark"></div></div><div class="meter-scale"><span>0</span><span>1</span><span>4+</span></div></div>
+        <p class="say" id="d-say"></p>
+        <p class="warn" id="d-warn" hidden></p>
+      </div>
+      <figure class="graph"><svg id="d-svg" viewBox="0 0 560 420" role="img" aria-label="Demand graph with points A and B"></svg><figcaption id="d-cap"></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 4 SPECTRUM -->
+  <section class="slide" data-title="The elasticity spectrum" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 1 · Price elasticity of demand</p>
+      <h2>From “won’t budge” to “walks away”</h2>
+      <p class="lede">Select a category to see its demand curve and a real-world example.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <div class="spec-btns" id="s-btns"></div>
+        <div class="work" id="s-info" style="font-family:var(--body);white-space:normal"></div>
+        <p class="warn" style="border-left-color:var(--unit)"><b>Careful:</b> slope and elasticity are not the same thing. A steeper curve is less elastic only when you compare curves on the same axes at the same point. Along a single straight line, the slope stays the same but elasticity changes (see slide 6).</p>
+      </div>
+      <figure class="graph"><svg id="s-svg" viewBox="0 0 560 420" role="img" aria-label="Demand curve shape for the selected category"></svg><figcaption>These curves show shape only. The axes have no units.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 5 CHECK 1 -->
+  <section class="slide" data-title="Check 1: calculate and classify" hidden>
+    <div class="head">
+      <p class="eyebrow">Check 1 · Price elasticity of demand</p>
+      <h2>Predict first, then click</h2>
+      <p class="lede">Use the midpoint method. The wrong choices are the answers you get from the most common mistakes.</p>
+    </div>
+    <div class="quiz" data-quiz="q1"></div>
+    <div class="scorebar"><span class="counter" data-score="q1"></span><button class="btn" type="button" data-reset="q1">Reset check</button></div>
+  </section>
+
+  <!-- 6 ALONG A LINE -->
+  <section class="slide" data-title="Elasticity along a linear demand curve" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 2 · Linear demand</p>
+      <h2>A straight line has one slope but many elasticities</h2>
+      <p class="lede">Use the slider to move the price. Above the midpoint, demand is elastic. At the midpoint, it is unit elastic. Below the midpoint, it is inelastic.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <p style="margin:0;font-family:var(--mono);font-size:1.05rem">Demand: Q = <span id="l-eq"></span></p>
+        <div class="inputs">
+          <div class="field"><label for="l-a">a (quantity when price is $0)</label><input id="l-a" type="number" step="1" value="120"></div>
+          <div class="field"><label for="l-b">b (units lost per $1 increase)</label><input id="l-b" type="number" step="0.5" value="10"></div>
+        </div>
+        <div class="field">
+          <label for="l-p">Price: <b id="l-pv" style="font-family:var(--mono);color:var(--ink)"></b></label>
+          <input id="l-p" type="range" min="0" max="12" step="0.05" value="9">
+        </div>
+        <div class="presets"><span class="lbl">Jump to:</span>
+          <button class="chip" type="button" data-lp="0.75">Upper half</button>
+          <button class="chip" type="button" data-lp="0.5">Midpoint</button>
+          <button class="chip" type="button" data-lp="0.25">Lower half</button>
+        </div>
+        <div class="work" id="l-work"></div>
+        <div class="result"><span class="big" id="l-E"></span><span id="l-badge"></span></div>
+        <p class="say" id="l-say"></p>
+        <p class="warn" id="l-warn" hidden></p>
+      </div>
+      <figure class="graph"><svg id="l-svg" viewBox="0 0 560 420" role="img" aria-label="Linear demand curve split into elastic and inelastic halves"></svg><figcaption>Point elasticity: |E| = (ΔQ/ΔP) × (P/Q) = b × P/Q. For a very small price change, the midpoint formula gives almost exactly this value.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 7 TOTAL REVENUE -->
+  <section class="slide" data-title="Total revenue test" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 2 · Total revenue test</p>
+      <h2>Raise the price: do you gain more than you lose?</h2>
+      <p class="lede">Total revenue (TR) = P × Q, which is the area of the rectangle under the demand point. A price change adds one strip of revenue and removes another. Elasticity tells you which strip is bigger.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <p style="margin:0;font-family:var(--mono)">Campus Cinema: Q = <span id="t-eq"></span> tickets per night</p>
+        <div class="presets" id="t-presets"><span class="lbl">Try:</span></div>
+        <div class="inputs">
+          <div class="field"><label for="t-a">a (tickets at $0)</label><input id="t-a" type="number" step="1" value="600"></div>
+          <div class="field"><label for="t-b">b (tickets lost per $1)</label><input id="t-b" type="number" step="1" value="40"></div>
+          <div class="field"><label for="t-p1"><span class="pt-tag">A</span>Old price P₁ ($)</label><input id="t-p1" type="number" step="0.5" value="10"></div>
+          <div class="field"><label for="t-p2"><span class="pt-tag">B</span>New price P₂ ($)</label><input id="t-p2" type="number" step="0.5" value="12"></div>
+        </div>
+        <div class="work" id="t-work"></div>
+        <div class="result"><span id="t-badge"></span><span id="t-verdict" style="font-weight:700"></span></div>
+        <p class="say" id="t-say"></p>
+        <p class="warn" id="t-warn" hidden></p>
+      </div>
+      <div class="col">
+        <figure class="graph"><svg id="t-svg" viewBox="0 0 560 360" role="img" aria-label="Demand curve with revenue rectangles"></svg>
+          <div class="legend" id="t-legend"></div></figure>
+        <figure class="graph"><svg id="t-svg2" viewBox="0 0 560 260" role="img" aria-label="Total revenue curve"></svg><figcaption>TR is highest at the midpoint of the demand line, where |E| = 1.</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 CHECK 2 -->
+  <section class="slide" data-title="Check 2: revenue and linear demand" hidden>
+    <div class="head">
+      <p class="eyebrow">Check 2 · Total revenue</p>
+      <h2>Follow the money</h2>
+      <p class="lede">Rule of thumb: when demand is elastic, price and TR move in opposite directions. When demand is inelastic, they move in the same direction.</p>
+    </div>
+    <div class="quiz" data-quiz="q2"></div>
+    <div class="scorebar"><span class="counter" data-score="q2"></span><button class="btn" type="button" data-reset="q2">Reset check</button></div>
+  </section>
+
+  <!-- 9 SUPPLY -->
+  <section class="slide" data-title="Price elasticity of supply" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 3 · Price elasticity of supply</p>
+      <h2>How fast can sellers respond?</h2>
+      <p class="lede">E<sub>s</sub> = %ΔQ<sub>s</sub> ÷ %ΔP, using the same midpoint method. Hill Country Honey can’t add hives overnight. Compare the short run with the long run.</p>
+    </div>
+    <div class="split">
+      <div class="col">
+        <div class="presets" id="s2-presets"><span class="lbl">Scenarios:</span></div>
+        <div class="inputs">
+          <div class="field"><label for="p-p1"><span class="pt-tag">A</span>Price P₁ ($)</label><input id="p-p1" type="number" step="0.01"></div>
+          <div class="field"><label for="p-q1"><span class="pt-tag">A</span>Qty supplied Q₁</label><input id="p-q1" type="number" step="1"></div>
+          <div class="field"><label for="p-p2"><span class="pt-tag">B</span>Price P₂ ($)</label><input id="p-p2" type="number" step="0.01"></div>
+          <div class="field"><label for="p-q2"><span class="pt-tag">B</span>Qty supplied Q₂</label><input id="p-q2" type="number" step="1"></div>
+        </div>
+        <div class="work" id="p-work"></div>
+        <div class="result"><span class="big" id="p-E"></span><span id="p-badge"></span></div>
+        <p class="say" id="p-say"></p>
+        <p class="warn" id="p-warn" hidden></p>
+      </div>
+      <figure class="graph"><svg id="p-svg" viewBox="0 0 560 420" role="img" aria-label="Supply graph with points A and B"></svg><figcaption id="p-cap"></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 10 CROSS & INCOME -->
+  <section class="slide" data-title="Cross-price and income elasticity" hidden>
+    <div class="head">
+      <p class="eyebrow">Part 4 · Other elasticities</p>
+      <h2>Here the sign tells the story</h2>
+      <p class="lede">These elasticities measure how demand for good X <em>shifts</em> when something other than its own price changes. Keep the + or − sign, because it tells you what kind of good you have.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-x" aria-selected="true" aria-controls="pane-x">Cross-price elasticity</button>
+      <button type="button" role="tab" id="tab-i" aria-selected="false" aria-controls="pane-i">Income elasticity</button>
+    </div>
+    <div class="split">
+      <div class="col">
+        <div id="pane-x" role="tabpanel" aria-labelledby="tab-x" class="col">
+          <div class="formula" style="font-size:1rem"><span>E<sub>XY</sub> =</span><span class="frac"><span>% change in quantity of X</span><span>% change in price of Y</span></span></div>
+          <div class="presets" id="x-presets"><span class="lbl">Pairs:</span></div>
+          <div class="inputs">
+            <div class="field"><label for="x-p1">Price of <span data-yname></span>: before ($)</label><input id="x-p1" type="number" step="0.01"></div>
+            <div class="field"><label for="x-p2">Price of <span data-yname></span>: after ($)</label><input id="x-p2" type="number" step="0.01"></div>
+            <div class="field"><label for="x-q1">Qty of <span data-xname></span>: before</label><input id="x-q1" type="number" step="1"></div>
+            <div class="field"><label for="x-q2">Qty of <span data-xname></span>: after</label><input id="x-q2" type="number" step="1"></div>
+          </div>
+        </div>
+        <div id="pane-i" role="tabpanel" aria-labelledby="tab-i" class="col" hidden>
+          <div class="formula" style="font-size:1rem"><span>E<sub>I</sub> =</span><span class="frac"><span>% change in quantity of X</span><span>% change in income</span></span></div>
+          <div class="presets" id="i-presets"><span class="lbl">Goods:</span></div>
+          <div class="inputs">
+            <div class="field"><label for="i-y1">Annual income: before ($)</label><input id="i-y1" type="number" step="100"></div>
+            <div class="field"><label for="i-y2">Annual income: after ($)</label><input id="i-y2" type="number" step="100"></div>
+            <div class="field"><label for="i-q1">Qty of <span data-iname></span>: before</label><input id="i-q1" type="number" step="1"></div>
+            <div class="field"><label for="i-q2">Qty of <span data-iname></span>: after</label><input id="i-q2" type="number" step="1"></div>
+          </div>
+        </div>
+        <div class="work" id="c-work"></div>
+        <div class="result"><span class="big" id="c-E"></span><span id="c-badge"></span></div>
+        <p class="say" id="c-say"></p>
+        <p class="warn" id="c-warn" hidden></p>
+      </div>
+      <figure class="graph"><svg id="c-svg" viewBox="0 0 560 420" role="img" aria-label="Demand for good X shifting"></svg><figcaption id="c-cap"></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 11 CHECK 3 -->
+  <section class="slide" data-title="Check 3: supply, cross-price, income" hidden>
+    <div class="head">
+      <p class="eyebrow">Check 3 · Supply, cross-price, and income</p>
+      <h2>Read the sign, read the size</h2>
+      <p class="lede">For cross-price and income elasticity, the sign matters. For supply, think about the time sellers have to respond.</p>
+    </div>
+    <div class="quiz" data-quiz="q3"></div>
+    <div class="scorebar"><span class="counter" data-score="q3"></span><button class="btn" type="button" data-reset="q3">Reset check</button></div>
+  </section>
+
+  <!-- 12 SUMMARY -->
+  <section class="slide" data-title="Summary sheet" hidden>
+    <div class="head">
+      <p class="eyebrow">Wrap-up</p>
+      <h2>The elasticity summary sheet</h2>
+    </div>
+    <div class="tablewrap">
+      <table class="sum">
+        <thead><tr><th>Measure</th><th>Midpoint formula</th><th>How to read it</th></tr></thead>
+        <tbody>
+          <tr><td>Price elasticity of demand</td><td class="f">|%ΔQd ÷ %ΔP|</td><td>&gt; 1 elastic · = 1 unit elastic · &lt; 1 inelastic · 0 perfectly inelastic · ∞ perfectly elastic</td></tr>
+          <tr><td>Price elasticity of supply</td><td class="f">%ΔQs ÷ %ΔP</td><td>Same cutoffs as demand. Supply is usually more elastic in the long run than in the short run.</td></tr>
+          <tr><td>Cross-price elasticity</td><td class="f">%ΔQx ÷ %ΔPy</td><td>+ substitutes · − complements · 0 unrelated</td></tr>
+          <tr><td>Income elasticity</td><td class="f">%ΔQx ÷ %ΔIncome</td><td>− inferior · between 0 and 1 normal necessity · &gt; 1 normal luxury</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rules">
+      <div class="rule"><h3>Total revenue test</h3><p>Elastic: price and TR move in opposite directions. Inelastic: they move together. Unit elastic: TR does not change. With the midpoint method, this test always gives the right answer.</p></div>
+      <div class="rule"><h3>Linear demand</h3><p>Above the midpoint, demand is elastic. At the midpoint, it is unit elastic and TR is at its maximum. Below the midpoint, it is inelastic. The slope is the same everywhere on the line, but elasticity is not.</p></div>
+      <div class="rule"><h3>Linear supply</h3><p>Extend the supply line. If it meets the price axis, supply is elastic. If it passes through the origin, it is unit elastic. If it meets the quantity axis, it is inelastic.</p></div>
+    </div>
+    <p class="credit">Created by <b>Dr.Sarabjeet Bedi</b> for Principles of Microeconomics students. For practice on what makes demand elastic (substitutes, share of budget, time), use the <i>Elasticity Meter</i> lab.</p>
+  </section>
+
+  </main>
+
+  <aside class="notes" id="notes" hidden></aside>
+
+  <nav class="navbar" aria-label="Slide navigation">
+    <button class="btn" type="button" id="prev">← Back</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn primary" type="button" id="next">Next →</button>
+  </nav>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const val = id => parseFloat(document.getElementById(id).value);
+const setv = (id, v) => { document.getElementById(id).value = v; };
+const fx = (x, d=2) => Number.isFinite(x) ? Math.abs(x).toLocaleString('en-US',{minimumFractionDigits:d, maximumFractionDigits:d}) : '∞';
+const sgn = x => x < 0 ? '−' : '';
+const num = (x, d=2) => sgn(x) + fx(x, d);
+const money = (x, d=2) => sgn(x) + '$' + fx(x, d);
+const qty = x => sgn(x) + fx(x, Number.isInteger(x) ? 0 : 2);
+const pct = x => (x > 0 ? '+' : x < 0 ? '−' : '') + fx(x) + '%';
+const signed = x => (x > 0 ? '+' : x < 0 ? '−' : '') + fx(x);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function mid(a, b){ const d = b - a, avg = (a + b) / 2; return {d, avg, pct: d / avg * 100}; }
+function badge(key, label){ return `<span class="badge k-${key}">${esc(label)}</span>`; }
+function rows(list){ return list.map(r => `<div class="row${r[2]?' total':''}"><span>${r[0]}</span><span>${r[1]}</span></div>`).join(''); }
+function warn(id, msg){ const el = document.getElementById(id); if(msg){ el.innerHTML = msg; el.hidden = false; } else { el.hidden = true; el.innerHTML=''; } }
+
+/* elasticity classifier for |E| (demand/supply) */
+function classify(dP, dQ, E){
+  if (dP === 0 && dQ === 0) return {key:'neutral', label:'No change'};
+  if (dP === 0) return {key:'elastic', label:'Perfectly elastic'};
+  if (dQ === 0) return {key:'inelastic', label:'Perfectly inelastic'};
+  if (Math.abs(E - 1) < 1e-9) return {key:'unit', label:'Unit elastic'};
+  if (E > 1) return {key:'elastic', label: E < 1.005 ? 'Elastic (just above 1)' : 'Elastic'};
+  return {key:'inelastic', label: E > 0.995 ? 'Inelastic (just below 1)' : 'Inelastic'};
+}
+
+/* ---------- SVG chart kit ---------- */
+function niceMax(v){
+  if (!(v > 0)) return 1;
+  const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e;
+  const n = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10;
+  return n * e;
+}
+function tickFmt(v, money){
+  const s = Math.abs(v) >= 1000 ? v.toLocaleString('en-US',{maximumFractionDigits:0}) : (+v.toFixed(2)).toString();
+  return money ? '$' + s : s;
+}
+function chart(W, H, xmax, ymax, xlab, ylab, o={}){
+  const m = {l:64, r:24, t:18, b:50};
+  const X = v => m.l + v / xmax * (W - m.l - m.r);
+  const Y = v => H - m.b - v / ymax * (H - m.t - m.b);
+  let s = '';
+  const n = 5;
+  for (let i = 0; i <= n; i++){
+    const xv = xmax * i / n, yv = ymax * i / n;
+    if (i > 0){
+      s += `<line class="gridl" x1="${X(xv)}" y1="${Y(0)}" x2="${X(xv)}" y2="${Y(ymax)}"/>`;
+      s += `<line class="gridl" x1="${X(0)}" y1="${Y(yv)}" x2="${X(xmax)}" y2="${Y(yv)}"/>`;
+    }
+    if (!o.noX) s += `<text class="tick" x="${X(xv)}" y="${Y(0)+18}" text-anchor="middle">${tickFmt(xv, o.xMoney)}</text>`;
+    if (!o.noY) s += `<text class="tick" x="${X(0)-8}" y="${Y(yv)+4}" text-anchor="end">${tickFmt(yv, o.yMoney)}</text>`;
+  }
+  s += `<path class="axis" d="M${X(0)} ${Y(ymax)} V${Y(0)} H${X(xmax)}"/>`;
+  s += `<text class="alabel" x="${(X(0)+X(xmax))/2}" y="${H-10}" text-anchor="middle">${esc(xlab)}</text>`;
+  s += `<text class="alabel" transform="translate(16 ${(Y(0)+Y(ymax))/2}) rotate(-90)" text-anchor="middle">${esc(ylab)}</text>`;
+  return {X, Y, s, xmax, ymax};
+}
+/* clip infinite line through (q1,p1),(q2,p2) to box [0,xmax]x[0,ymax] */
+function clipLine(q1, p1, q2, p2, xmax, ymax){
+  const dx = q2 - q1, dy = p2 - p1;
+  if (dx === 0 && dy === 0) return null;
+  const ts = [];
+  const add = t => { const x = q1 + t*dx, y = p1 + t*dy; if (x >= -1e-9 && x <= xmax+1e-9 && y >= -1e-9 && y <= ymax+1e-9) ts.push(t); };
+  if (dx !== 0){ add((0 - q1)/dx); add((xmax - q1)/dx); }
+  if (dy !== 0){ add((0 - p1)/dy); add((ymax - p1)/dy); }
+  if (ts.length < 2) return null;
+  const a = Math.min(...ts), b = Math.max(...ts);
+  return [q1 + a*dx, p1 + a*dy, q1 + b*dx, p1 + b*dy];
+}
+function arrow(x1, y1, x2, y2){
+  const L = Math.hypot(x2-x1, y2-y1); if (L < 14) return '';
+  const ux = (x2-x1)/L, uy = (y2-y1)/L;
+  const sx = x1 + ux*10, sy = y1 + uy*10, ex = x2 - ux*12, ey = y2 - uy*12;
+  const hx = ex - ux*9, hy = ey - uy*9;
+  return `<line class="arrow" x1="${sx}" y1="${sy}" x2="${hx}" y2="${hy}"/>` +
+    `<path class="arrowhead" d="M${ex} ${ey} L${hx - uy*5} ${hy + ux*5} L${hx + uy*5} ${hy - ux*5} Z"/>`;
+}
+function point(c, q, p, cls, label, dx=10, dy=-10){
+  const x = c.X(q), y = c.Y(p);
+  return `<line class="guide" x1="${c.X(0)}" y1="${y}" x2="${x}" y2="${y}"/><line class="guide" x1="${x}" y1="${c.Y(0)}" x2="${x}" y2="${y}"/>` +
+    `<circle class="dot ${cls}" cx="${x}" cy="${y}" r="7"/>` + (label ? `<text class="ptlabel" x="${x+dx}" y="${y+dy}">${label}</text>` : '');
+}
+function twoPointGraph(svgId, P1, Q1, P2, Q2, kind){
+  const svg = document.getElementById(svgId);
+  const xmax = niceMax(Math.max(Q1, Q2) * 1.35), ymax = niceMax(Math.max(P1, P2) * 1.35);
+  const c = chart(560, 420, xmax, ymax, kind === 'supply' ? 'Quantity supplied' : 'Quantity demanded', 'Price ($)', {yMoney:true});
+  let s = c.s;
+  const ln = clipLine(Q1, P1, Q2, P2, xmax, ymax);
+  const cls = kind === 'supply' ? 'sup' : 'dem';
+  if (ln){
+    s += `<line class="${cls} ext" x1="${c.X(ln[0])}" y1="${c.Y(ln[1])}" x2="${c.X(ln[2])}" y2="${c.Y(ln[3])}"/>`;
+    s += `<line class="${cls}" x1="${c.X(Q1)}" y1="${c.Y(P1)}" x2="${c.X(Q2)}" y2="${c.Y(P2)}"/>`;
+    const lx = ln[0] > ln[2] ? [ln[0], ln[1]] : [ln[2], ln[3]];
+    const endL = kind === 'supply' ? (ln[1] > ln[3] ? [ln[0],ln[1]] : [ln[2],ln[3]]) : lx;
+    s += `<text class="${kind==='supply'?'slabel':'dlabel'}" x="${Math.min(c.X(endL[0]) + 6, 520)}" y="${Math.max(c.Y(endL[1]) + (kind==='supply'? 16 : -8), 30)}">${kind==='supply'?'S':'D'}</text>`;
+  }
+  const bCls = kind === 'supply' ? 'dotS' : 'dotB';
+  const leftA = Q1 <= Q2;
+  s += point(c, Q1, P1, 'dotA', 'A', leftA ? -22 : 10, -10);
+  s += point(c, Q2, P2, bCls, 'B', leftA ? 10 : -22, -10);
+  s += arrow(c.X(Q1), c.Y(P1), c.X(Q2), c.Y(P2));
+  svg.innerHTML = s;
+}
+function validPts(P1, Q1, P2, Q2){
+  if (![P1, Q1, P2, Q2].every(Number.isFinite)) return 'Fill in all four boxes with numbers.';
+  if (P1 <= 0 || P2 <= 0) return 'Prices must be greater than zero.';
+  if (Q1 < 0 || Q2 < 0) return 'Quantities cannot be negative.';
+  if (Q1 + Q2 === 0) return 'At least one quantity must be greater than zero.';
+  return '';
+}
+
+/* ---------- slide 2: midpoint comparison ---------- */
+function s2(){
+  const P1 = val('m-p1'), Q1 = val('m-q1'), P2 = val('m-p2'), Q2 = val('m-q2');
+  const t = $('#m-table'), say = $('#m-say');
+  const bad = validPts(P1, Q1, P2, Q2) || (P1 === P2 ? 'Use two different prices.' : '') || (Q1 === 0 || Q2 === 0 ? 'Use quantities above zero for this comparison.' : '');
+  if (bad){ t.innerHTML = `<tr><td>${bad}</td></tr>`; say.textContent=''; return; }
+  const aQ = (Q2-Q1)/Q1*100, aP = (P2-P1)/P1*100;
+  const bQ = (Q1-Q2)/Q2*100, bP = (P1-P2)/P2*100;
+  const mQ = mid(Q1,Q2).pct, mP = mid(P1,P2).pct;
+  const eA = Math.abs(aQ/aP), eB = Math.abs(bQ/bP), eM = Math.abs(mQ/mP);
+  t.innerHTML = `<thead><tr><th>Method</th><th style="text-align:right">%ΔQ</th><th style="text-align:right">%ΔP</th><th style="text-align:right">|E|</th></tr></thead><tbody>
+    <tr><td>Start at A (A → B)</td><td class="n">${pct(aQ)}</td><td class="n">${pct(aP)}</td><td class="n">${fx(eA)}</td></tr>
+    <tr><td>Start at B (B → A)</td><td class="n">${pct(bQ)}</td><td class="n">${pct(bP)}</td><td class="n">${fx(eB)}</td></tr>
+    <tr class="win"><td>Midpoint (either direction)</td><td class="n">${pct(mQ)}</td><td class="n">${pct(mP)}</td><td class="n">${fx(eM)}</td></tr></tbody>`;
+  say.innerHTML = Math.abs(eA - eB) < 0.005
+    ? `With these numbers, the two plain methods happen to agree. Try a bigger price change to see them split apart.`
+    : `The plain method gives <b>${fx(eA)}</b> or <b>${fx(eB)}</b> depending on where you start. The midpoint method gives <b>${fx(eM)}</b> in both directions.`;
+}
+['m-p1','m-q1','m-p2','m-q2'].forEach(id => document.getElementById(id).addEventListener('input', s2));
+
+/* ---------- slide 3: PED calculator ---------- */
+const dPresets = [
+  {name:'Lone Star Boba', v:[5, 300, 6, 200], unit:'cups per week'},
+  {name:'Gasoline (short run)', v:[3, 1000, 3.6, 960], unit:'gallons per week'},
+  {name:'Campus Cinema', v:[12, 250, 10, 300], unit:'tickets per night'}
+];
+let dUnit = dPresets[0].unit;
+function presetRow(boxId, list, apply){
+  const box = document.getElementById(boxId);
+  list.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = p.name;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => { $$('.chip', box).forEach(x => x.setAttribute('aria-pressed','false')); b.setAttribute('aria-pressed','true'); apply(p); });
+    box.appendChild(b);
+  });
+  return () => $$('.chip', box).forEach(x => x.setAttribute('aria-pressed','false'));
+}
+const dClear = presetRow('d-presets', dPresets, p => { ['d-p1','d-q1','d-p2','d-q2'].forEach((id,i)=>setv(id,p.v[i])); dUnit = p.unit; s3(); });
+function s3(){
+  const P1 = val('d-p1'), Q1 = val('d-q1'), P2 = val('d-p2'), Q2 = val('d-q2');
+  const bad = validPts(P1, Q1, P2, Q2);
+  if (bad){ warn('d-warn', bad); $('#d-work').innerHTML=''; $('#d-E').textContent='—'; $('#d-badge').innerHTML=''; $('#d-say').textContent=''; return; }
+  const q = mid(Q1,Q2), p = mid(P1,P2);
+  const E = p.d === 0 ? Infinity : Math.abs(q.pct / p.pct);
+  const c = classify(p.d, q.d, E);
+  $('#d-work').innerHTML = rows([
+    ['%ΔQ = ' + qty(q.d) + ' ÷ ' + qty(q.avg), pct(q.pct)],
+    ['%ΔP = ' + money(p.d) + ' ÷ ' + money(p.avg), p.d === 0 ? '0.00%' : pct(p.pct)],
+    ['|E| = |' + pct(q.pct) + ' ÷ ' + pct(p.pct) + '|', fx(E), true],
+    ['TR: ' + money(P1*Q1) + ' → ' + money(P2*Q2), (P2*Q2 > P1*Q1 ? 'rises' : P2*Q2 < P1*Q1 ? 'falls' : 'unchanged')]
+  ]);
+  $('#d-E').textContent = Number.isFinite(E) ? fx(E) : '∞';
+  $('#d-badge').innerHTML = badge(c.key, c.label);
+  $('#d-mark').style.left = (Math.min(Number.isFinite(E) ? E : 4, 4) / 4 * 100) + '%';
+  let say = '';
+  if (Number.isFinite(E) && q.d !== 0) say = `For each 1% change in price, quantity demanded changes by about <b>${fx(E)}%</b>. ` +
+      (c.key==='elastic' ? 'Buyers are very responsive.' : c.key==='inelastic' ? 'Buyers are not very responsive.' : c.key==='unit' ? 'Quantity changes by the same percentage as price.' : '');
+  else if (c.label === 'Perfectly inelastic') say = 'Quantity did not change at all, even though price changed.';
+  else if (c.label === 'Perfectly elastic') say = 'Quantity changed even though price did not change, so E = ∞.';
+  $('#d-say').innerHTML = say;
+  warn('d-warn', (p.d !== 0 && q.d !== 0 && Math.sign(p.d) === Math.sign(q.d)) ? '<b>Check your numbers:</b> price and quantity moved in the same direction. On a demand curve, a higher price should lower quantity demanded.' : '');
+  twoPointGraph('d-svg', P1, Q1, P2, Q2, 'demand');
+  $('#d-cap').textContent = `A = (${qty(Q1)}, ${money(P1)}) → B = (${qty(Q2)}, ${money(P2)}). Quantity is in ${dUnit}. The dashed line extends the straight line through A and B.`;
+}
+['d-p1','d-q1','d-p2','d-q2'].forEach(id => document.getElementById(id).addEventListener('input', () => { dClear(); dUnit = 'units'; s3(); }));
+
+/* ---------- slide 4: spectrum ---------- */
+const spec = [
+  {k:'pi', name:'Perfectly inelastic', e:'E = 0', cls:'k-inelastic', ex:'Example (close to it): a life-saving medicine with no substitute. Buyers need the same amount at any price.', mean:'Quantity does not change at all when price changes.'},
+  {k:'ri', name:'Relatively inelastic', e:'0 < E < 1', cls:'k-inelastic', ex:'Examples: gasoline in the short run, table salt, a campus parking permit.', mean:'Quantity changes by a smaller percentage than price.'},
+  {k:'un', name:'Unit elastic', e:'E = 1', cls:'k-unit', ex:'This is where demand changes from elastic to inelastic. On a straight-line demand curve, it happens only at the midpoint.', mean:'Quantity changes by the same percentage as price, so total revenue stays the same. The curve shown is P × Q = constant.'},
+  {k:'re', name:'Relatively elastic', e:'E > 1', cls:'k-elastic', ex:'Examples: a specific brand of coffee, restaurant meals, vacation travel.', mean:'Quantity changes by a larger percentage than price.'},
+  {k:'pe', name:'Perfectly elastic', e:'E = ∞', cls:'k-elastic', ex:'Example (close to it): one wheat farmer selling at the market price. If the farmer charges even a cent more, sales drop to zero.', mean:'Buyers will buy any amount at this one price and none at a higher price.'}
+];
+let specSel = 1;
+function s4(){
+  $('#s-btns').innerHTML = spec.map((s,i) => `<button type="button" data-spec="${i}" aria-pressed="${i===specSel}"><span>${s.name}</span><b class="${s.cls}">${s.e}</b></button>`).join('');
+  const s = spec[specSel];
+  $('#s-info').innerHTML = `<p style="margin:0 0 6px"><b class="${s.cls}">${s.name} (${s.e})</b>: ${s.mean}</p><p style="margin:0">${s.ex}</p>`;
+  const c = chart(560, 420, 100, 100, 'Quantity', 'Price', {noX:true, noY:true});
+  let g = c.s, path = '';
+  if (s.k === 'pi') path = `M${c.X(50)} ${c.Y(95)} V${c.Y(0)}`;
+  if (s.k === 'ri') path = `M${c.X(40)} ${c.Y(95)} L${c.X(60)} ${c.Y(5)}`;
+  if (s.k === 're') path = `M${c.X(5)} ${c.Y(65)} L${c.X(95)} ${c.Y(35)}`;
+  if (s.k === 'pe') path = `M${c.X(0)} ${c.Y(50)} H${c.X(98)}`;
+  if (s.k === 'un'){ const pts = []; for (let q = 16; q <= 98; q += 2) pts.push(`${c.X(q)} ${c.Y(1500/q)}`); path = 'M' + pts.join(' L'); }
+  g += `<path class="dem" d="${path}"/>`;
+  g += `<text class="dlabel" x="${c.X(s.k==='pe'?92:s.k==='pi'?52:s.k==='ri'?61:s.k==='re'?92:92)}" y="${c.Y(s.k==='pe'?53:s.k==='pi'?90:s.k==='ri'?10:s.k==='re'?40:20)}">D</text>`;
+  if (s.k === 'un'){
+    g += `<rect class="r-common" x="${c.X(0)}" y="${c.Y(50)}" width="${c.X(30)-c.X(0)}" height="${c.Y(0)-c.Y(50)}"/>`;
+    g += `<rect class="r-common" x="${c.X(0)}" y="${c.Y(20)}" width="${c.X(75)-c.X(0)}" height="${c.Y(0)-c.Y(20)}"/>`;
+    g += `<text class="note" x="${c.X(33)}" y="${c.Y(48)}">Both rectangles have the same area: TR = 1,500</text>`;
+  }
+  $('#s-svg').innerHTML = g;
+}
+$('#s-btns').addEventListener('click', e => { const b = e.target.closest('[data-spec]'); if (b){ specSel = +b.dataset.spec; s4(); $(`[data-spec="${specSel}"]`).focus(); } });
+
+/* ---------- slide 6: linear demand ---------- */
+let lastChoke = 12;
+function s6(fromParams){
+  const a = val('l-a'), b = val('l-b'), sl = document.getElementById('l-p');
+  if (!(a > 0) || !(b > 0)){ warn('l-warn', 'Both a and b must be greater than zero.'); return; }
+  warn('l-warn','');
+  const choke = a / b;
+  if (fromParams){
+    const ratio = Math.min(Math.max(parseFloat(sl.value) / lastChoke, 0), 1);
+    sl.max = choke; sl.step = choke / 240; sl.value = ratio * choke; lastChoke = choke;
+  }
+  const P = parseFloat(sl.value), Q = Math.max(a - b * P, 0);
+  const E = Q === 0 ? Infinity : b * P / Q;
+  const c = P === 0 ? {key:'inelastic', label:'Perfectly inelastic (at P = $0)'} : Q === 0 ? {key:'elastic', label:'Perfectly elastic (at Q = 0)'} : classify(1, 1, E);
+  $('#l-eq').textContent = `${qty(a)} − ${qty(b)}P`;
+  $('#l-pv').textContent = money(P);
+  $('#l-work').innerHTML = rows([
+    ['Q = ' + qty(a) + ' − ' + qty(b) + ' × ' + money(P), qty(+Q.toFixed(4))],
+    ['|E| = b × P ÷ Q = ' + qty(b) + ' × ' + fx(P) + ' ÷ ' + qty(+Q.toFixed(4)), Number.isFinite(E) ? fx(E) : '∞', true],
+    ['Midpoint price (a ÷ 2b)', money(choke/2)],
+    ['TR = P × Q', money(P*Q)]
+  ]);
+  $('#l-E').textContent = Number.isFinite(E) ? fx(E) : '∞';
+  $('#l-badge').innerHTML = badge(c.key, c.label);
+  $('#l-say').innerHTML = P > choke/2 + 1e-9 ? `The price is above the midpoint (${money(choke/2)}). Price is high and quantity is low, so a given price change is a small <i>percentage</i> of price and a large <i>percentage</i> of quantity. That makes demand elastic.`
+    : P < choke/2 - 1e-9 ? `The price is below the midpoint (${money(choke/2)}). Price is low and quantity is high, so a given price change is a large percentage of price and a small percentage of quantity. That makes demand inelastic.`
+    : `This is the midpoint, where |E| = 1 and total revenue is at its maximum.`;
+  const xmax = niceMax(a), ymax = niceMax(choke);
+  const g = chart(560, 420, xmax, ymax, 'Quantity demanded', 'Price ($)', {yMoney:true});
+  let s = g.s;
+  s += `<line class="el-line" x1="${g.X(0)}" y1="${g.Y(choke)}" x2="${g.X(a/2)}" y2="${g.Y(choke/2)}"/>`;
+  s += `<line class="in-line" x1="${g.X(a/2)}" y1="${g.Y(choke/2)}" x2="${g.X(a)}" y2="${g.Y(0)}"/>`;
+  s += `<circle cx="${g.X(a/2)}" cy="${g.Y(choke/2)}" r="6" fill="var(--unit)"/>`;
+  s += `<text class="t-un" x="${g.X(a/2)+10}" y="${g.Y(choke/2)-8}">Unit elastic |E| = 1</text>`;
+  s += `<text class="t-el" x="${g.X(a*0.25)+12}" y="${g.Y(choke*0.75)-10}">Elastic |E| &gt; 1</text>`;
+  s += `<text class="t-in" x="${g.X(a*0.75)+10}" y="${g.Y(choke*0.25)-10}">Inelastic |E| &lt; 1</text>`;
+  s += `<rect class="r-common" x="${g.X(0)}" y="${g.Y(P)}" width="${g.X(Q)-g.X(0)}" height="${g.Y(0)-g.Y(P)}"/>`;
+  s += point(g, Q, P, 'dotA', '', 0, 0);
+  const lab = `(${qty(+Q.toFixed(2))}, ${money(P)})`;
+  s += `<text class="ptlabel" x="${Math.min(g.X(Q)+10, 400)}" y="${Math.max(g.Y(P)-12, 16)}">${lab}</text>`;
+  document.getElementById('l-svg').innerHTML = s;
+}
+['l-a','l-b'].forEach(id => document.getElementById(id).addEventListener('input', () => s6(true)));
+document.getElementById('l-p').addEventListener('input', () => s6(false));
+$$('[data-lp]').forEach(b => b.addEventListener('click', () => { const sl = document.getElementById('l-p'); sl.value = parseFloat(sl.max) * parseFloat(b.dataset.lp); s6(false); }));
+
+/* ---------- slide 7: TR test ---------- */
+const tPresets = [
+  {name:'Elastic range: $10 → $12', v:[10,12]},
+  {name:'Inelastic range: $4 → $5', v:[4,5]},
+  {name:'Across the midpoint: $7 → $8', v:[7,8]},
+  {name:'Price cut: $12 → $10', v:[12,10]}
+];
+const tClear = presetRow('t-presets', tPresets, p => { setv('t-a',600); setv('t-b',40); setv('t-p1',p.v[0]); setv('t-p2',p.v[1]); s7(); });
+function s7(){
+  const a = val('t-a'), b = val('t-b'), P1 = val('t-p1'), P2 = val('t-p2');
+  const out = ['t-work','t-badge','t-verdict','t-say','t-legend'];
+  const fail = m => { warn('t-warn', m); out.forEach(id => document.getElementById(id).innerHTML=''); };
+  if (![a,b,P1,P2].every(Number.isFinite)) return fail('Fill in all four boxes with numbers.');
+  if (a <= 0 || b <= 0) return fail('a and b must be greater than zero.');
+  const choke = a / b;
+  if (P1 <= 0 || P2 <= 0 || P1 > choke || P2 > choke) return fail(`Prices must be above $0 and no higher than ${money(choke)}, the price at which quantity reaches zero.`);
+  if (P1 === P2) return fail('Enter two different prices.');
+  warn('t-warn','');
+  $('#t-eq').textContent = `${qty(a)} − ${qty(b)}P`;
+  const Q1 = a - b*P1, Q2 = a - b*P2, TR1 = P1*Q1, TR2 = P2*Q2, dTR = TR2 - TR1;
+  const q = mid(Q1,Q2), p = mid(P1,P2);
+  const E = (Q1 + Q2) === 0 ? Infinity : Math.abs(q.pct / p.pct);
+  const c = classify(p.d, q.d, E);
+  const up = P2 > P1;
+  const minP = Math.min(P1,P2), maxP = Math.max(P1,P2), minQ = Math.min(Q1,Q2), maxQ = Math.max(Q1,Q2);
+  const priceStrip = (maxP - minP) * minQ, qtyStrip = minP * (maxQ - minQ);
+  const gain = up ? priceStrip : qtyStrip, loss = up ? qtyStrip : priceStrip;
+  $('#t-work').innerHTML = rows([
+    ['Q₁ = ' + qty(a) + ' − ' + qty(b) + '×' + fx(P1) + ' → TR₁', qty(Q1) + ' → ' + money(TR1)],
+    ['Q₂ = ' + qty(a) + ' − ' + qty(b) + '×' + fx(P2) + ' → TR₂', qty(Q2) + ' → ' + money(TR2)],
+    ['Gained (green) − lost (red)', money(gain) + ' − ' + money(loss)],
+    ['ΔTR', (dTR>0?'+':'') + money(dTR), true],
+    ['Midpoint |E| = |' + pct(q.pct) + ' ÷ ' + pct(p.pct) + '|', Number.isFinite(E) ? fx(E) : '∞']
+  ]);
+  $('#t-badge').innerHTML = badge(c.key, c.label);
+  const trWord = Math.abs(dTR) < 1e-9 ? 'TR does not change' : dTR > 0 ? 'TR rises' : 'TR falls';
+  $('#t-verdict').innerHTML = `Price ${up?'rises':'falls'} → <span class="${Math.abs(dTR)<1e-9?'k-unit':dTR>0?'k-gain':'k-loss'}">${trWord}</span>`;
+  $('#t-say').innerHTML = c.key === 'elastic' ? 'Demand is elastic, so price and TR move in <b>opposite</b> directions. The quantity effect is larger than the price effect.'
+    : c.key === 'inelastic' ? 'Demand is inelastic, so price and TR move in the <b>same</b> direction. The price effect is larger than the quantity effect.'
+    : c.key === 'unit' ? 'Demand is unit elastic, so the revenue gained exactly offsets the revenue lost.' : '';
+  $('#t-legend').innerHTML = `<span><i style="background:var(--shade-common)"></i>Kept: ${money(minP*minQ)}</span><span><i style="background:var(--shade-gain);border:1px solid var(--gain)"></i>Gained: ${money(gain)}</span><span><i style="background:var(--shade-loss);border:1px solid var(--loss)"></i>Lost: ${money(loss)}</span>`;
+  // demand + rectangles
+  const g = chart(560, 360, niceMax(a), niceMax(choke), 'Tickets per night', 'Ticket price ($)', {yMoney:true});
+  let s = g.s;
+  const R = (q0,p0,q1,p1,cls) => `<rect class="${cls}" x="${g.X(q0)}" y="${g.Y(p1)}" width="${Math.max(g.X(q1)-g.X(q0),0)}" height="${Math.max(g.Y(p0)-g.Y(p1),0)}"/>`;
+  s += R(0, 0, minQ, minP, 'r-common');
+  s += R(0, minP, minQ, maxP, up ? 'r-gain' : 'r-loss');
+  s += R(minQ, 0, maxQ, minP, up ? 'r-loss' : 'r-gain');
+  s += `<line class="dem" x1="${g.X(0)}" y1="${g.Y(choke)}" x2="${g.X(a)}" y2="${g.Y(0)}"/>`;
+  s += `<text class="dlabel" x="${g.X(a)-18}" y="${g.Y(0)-10}">D</text>`;
+  s += point(g, Q1, P1, 'dotA', 'A', 10, -10) + point(g, Q2, P2, 'dotB', 'B', 10, -10);
+  document.getElementById('t-svg').innerHTML = s;
+  // TR curve
+  const trMax = a*a/(4*b);
+  const h = chart(560, 260, niceMax(a), niceMax(trMax), 'Tickets per night', 'Total revenue ($)', {yMoney:true});
+  let t = h.s, pts = [];
+  for (let i = 0; i <= 60; i++){ const qq = a*i/60; pts.push(`${h.X(qq)} ${h.Y(qq*(a-qq)/b)}`); }
+  t += `<path class="tr-curve" d="M${pts.join(' L')}"/>`;
+  t += `<line class="guide" x1="${h.X(a/2)}" y1="${h.Y(0)}" x2="${h.X(a/2)}" y2="${h.Y(trMax)}"/>`;
+  t += `<text class="t-un" x="${h.X(a/2)+6}" y="${h.Y(trMax)+16}">Max TR ${money(trMax,0)}</text>`;
+  t += `<circle class="dot dotA" cx="${h.X(Q1)}" cy="${h.Y(TR1)}" r="6"/><text class="ptlabel" x="${h.X(Q1)-18}" y="${h.Y(TR1)-8}">A</text>`;
+  t += `<circle class="dot dotB" cx="${h.X(Q2)}" cy="${h.Y(TR2)}" r="6"/><text class="ptlabel" x="${h.X(Q2)+8}" y="${h.Y(TR2)-8}">B</text>`;
+  document.getElementById('t-svg2').innerHTML = t;
+}
+['t-a','t-b','t-p1','t-p2'].forEach(id => document.getElementById(id).addEventListener('input', () => { tClear(); s7(); }));
+
+/* ---------- slide 9: supply ---------- */
+const pPresets = [
+  {name:'Short run (same hives)', v:[6,400,8,500]},
+  {name:'Long run (new hives)', v:[6,400,8,700]},
+  {name:'Line through the origin', v:[4,200,6,300]}
+];
+const pClear = presetRow('s2-presets', pPresets, p => { ['p-p1','p-q1','p-p2','p-q2'].forEach((id,i)=>setv(id,p.v[i])); s9(); });
+function s9(){
+  const P1 = val('p-p1'), Q1 = val('p-q1'), P2 = val('p-p2'), Q2 = val('p-q2');
+  const bad = validPts(P1, Q1, P2, Q2);
+  if (bad){ warn('p-warn', bad); $('#p-work').innerHTML=''; $('#p-E').textContent='—'; $('#p-badge').innerHTML=''; $('#p-say').textContent=''; return; }
+  const q = mid(Q1,Q2), p = mid(P1,P2);
+  const Es = p.d === 0 ? Infinity : q.pct / p.pct;
+  const c = classify(p.d, q.d, Math.abs(Es));
+  let interceptRow = ['Extended line', '—'], note = '';
+  if (p.d !== 0 && q.d !== 0 && Math.sign(p.d) === Math.sign(q.d)){
+    const d = q.d / p.d, c0 = Q1 - d * P1, tol = 1e-9 * Math.max(Q1, Q2, 1);
+    if (Math.abs(c0) <= tol){ interceptRow = ['Extended line meets', 'the origin']; note = 'The line passes through the origin, so E<sub>s</sub> = 1 everywhere on it.'; }
+    else if (c0 > 0){ interceptRow = ['Extended line meets Q-axis at', 'Q = ' + qty(+c0.toFixed(2))]; note = 'The line meets the <b>quantity</b> axis, so supply is inelastic.'; }
+    else { interceptRow = ['Extended line meets P-axis at', money(-c0/d)]; note = 'The line meets the <b>price</b> axis, so supply is elastic.'; }
+  }
+  $('#p-work').innerHTML = rows([
+    ['%ΔQs = ' + qty(q.d) + ' ÷ ' + qty(q.avg), pct(q.pct)],
+    ['%ΔP = ' + money(p.d) + ' ÷ ' + money(p.avg), p.d === 0 ? '0.00%' : pct(p.pct)],
+    ['Es = ' + pct(q.pct) + ' ÷ ' + pct(p.pct), Number.isFinite(Es) ? num(Es) : '∞', true],
+    interceptRow
+  ]);
+  $('#p-E').textContent = Number.isFinite(Es) ? num(Es) : '∞';
+  $('#p-badge').innerHTML = badge(c.key, c.label.replace('Elastic','Elastic supply').replace('Inelastic','Inelastic supply'));
+  $('#p-say').innerHTML = (Number.isFinite(Es) && q.d !== 0 ? `For each 1% rise in price, quantity supplied rises about <b>${fx(Es)}%</b>. ` : '') + note;
+  warn('p-warn', (p.d !== 0 && q.d !== 0 && Math.sign(p.d) !== Math.sign(q.d)) ? '<b>Check your numbers:</b> supply slopes upward, so a higher price should increase quantity supplied.' : '');
+  twoPointGraph('p-svg', P1, Q1, P2, Q2, 'supply');
+  $('#p-cap').textContent = `Hill Country Honey, jars per week. A = (${qty(Q1)}, ${money(P1)}) → B = (${qty(Q2)}, ${money(P2)}). The dashed line shows where the supply line would meet an axis.`;
+}
+['p-p1','p-q1','p-p2','p-q2'].forEach(id => document.getElementById(id).addEventListener('input', () => { pClear(); s9(); }));
+
+/* ---------- slide 10: cross & income ---------- */
+let cMode = 'x', xNames = {x:'coffee', y:'boba'}, iName = 'restaurant meals', xUnit = 'cups per week', iUnit = 'per month';
+const xPresets = [
+  {name:'Boba price → coffee cart', v:[5,6,200,230], x:'coffee', y:'boba', u:'cups per week'},
+  {name:'Movie tickets → popcorn', v:[10,12,500,420], x:'popcorn', y:'movie tickets', u:'bags per week'},
+  {name:'Gasoline → textbooks', v:[3,3.6,150,150], x:'textbooks', y:'gasoline', u:'books per term'}
+];
+const iPresets = [
+  {name:'Restaurant meals', v:[30000,36000,4,6], n:'restaurant meals', u:'per month'},
+  {name:'Toothpaste', v:[30000,36000,10,11], n:'toothpaste', u:'tubes per year'},
+  {name:'Instant ramen', v:[30000,36000,30,24], n:'instant ramen', u:'packs per month'}
+];
+const xClear = presetRow('x-presets', xPresets, p => { ['x-p1','x-p2','x-q1','x-q2'].forEach((id,i)=>setv(id,p.v[i])); xNames = {x:p.x, y:p.y}; xUnit = p.u; s10(); });
+const iClear = presetRow('i-presets', iPresets, p => { ['i-y1','i-y2','i-q1','i-q2'].forEach((id,i)=>setv(id,p.v[i])); iName = p.n; iUnit = p.u; s10(); });
+function s10(){
+  $$('[data-xname]').forEach(e => e.textContent = xNames.x);
+  $$('[data-yname]').forEach(e => e.textContent = xNames.y);
+  $$('[data-iname]').forEach(e => e.textContent = iName);
+  const isX = cMode === 'x';
+  const A = isX ? val('x-p1') : val('i-y1'), B = isX ? val('x-p2') : val('i-y2');
+  const Q1 = isX ? val('x-q1') : val('i-q1'), Q2 = isX ? val('x-q2') : val('i-q2');
+  const good = isX ? xNames.x : iName, driver = isX ? `price of ${xNames.y}` : 'income';
+  const clear = m => { warn('c-warn', m); ['c-work','c-badge','c-say'].forEach(id => document.getElementById(id).innerHTML=''); $('#c-E').textContent='—'; };
+  if (![A,B,Q1,Q2].every(Number.isFinite)) return clear('Fill in all four boxes with numbers.');
+  if (A <= 0 || B <= 0) return clear(isX ? 'Prices must be greater than zero.' : 'Incomes must be greater than zero.');
+  if (Q1 < 0 || Q2 < 0 || Q1 + Q2 === 0) return clear('Quantities cannot be negative, and at least one must be above zero.');
+  if (A === B) return clear(`Change the ${driver} to see a response.`);
+  warn('c-warn','');
+  const q = mid(Q1,Q2), d = mid(A,B), E = q.pct / d.pct;
+  let c;
+  if (isX){
+    c = q.d === 0 ? {key:'neutral', label:'Unrelated goods (E = 0)'} : E > 0 ? {key:'elastic', label:'Substitutes (E > 0)'} : {key:'loss', label:'Complements (E < 0)'};
+  } else {
+    c = q.d === 0 ? {key:'neutral', label:'No income response (E = 0)'} : E < 0 ? {key:'loss', label:'Inferior good (E < 0)'} :
+      Math.abs(E-1) < 1e-9 ? {key:'unit', label:'Normal good (E = 1)'} : E < 1 ? {key:'inelastic', label:'Normal good: necessity (0 < E < 1)'} : {key:'elastic', label:'Normal good: luxury (E > 1)'};
+  }
+  const dFmt = isX ? money : (x => money(x, 0));
+  $('#c-work').innerHTML = rows([
+    [`%ΔQ (${good}) = ${qty(q.d)} ÷ ${qty(q.avg)}`, pct(q.pct)],
+    [`%Δ${isX ? 'P (' + xNames.y + ')' : 'Income'} = ${dFmt(d.d)} ÷ ${dFmt(d.avg)}`, pct(d.pct)],
+    [`E = ${pct(q.pct)} ÷ ${pct(d.pct)}`, signed(E), true]
+  ]);
+  $('#c-E').textContent = signed(E);
+  $('#c-badge').innerHTML = badge(c.key, c.label);
+  const dir = B > A ? 'rose' : 'fell', qdir = Q2 > Q1 ? 'rose' : Q2 < Q1 ? 'fell' : 'did not change';
+  $('#c-say').innerHTML = `When the ${driver} ${dir}, the quantity of ${good} bought ${qdir}. ` + (isX
+    ? (q.d === 0 ? 'The two goods are unrelated.' : E > 0 ? `Because they move in the same direction, the goods are <b>substitutes</b>: buyers switch from ${xNames.y} to ${good}.` : `Because they move in opposite directions, the goods are <b>complements</b>: they are used together.`)
+    : (q.d === 0 ? 'Demand does not respond to income.' : E < 0 ? 'Buyers purchase less as they earn more, so this is an <b>inferior</b> good.' : E > 1 ? 'Quantity grows faster than income, so this is a <b>luxury</b>.' : Math.abs(E-1) < 1e-9 ? 'Quantity grows at the same rate as income.' : 'Quantity grows more slowly than income, so this is a <b>necessity</b>.'));
+  // shifting demand graph: own price of X held at P̄
+  const xmax = niceMax(Math.max(Q1,Q2) * 1.6), k = 10 / xmax;  // P = 5 - k(Q - Qi)
+  const g = chart(560, 420, xmax, 10, `Quantity of ${good} (${isX ? xUnit : iUnit})`, `Price of ${good}`, {noY:true});
+  let s = g.s;
+  const dl = (Qi, cls, lab) => {
+    const q0 = Math.max(0, Qi - 5/k), p0 = 5 + k*(Qi - q0), q1 = Math.min(xmax, Qi + 5/k), p1 = 5 - k*(q1 - Qi);
+    return `<line class="dem ${cls}" x1="${g.X(q0)}" y1="${g.Y(p0)}" x2="${g.X(q1)}" y2="${g.Y(p1)}"/>` +
+      `<text class="dlabel" x="${g.X(q1)-26}" y="${g.Y(p1)-8}">${lab}</text>`;
+  };
+  s += `<line class="guide" x1="${g.X(0)}" y1="${g.Y(5)}" x2="${g.X(xmax)}" y2="${g.Y(5)}"/>`;
+  s += `<text class="tick" x="${g.X(0)-8}" y="${g.Y(5)+4}" text-anchor="end">P̄</text>`;
+  if (Q1 === Q2){ s += dl(Q1, '', 'D'); s += point(g, Q1, 5, 'dotA', '', 0, 0); }
+  else {
+    s += dl(Q1, 'ext', 'D₁') + dl(Q2, '', 'D₂');
+    s += `<circle class="dot dotA" cx="${g.X(Q1)}" cy="${g.Y(5)}" r="6"/><circle class="dot dotB" cx="${g.X(Q2)}" cy="${g.Y(5)}" r="6"/>`;
+    s += arrow(g.X(Q1), g.Y(5) - 24, g.X(Q2), g.Y(5) - 24);
+    s += `<text class="note" x="${(g.X(Q1)+g.X(Q2))/2}" y="${g.Y(5) - 36}" text-anchor="middle">${Q2 > Q1 ? 'Demand shifts right' : 'Demand shifts left'}</text>`;
+  }
+  document.getElementById('c-svg').innerHTML = s;
+  $('#c-cap').textContent = `The price of ${good} stays at P̄. The change in the ${driver} shifts the whole demand curve for ${good}, so this is not a movement along it.`;
+}
+['x-p1','x-p2','x-q1','x-q2'].forEach(id => document.getElementById(id).addEventListener('input', () => { xClear(); xNames = {x:'good X', y:'good Y'}; xUnit = 'units'; s10(); }));
+['i-y1','i-y2','i-q1','i-q2'].forEach(id => document.getElementById(id).addEventListener('input', () => { iClear(); iName = 'good X'; iUnit = 'units'; s10(); }));
+function setTab(m){
+  cMode = m;
+  $('#tab-x').setAttribute('aria-selected', m === 'x'); $('#tab-i').setAttribute('aria-selected', m === 'i');
+  $('#pane-x').hidden = m !== 'x'; $('#pane-i').hidden = m !== 'i';
+  s10();
+}
+$('#tab-x').addEventListener('click', () => setTab('x'));
+$('#tab-i').addEventListener('click', () => setTab('i'));
+
+/* ---------- checks ---------- */
+const QUIZ = {
+  q1: [
+    {q:'The price of a monthly bus pass rises from <b>$40 to $60</b>, and riders fall from <b>1,100 to 900</b>. What is |E<sub>d</sub>|?', o:['0.36','0.50','1.00','2.00'], a:1,
+     why:'%ΔQ = −200 ÷ 1,000 = −20%. %ΔP = 20 ÷ 50 = +40%. |E| = 20 ÷ 40 = <b>0.50</b>, which is inelastic. (0.36 comes from using starting values instead of averages. 2.00 comes from flipping the fraction.)'},
+    {q:'Concert tickets drop from <b>$30 to $20</b>, and tickets sold rise from <b>500 to 1,000</b>. What is |E<sub>d</sub>|?', o:['0.60','1.00','1.67','3.00'], a:2,
+     why:'%ΔQ = 500 ÷ 750 = +66.67%. %ΔP = −10 ÷ 25 = −40%. |E| = 66.67 ÷ 40 = <b>1.67</b>, which is elastic. (3.00 comes from using starting values. 0.60 comes from flipping the fraction.)'},
+    {q:'A 10% cut in price raises quantity demanded by 10%. Demand is…', o:['Elastic','Unit elastic','Inelastic','Perfectly elastic'], a:1,
+     why:'|E| = 10% ÷ 10% = <b>1</b>, so demand is unit elastic and total revenue does not change.'},
+    {q:'Which of these most likely has the <b>least</b> elastic demand?', o:['One brand of sneakers','Table salt','Vacation flights','Restaurant dinners'], a:1,
+     why:'<b>Table salt</b> has few close substitutes and takes up a tiny share of a household budget, so buyers barely respond to its price.'}
+  ],
+  q2: [
+    {q:'Short-run demand for gasoline is inelastic. If the price of gas rises, gas stations’ total revenue…', o:['Rises','Falls','Stays the same'], a:0,
+     why:'With inelastic demand, price and TR move in the <b>same</b> direction. Quantity falls by a smaller percentage than price rises, so <b>TR rises</b>.'},
+    {q:'Campus Cinema cuts its ticket price from $12 to $10, and total revenue <b>rises</b>. In this price range, demand is…', o:['Elastic','Inelastic','Unit elastic'], a:0,
+     why:'Price fell and TR rose, so they moved in opposite directions. That means demand is <b>elastic</b>.'},
+    {q:'Price rises from <b>$8 to $10</b>, and quantity falls from <b>50 to 40</b>. What happens to TR, and what is |E|?', o:['TR rises; |E| = 0.80','TR unchanged; |E| = 1.00','TR falls; |E| = 1.25'], a:1,
+     why:'TR = $8 × 50 = $400 and $10 × 40 = $400, so TR does not change. Midpoint: %ΔQ = −10 ÷ 45 = −22.22% and %ΔP = 2 ÷ 9 = +22.22%, so <b>|E| = 1.00</b>.'},
+    {q:'On a straight-line demand curve, total revenue is at its <b>maximum</b>…', o:['At the highest price','At the midpoint','At the largest quantity'], a:1,
+     why:'Above the midpoint, a price cut raises TR because demand is elastic. Below it, a price cut lowers TR because demand is inelastic. So TR peaks at the <b>midpoint</b>, where |E| = 1.'}
+  ],
+  q3: [
+    {q:'The price of printer ink rises 20%, and printer purchases fall 10%. The cross-price elasticity is −0.5, so printers and ink are…', o:['Substitutes','Complements','Unrelated'], a:1,
+     why:'E<sub>XY</sub> = −10% ÷ +20% = <b>−0.5</b>. A negative sign means the goods are <b>complements</b>, which are used together.'},
+    {q:'Income rises 10%, and bus rides fall 5%. Bus rides are…', o:['A luxury','A necessity','An inferior good'], a:2,
+     why:'E<sub>I</sub> = −5% ÷ +10% = <b>−0.5</b>. A negative sign means bus rides are an <b>inferior good</b>.'},
+    {q:'Income rises 10%, and restaurant meals rise 25%. E<sub>I</sub> equals…', o:['0.40, a necessity','2.50, a luxury','−2.50, an inferior good'], a:1,
+     why:'E<sub>I</sub> = 25% ÷ 10% = <b>2.5</b>. It is greater than 1, so restaurant meals are a normal good and a <b>luxury</b>.'},
+    {q:'A straight-line supply curve that starts at the origin has a price elasticity of supply that is…', o:['Elastic','Unit elastic everywhere','Inelastic'], a:1,
+     why:'Along a ray from the origin, P and Q change in proportion, so %ΔQ = %ΔP and <b>E<sub>s</sub> = 1</b> at every point. Try the “Line through the origin” scenario on slide 9.'}
+  ]
+};
+const answered = {q1:{}, q2:{}, q3:{}};
+function renderQuiz(key){
+  const box = $(`[data-quiz="${key}"]`);
+  box.innerHTML = QUIZ[key].map((it, i) => {
+    const pick = answered[key][i];
+    const done = pick !== undefined;
+    return `<div class="q"><span class="qn">QUESTION ${i+1}</span><p>${it.q}</p>
+      <div class="opts">${it.o.map((o,j) => `<button type="button" data-q="${key}" data-i="${i}" data-j="${j}" class="${done && j===it.a ? 'right' : done && j===pick ? 'wrong' : ''}" ${done?'disabled':''}>${o}</button>`).join('')}</div>
+      ${done ? `<div class="explain ${pick===it.a?'':'no'}">${pick===it.a ? '<b>Correct.</b> ' : '<b>Not quite.</b> '}${it.why}</div>` : ''}</div>`;
+  }).join('');
+  const n = Object.keys(answered[key]).length, right = Object.entries(answered[key]).filter(([i,p]) => QUIZ[key][i].a === p).length;
+  $(`[data-score="${key}"]`).textContent = `${right} correct of ${n} answered · ${QUIZ[key].length} total`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-q]');
+  if (b){ answered[b.dataset.q][+b.dataset.i] = +b.dataset.j; renderQuiz(b.dataset.q); return; }
+  const r = e.target.closest('[data-reset]');
+  if (r){ answered[r.dataset.reset] = {}; renderQuiz(r.dataset.reset); }
+});
+
+/* ---------- instructor notes (#instructor) ---------- */
+const NOTES = [
+  ['Open with a question: “If Brew Lab raised coffee by 10%, would you stop buying?” Ask for a show of hands, then point out that elasticity puts a number on that reaction.','Tell students to change numbers freely. Nothing they enter can break the deck.'],
+  ['Default A(4,100) → B(5,80): starting at A gives 0.80 and starting at B gives 1.25, but the midpoint method gives exactly 1.00.','Ask: “Which answer is right?” The point is that the midpoint method gives the same answer in both directions.'],
+  ['Presets: Boba |E| = 2.20 (elastic, TR 1,500 → 1,200); gasoline |E| = 0.22 (inelastic, TR 3,000 → 3,456); cinema |E| = 1.00 (TR 3,000 → 3,000).','Have students enter the same price and quantity movement in the wrong direction to see the warning message.'],
+  ['Stress the slope caveat. Unit elastic is drawn as P × Q = 1,500, not as a straight line.','The perfectly elastic example uses a single competitive firm. Previews the market-structure chapters.'],
+  ['Answer key: B (0.50), C (1.67), B (unit elastic), B (table salt).','The wrong choices match common mistakes: using starting values instead of averages, or dividing %ΔP by %ΔQ.'],
+  ['Default Q = 120 − 10P: P = $9 gives |E| = 3.00; P = $6 gives 1.00; P = $3 gives 0.33.','Change b and ask: “Does the midpoint price move?” Yes, because it equals a ÷ 2b.'],
+  ['Q = 600 − 40P. $10 → $12: |E| = 2.75, TR 2,000 → 1,440 (gained 240, lost 800). $4 → $5: |E| = 0.43, TR 1,760 → 2,000. $7 → $8: |E| = 1.00, TR 2,240 → 2,240.','Point out that with the midpoint method, |E| = 1 exactly when TR does not change. The test always agrees with the calculation.'],
+  ['Answer key: rises; elastic; TR unchanged and |E| = 1.00; at the midpoint.'],
+  ['Short run 6 → 8, 400 → 500: Es = 0.78, and the line meets the Q-axis at 100. Long run 400 → 700: Es = 1.91, and the line meets the P-axis at $3.33. Origin case: Es = 1.00.','Connect to time as a determinant: over a longer period, sellers can add capacity.'],
+  ['Cross-price: boba → coffee +0.77 (substitutes); tickets → popcorn −0.96 (complements); gasoline → textbooks 0 (unrelated). Income: meals +2.20 (luxury), toothpaste +0.52 (necessity), ramen −1.22 (inferior).','Stress that these elasticities shift the demand curve, while own-price elasticity describes a movement along it.'],
+  ['Answer key: complements; inferior good; 2.50 luxury; unit elastic everywhere.'],
+  ['Exit ticket idea: “Give one good you think is inelastic for you and explain why, using one determinant.”','Follow up with the Elasticity Meter lab for practice on the determinants.']
+];
+const instructor = location.hash.toLowerCase().includes('instructor');
+let notesOn = instructor;
+if (instructor) $('#notes-btn').hidden = false;
+$('#notes-btn').addEventListener('click', () => { notesOn = !notesOn; show(cur); });
+
+/* ---------- navigation ---------- */
+const slides = $$('.slide');
+let cur = 0;
+$('#dots').innerHTML = slides.map((s,i) => `<button type="button" aria-label="Slide ${i+1}: ${esc(s.dataset.title)}" title="${esc(s.dataset.title)}" data-go="${i}"></button>`).join('');
+$('#agenda').innerHTML = slides.slice(1).map((s,i) => `<li><span>${i+2}</span><button type="button" data-go="${i+1}">${esc(s.dataset.title)}</button></li>`).join('');
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) show(+g.dataset.go); });
+function show(i){
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.hidden = k !== cur);
+  $$('#dots button').forEach((d, k) => d.setAttribute('aria-current', k === cur ? 'true' : 'false'));
+  $('#counter').textContent = `${cur+1} / ${slides.length}`;
+  $('#prog').style.width = ((cur+1) / slides.length * 100) + '%';
+  $('#prev').disabled = cur === 0; $('#next').disabled = cur === slides.length - 1;
+  const n = $('#notes');
+  if (notesOn){ n.hidden = false; n.innerHTML = `<h3>Instructor notes · slide ${cur+1}</h3><ul>${NOTES[cur].map(x => `<li>${x}</li>`).join('')}</ul>`; }
+  else n.hidden = true;
+}
+$('#prev').addEventListener('click', () => show(cur - 1));
+$('#next').addEventListener('click', () => show(cur + 1));
+document.addEventListener('keydown', e => {
+  const t = e.target, tag = t && t.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); show(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); show(cur - 1); }
+  else if (e.key === 'Home') show(0);
+  else if (e.key === 'End') show(slides.length - 1);
+  else if (e.key === 'f' || e.key === 'F') toggleFs();
+});
+function toggleFs(){
+  try {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen && document.exitFullscreen();
+  } catch(_) {}
+}
+$('#fs-btn').addEventListener('click', toggleFs);
+
+/* ---------- boot ---------- */
+['d-p1','d-q1','d-p2','d-q2'].forEach((id,i) => setv(id, dPresets[0].v[i]));
+['p-p1','p-q1','p-p2','p-q2'].forEach((id,i) => setv(id, pPresets[0].v[i]));
+['x-p1','x-p2','x-q1','x-q2'].forEach((id,i) => setv(id, xPresets[0].v[i]));
+['i-y1','i-y2','i-q1','i-q2'].forEach((id,i) => setv(id, iPresets[0].v[i]));
+s2(); s3(); s4(); s6(false); s7(); s9(); s10();
+['q1','q2','q3'].forEach(renderQuiz);
+show(0);
+})();
+</script>
+
+</body>
+</html>

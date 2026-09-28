@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>*{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Movement or Shift?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+  :root{
+    --ground:#F5F7FA; --surface:#FFFFFF; --ink:#0F1729; --muted:#5C6779; --faint:#8791A3;
+    --line:#DCE2EB; --rule:#C9D2DE;
+    --move:#8A5A11; --move-bg:#FBF2E0; --move-line:#E2C489;
+    --shift:#125E5A; --shift-bg:#E4F2F0; --shift-line:#8CC7C1;
+    --accent:#31419B; --accent-soft:#E8EBF7;
+    --ok:#1A6B3C; --ok-bg:#E6F3EA; --ok-line:#9DCCAF;
+    --no:#9A2C2C; --no-bg:#FBEAEA; --no-line:#E0A7A7;
+    --grid:#E6EAF1;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0F1219; --surface:#161A23; --ink:#E9EDF3; --muted:#9AA4B4; --faint:#798394;
+      --line:#262C38; --rule:#333B49;
+      --move:#E8B159; --move-bg:#2A2113; --move-line:#5C4720;
+      --shift:#5CC6BB; --shift-bg:#122624; --shift-line:#265049;
+      --accent:#94A4F2; --accent-soft:#1B2038;
+      --ok:#6FCB93; --ok-bg:#12241A; --ok-line:#2C4C37;
+      --no:#EE9292; --no-bg:#2A1516; --no-line:#54282A;
+      --grid:#1E2430;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0F1219; --surface:#161A23; --ink:#E9EDF3; --muted:#9AA4B4; --faint:#798394;
+    --line:#262C38; --rule:#333B49;
+    --move:#E8B159; --move-bg:#2A2113; --move-line:#5C4720;
+    --shift:#5CC6BB; --shift-bg:#122624; --shift-line:#265049;
+    --accent:#94A4F2; --accent-soft:#1B2038;
+    --ok:#6FCB93; --ok-bg:#12241A; --ok-line:#2C4C37;
+    --no:#EE9292; --no-bg:#2A1516; --no-line:#54282A;
+    --grid:#1E2430;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:44rem;margin:0 auto;padding:2rem 1.15rem 4rem}
+
+  header{display:flex;flex-direction:column;gap:.55rem;padding-bottom:1.2rem;border-bottom:2px solid var(--ink)}
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.68rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint);margin:0;
+  }
+  h1{
+    font-family:"IBM Plex Serif",Georgia,serif;font-weight:600;
+    font-size:clamp(1.7rem,5.2vw,2.35rem);line-height:1.12;margin:0;
+    text-wrap:balance;letter-spacing:-.01em;
+  }
+  .standfirst{margin:0;color:var(--muted);max-width:34rem}
+
+  /* name card */
+  .idcard{
+    margin:1.5rem 0 0;padding:1rem 1.1rem;background:var(--surface);
+    border:1px solid var(--line);border-left:3px solid var(--accent);
+    display:flex;flex-direction:column;gap:.5rem;
+  }
+  .idcard label{
+    font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--faint);font-weight:600;
+  }
+  .idcard input{
+    font:inherit;font-size:1rem;padding:.55rem .7rem;background:var(--ground);
+    color:var(--ink);border:1px solid var(--rule);border-radius:3px;width:100%;
+  }
+  .idcard input::placeholder{color:var(--faint)}
+  .idcard p{margin:0;font-size:.84rem;color:var(--muted)}
+
+  /* progress */
+  .progress{
+    position:sticky;top:0;z-index:5;margin:1.6rem 0 0;padding:.65rem 0;
+    background:var(--ground);border-bottom:1px solid var(--rule);
+    display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  }
+  .progress .count{
+    font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.06em;
+    color:var(--muted);font-variant-numeric:tabular-nums;
+  }
+  .bar{flex:1;height:4px;background:var(--line);border-radius:2px;overflow:hidden;max-width:14rem}
+  .bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+
+  ol.items{list-style:none;margin:0;padding:0}
+  li.item{padding:1.5rem 0;border-bottom:1px solid var(--line)}
+  .qhead{display:flex;gap:.75rem;align-items:baseline;margin-bottom:.15rem}
+  .num{
+    font-family:"IBM Plex Mono",monospace;font-size:.85rem;font-weight:600;
+    color:var(--accent);flex:none;width:1.8rem;
+  }
+  .stem{font-family:"IBM Plex Serif",Georgia,serif;font-size:1.02rem;line-height:1.5;margin:0}
+
+  .opts{margin:.8rem 0 0 2.55rem;display:flex;flex-direction:column;gap:.3rem}
+  .opt{
+    display:flex;gap:.6rem;align-items:flex-start;padding:.5rem .65rem;
+    border:1px solid var(--line);border-radius:3px;background:var(--surface);
+    cursor:pointer;transition:border-color .12s,background .12s;
+  }
+  .opt:hover{border-color:var(--accent)}
+  .opt input{margin:.3rem 0 0;accent-color:var(--accent);flex:none}
+  .opt .lab{
+    font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--faint);flex:none;width:1.1rem;
+  }
+  .opt .txt{font-size:.94rem}
+  .opt.chosen{border-color:var(--accent);background:var(--accent-soft)}
+  .opt.correct{border-color:var(--ok-line);background:var(--ok-bg)}
+  .opt.wrong{border-color:var(--no-line);background:var(--no-bg)}
+  .mark{
+    margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:.68rem;
+    letter-spacing:.06em;text-transform:uppercase;font-weight:600;flex:none;
+  }
+  .opt.correct .mark{color:var(--ok)}
+  .opt.wrong .mark{color:var(--no)}
+  body.marked .opt{cursor:default}
+  body.marked .opt:hover{border-color:var(--line)}
+  body.marked .opt.correct:hover{border-color:var(--ok-line)}
+  body.marked .opt.wrong:hover{border-color:var(--no-line)}
+
+  .answer{margin:.8rem 0 0 2.55rem;padding:.8rem .95rem;border-radius:3px;font-size:.92rem}
+  .answer.move{background:var(--move-bg);border:1px solid var(--move-line)}
+  .answer.shift{background:var(--shift-bg);border:1px solid var(--shift-line)}
+  .ansline{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:0 0 .4rem}
+  .ansline strong{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.05em}
+  .answer.move .ansline strong{color:var(--move)}
+  .answer.shift .ansline strong{color:var(--shift)}
+  .answer p{margin:0;line-height:1.55}
+  .answer p + p{margin-top:.45rem}
+  .determinant{
+    font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.07em;
+    text-transform:uppercase;padding:.08rem .38rem;border-radius:2px;
+  }
+  .answer.move .determinant{color:var(--move);border:1px solid var(--move-line)}
+  .answer.shift .determinant{color:var(--shift);border:1px solid var(--shift-line)}
+
+  button{font:inherit;cursor:pointer}
+  .btn{
+    background:var(--accent);border:1px solid var(--accent);color:#fff;
+    font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.08em;
+    text-transform:uppercase;font-weight:600;padding:.7rem 1.1rem;border-radius:3px;
+  }
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-ghost{
+    background:none;border:1px solid var(--rule);color:var(--ink);
+    font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.08em;
+    text-transform:uppercase;padding:.6rem .9rem;border-radius:3px;
+  }
+  .btn-ghost:hover{background:var(--accent-soft);border-color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .actions{margin:1.8rem 0 0;display:flex;flex-wrap:wrap;gap:.7rem;align-items:center}
+  .hint{margin:.7rem 0 0;font-size:.85rem;color:var(--faint)}
+
+  /* score */
+  #score{margin:1.8rem 0 0;padding:1.2rem 1.3rem;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent)}
+  #score h2{margin:0 0 .3rem;font-family:"IBM Plex Serif",Georgia,serif;font-size:1.35rem;font-weight:600}
+  .bignum{font-family:"IBM Plex Mono",monospace;font-size:2.4rem;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+  #score .split{margin:.6rem 0 0;font-size:.9rem;color:var(--muted)}
+  #score .split b{color:var(--ink);font-weight:600}
+
+  /* review reference */
+  .rulebox{margin:1.6rem 0 0;padding:1.05rem 1.15rem;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);display:flex;flex-direction:column;gap:.65rem}
+  .rulebox h2{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0;font-weight:600}
+  .rule-line{display:flex;gap:.7rem;align-items:baseline}
+  .rule-line p{margin:0;font-size:.93rem}
+  .tag{flex:none;font-family:"IBM Plex Mono",monospace;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.1rem .42rem;border:1px solid currentColor;border-radius:2px}
+  .tag.move{color:var(--move)} .tag.shift{color:var(--shift)}
+
+  figure{margin:1.4rem 0 0;background:var(--surface);border:1px solid var(--line);padding:.85rem}
+  .figscroll{overflow-x:auto}
+  svg.diagram{display:block;width:100%;min-width:420px;height:auto}
+  .ax{stroke:var(--rule);stroke-width:1.4}
+  .dcurve{stroke:var(--ink);stroke-width:2;fill:none}
+  .dcurve.ghost{stroke:var(--faint);opacity:.55}
+  .guide{stroke:var(--faint);stroke-width:1;stroke-dasharray:3 3;opacity:.7}
+  .pt{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+  .arrow-move{stroke:var(--move);stroke-width:2.4;fill:none;marker-end:url(#head-move)}
+  .arrow-shift{stroke:var(--shift);stroke-width:2.4;fill:none;marker-end:url(#head-shift)}
+  .hm{fill:var(--move)} .hs{fill:var(--shift)}
+  text{font-family:"IBM Plex Mono",monospace;font-size:12px;fill:var(--muted)}
+  text.curvelab{font-size:13px;font-weight:600;fill:var(--ink)}
+  text.cap{font-family:"IBM Plex Sans",sans-serif;font-size:12.5px;fill:var(--muted)}
+  text.cap tspan.k{font-weight:600;fill:var(--ink)}
+
+  .note{margin:1rem 0 0;font-size:.82rem;color:var(--faint);font-style:italic;font-family:"IBM Plex Serif",Georgia,serif}
+  footer{margin-top:2.2rem;padding-top:1.1rem;border-top:2px solid var(--ink);color:var(--muted);font-size:.87rem}
+  footer p{margin:0 0 .5rem} footer p:last-child{margin-bottom:0}
+
+  @media (max-width:520px){
+    .opts,.answer{margin-left:0}
+    .qhead{gap:.55rem}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Principles of Microeconomics &middot; Demand &middot; In-class check</p>
+    <h1>Movement along the curve, or a shift of the curve?</h1>
+    <p class="standfirst">Ten scenarios. For each one, decide whether buyers moved <em>upward or downward</em> along a demand curve that stayed put, or the curve itself shifted <em>inward or outward</em>. Answer all ten, then submit to see your score and the reasoning.</p>
+  </header>
+
+  <div class="idcard">
+    <label for="sname">Your name</label>
+    <input id="sname" type="text" autocomplete="name" placeholder="First and last name" spellcheck="false">
+    <p>Used only to label the result you send to your instructor.</p>
+  </div>
+
+  <div class="progress">
+    <span class="count" id="count">0 of 10 answered</span>
+    <span class="bar"><span id="barfill"></span></span>
+  </div>
+
+  <ol class="items" id="items"></ol>
+
+  <div class="actions">
+    <button class="btn" id="submit" type="button" disabled>Submit and check answers</button>
+    <button class="btn-ghost" id="retake" type="button" hidden>Start over</button>
+  </div>
+  <p class="hint" id="hint">Answer all ten items to enable submission.</p>
+
+  <div id="score" hidden></div>
+
+  <div class="actions" id="afteractions" hidden>
+    <button class="btn" id="emailbtn" type="button">Email my result to my instructor</button>
+  </div>
+  <p class="hint" id="emailhint" hidden>Opens your own mail app with the result filled in. You still have to press send.</p>
+
+  <section id="review" hidden>
+    <div class="rulebox">
+      <h2>The one test that settles every item</h2>
+      <div class="rule-line">
+        <span class="tag move">Movement</span>
+        <p>The <strong>good's own price</strong> changed, and nothing else did. Buyers slide along a curve that stays put &mdash; <em>downward</em> when the price falls, <em>upward</em> when it rises. Report it as a change in <strong>quantity demanded</strong>.</p>
+      </div>
+      <div class="rule-line">
+        <span class="tag shift">Shift</span>
+        <p>Something <strong>other than the good's own price</strong> changed &mdash; income, price of a substitute or complement, tastes, expectations, number of buyers. The whole curve relocates: <em>outward</em> if buyers want more at every price, <em>inward</em> if they want less. Report it as a change in <strong>demand</strong>.</p>
+      </div>
+    </div>
+
+    <figure>
+      <div class="figscroll">
+        <svg class="diagram" viewBox="0 0 600 212" role="img" aria-label="Two price-quantity diagrams. Left: one demand curve with two points on it and an arrow sliding downward from the first to the second. Right: a demand curve and a second demand curve lying to its right, with an arrow pointing outward between them.">
+          <defs>
+            <marker id="head-move" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path class="hm" d="M0 0 L10 5 L0 10 z"></path></marker>
+            <marker id="head-shift" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path class="hs" d="M0 0 L10 5 L0 10 z"></path></marker>
+          </defs>
+          <g>
+            <line class="ax" x1="42" y1="20" x2="42" y2="150"></line>
+            <line class="ax" x1="42" y1="150" x2="266" y2="150"></line>
+            <text x="30" y="26">P</text><text x="270" y="156">Q</text>
+            <line class="guide" x1="42" y1="60" x2="98" y2="60"></line>
+            <line class="guide" x1="98" y1="60" x2="98" y2="150"></line>
+            <line class="guide" x1="42" y1="107" x2="177" y2="107"></line>
+            <line class="guide" x1="177" y1="107" x2="177" y2="150"></line>
+            <line class="dcurve" x1="58" y1="36" x2="238" y2="144"></line>
+            <text class="curvelab" x="246" y="141">D</text>
+            <circle class="pt" cx="98" cy="60" r="4"></circle>
+            <circle class="pt" cx="177" cy="107" r="4"></circle>
+            <text x="86" y="52">a</text><text x="186" y="102">b</text>
+            <line class="arrow-move" x1="109" y1="46" x2="184" y2="91"></line>
+            <text class="cap" x="42" y="182"><tspan class="k">Downward movement along D.</tspan> Own price</text>
+            <text class="cap" x="42" y="199">falls, a to b; the curve never moved.</text>
+          </g>
+          <g transform="translate(310,0)">
+            <line class="ax" x1="42" y1="20" x2="42" y2="150"></line>
+            <line class="ax" x1="42" y1="150" x2="266" y2="150"></line>
+            <text x="30" y="26">P</text><text x="270" y="156">Q</text>
+            <line class="dcurve ghost" x1="52" y1="38" x2="192" y2="144"></line>
+            <line class="dcurve" x1="100" y1="38" x2="240" y2="144"></line>
+            <text class="curvelab" x="52" y="30" text-anchor="middle">D₁</text>
+            <text class="curvelab" x="100" y="30" text-anchor="middle">D₂</text>
+            <line class="arrow-shift" x1="126" y1="86" x2="176" y2="86"></line>
+            <text class="cap" x="42" y="182"><tspan class="k">Outward shift of D.</tspan> A determinant other</text>
+            <text class="cap" x="42" y="199">than own price changed; the curve relocated.</text>
+          </g>
+        </svg>
+      </div>
+    </figure>
+
+    <footer>
+      <p><strong>Where the marks go.</strong> Three items (01, 06, 10) are movements; seven are shifts. Movement has exactly one cause &mdash; the good's own price &mdash; while a shift can come from any of six determinants, so the shifters get more practice.</p>
+      <p>Item 10 is the one most often missed, and it is a wording error rather than a diagram error. <em>Demand</em> is the whole curve; <em>quantity demanded</em> is one point on it.</p>
+      <p>Items 02 and 08 are a matched pair on income: same determinant, opposite direction, because one good is normal and the other inferior.</p>
+    </footer>
+  </section>
+
+  <p class="note">All scenarios are hypothetical. Prices, quantities and percentages are constructed for classification practice and are not drawn from any published dataset.</p>
+</div>
+
+<script>
+const INSTRUCTOR = "sarabjeet.bedi@austincc.edu";
+
+const STD = [
+  "A downward movement along the demand curve &mdash; an increase in quantity demanded",
+  "An upward movement along the demand curve &mdash; a decrease in quantity demanded",
+  "An outward shift of the demand curve &mdash; an increase in demand",
+  "An inward shift of the demand curve &mdash; a decrease in demand"
+];
+
+const ITEMS = [
+  { stem:"A cinema drops its student ticket price from $12.00 to $9.00. Weekly student attendance rises from 260 to 340. Nothing else about students' circumstances changes.",
+    opts:STD, ans:0, kind:"move", det:"own price · price falls",
+    why:["The only thing that changed is the good's <strong>own price</strong>. Student income, tastes, the price of streaming subscriptions and the number of students are all held constant.",
+         "So the demand curve did not move. Students slid <em>down</em> it to a lower price and a larger quantity: a <strong>downward movement</strong> along the curve, an increase in <strong>quantity demanded</strong>."] },
+
+  { stem:"Real average weekly earnings in a metropolitan area rise 5 percent. At every price on the menu, households book more restaurant meals.",
+    opts:STD, ans:2, kind:"shift", det:"income · normal good",
+    why:["Income is a determinant of demand, not a point on the demand curve. Restaurant meals are a normal good, so higher income raises the quantity bought <em>at every price</em>.",
+         "The phrase &ldquo;at every price&rdquo; is the giveaway: a movement along a curve happens at one price at a time, never at all of them at once. The whole curve moves <strong>outward</strong>."] },
+
+  { stem:"A drought raises the price of ground beef by 18 percent. At each price of chicken, households now buy more chicken.",
+    opts:STD, ans:2, kind:"shift", det:"price of a substitute",
+    why:["Beef and chicken are substitutes. In the <strong>chicken</strong> market, the price of beef is a <em>related</em> good's price &mdash; a shifter &mdash; so the chicken curve moves <strong>outward</strong>.",
+         "Note that the same price change is an <em>upward movement</em> along the beef curve. One event, two different classifications, depending on which market's diagram you are drawing. Name the market before you answer."] },
+
+  { stem:"Printer manufacturers cut hardware prices by 30 percent. At each price of toner cartridges, buyers purchase more cartridges.",
+    opts:STD, ans:2, kind:"shift", det:"price of a complement",
+    why:["Printers and toner are complements &mdash; bought and used together. A fall in the price of the complement raises the quantity of cartridges bought at every cartridge price.",
+         "The cartridge price itself has not changed. Because the cause is external to the cartridge market's own price, the cartridge demand curve shifts <strong>outward</strong>."] },
+
+  { stem:"A major smartphone maker announces that its next model launches in three weeks, and buyers widely expect current models to be discounted then. This month, at every current price, fewer units are bought.",
+    opts:STD, ans:3, kind:"shift", det:"expected future price",
+    why:["Expectations about the <em>future</em> price change demand <em>today</em>. Anticipating a lower price later, consumers postpone purchases, so demand falls at every current price and the curve moves <strong>inward</strong>.",
+         "Note the sign convention: an expected future price <em>decrease</em> shifts current demand inward; an expected future price <em>increase</em> shifts it outward."] },
+
+  { stem:"A stadium concession stand raises the price of a bottle of water from $1.50 to $2.25 between the first and second games of a series. Bottles sold fall from 1,400 to 1,050. Attendance, weather and everything else are the same at both games.",
+    opts:STD, ans:1, kind:"move", det:"own price · price rises",
+    why:["The stem deliberately holds every shifter constant: same crowd (number of buyers), same weather (tastes), same incomes, no change in the price of any substitute drink.",
+         "Only the good's own price moved, so the demand curve is exactly where it was. Buyers travelled <strong>upward</strong> along it to a higher price and a smaller quantity &mdash; a decrease in <strong>quantity demanded</strong>, not in demand."] },
+
+  { stem:"A large employer closes its plant and roughly 4,000 residents leave the town within a year. At every rent level, fewer apartments are sought than before.",
+    opts:STD, ans:3, kind:"shift", det:"number of buyers",
+    why:["Market demand is the horizontal sum of individual demand curves. Removing buyers subtracts quantity at every price, so the whole market curve moves <strong>inward</strong>.",
+         "Rent has not changed yet. Whatever happens to rent afterwards is the market's <em>response</em> to this shift, not its cause."] },
+
+  { stem:"A recession cuts household income across a region. At each price, families buy more store-brand instant noodles than they did before the downturn.",
+    opts:STD, ans:2, kind:"shift", det:"income · inferior good",
+    why:["Income fell, yet buyers want more at every price. That is the defining behaviour of an <strong>inferior good</strong>: the income effect runs in the opposite direction to a normal good's.",
+         "The determinant is income either way, so it is a shift. Only the <em>direction</em> is reversed &mdash; the curve moves <strong>outward</strong> here, which is why &ldquo;income down, demand down&rdquo; is not a rule you can apply blindly. Compare item 02."] },
+
+  { stem:"A widely publicised study links a common food additive to health risk. At every price, consumers now buy fewer of the products containing it.",
+    opts:STD, ans:3, kind:"shift", det:"tastes and preferences",
+    why:["Tastes are one of the standard demand shifters. Nothing about the good's own price changed &mdash; what changed is how much buyers want the good at any given price.",
+         "So the entire schedule contracts and the curve moves <strong>inward</strong>. This is a decrease in <strong>demand</strong>, not a decrease in quantity demanded."] },
+
+  { stem:"The price of gasoline in a city rises from $3.10 to $3.65 a gallon, and average household purchases fall from 42 to 38 gallons a month. Incomes, vehicle ownership and commuting patterns are unchanged. A student writes in her homework: &ldquo;Demand for gasoline decreased.&rdquo;",
+    opts:["She is right &mdash; demand fell from 42 to 38 gallons",
+          "She is wrong &mdash; this is an upward movement along an unchanged demand curve, so quantity demanded fell, not demand",
+          "She is wrong &mdash; the curve shifted inward, which is why purchases fell",
+          "She is right, and the demand curve also shifted outward at the same time"],
+    ans:1, kind:"move", det:"own price · demand vs. quantity demanded",
+    why:["<strong>Demand</strong> names the whole curve &mdash; the entire schedule of quantities buyers would take at every possible price. <strong>Quantity demanded</strong> names a single point on it.",
+         "Here only the good's own price changed, so the schedule is untouched; the household simply reads a different point off the same curve by moving <strong>upward</strong> along it. Writing &ldquo;demand decreased&rdquo; asserts that the curve relocated, which nothing in the stem supports."] }
+];
+
+const LET = ["A","B","C","D"];
+const N = ITEMS.length;
+const picks = new Array(N).fill(null);
+let marked = false;
+
+const list = document.getElementById("items");
+const countEl = document.getElementById("count");
+const barEl = document.getElementById("barfill");
+const submitBtn = document.getElementById("submit");
+const retakeBtn = document.getElementById("retake");
+const hintEl = document.getElementById("hint");
+const scoreEl = document.getElementById("score");
+const reviewEl = document.getElementById("review");
+const afterEl = document.getElementById("afteractions");
+const emailHint = document.getElementById("emailhint");
+const nameEl = document.getElementById("sname");
+
+const KEY = "demand-drill-v1";
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({n:nameEl.value, p:picks})); }catch(e){}
+}
+function restore(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return;
+    const s = JSON.parse(raw);
+    if(typeof s.n === "string") nameEl.value = s.n;
+    if(Array.isArray(s.p)) s.p.forEach((v,i)=>{ if(typeof v === "number") picks[i]=v; });
+  }catch(e){}
+}
+
+ITEMS.forEach((it,i)=>{
+  const li = document.createElement("li");
+  li.className = "item";
+
+  const head = document.createElement("div");
+  head.className = "qhead";
+  head.innerHTML = '<span class="num">'+String(i+1).padStart(2,"0")+'</span><p class="stem">'+it.stem+'</p>';
+  li.appendChild(head);
+
+  const box = document.createElement("div");
+  box.className = "opts";
+  box.setAttribute("role","radiogroup");
+  box.setAttribute("aria-label","Item "+(i+1)+" options");
+
+  it.opts.forEach((o,k)=>{
+    const lab = document.createElement("label");
+    lab.className = "opt";
+    lab.innerHTML =
+      '<input type="radio" name="q'+i+'" value="'+k+'">' +
+      '<span class="lab">'+LET[k]+'.</span><span class="txt">'+o+'</span>' +
+      '<span class="mark"></span>';
+    lab.querySelector("input").addEventListener("change",()=>{
+      if(marked) return;
+      picks[i] = k;
+      [...box.children].forEach(c=>c.classList.remove("chosen"));
+      lab.classList.add("chosen");
+      save(); sync();
+    });
+    box.appendChild(lab);
+  });
+  li.appendChild(box);
+
+  const ans = document.createElement("div");
+  ans.className = "answer " + it.kind;
+  ans.hidden = true;
+  ans.innerHTML =
+    '<p class="ansline"><strong>Correct answer &middot; '+LET[it.ans]+'</strong>' +
+    '<span class="determinant">'+it.det+'</span></p>' +
+    it.why.map(w=>"<p>"+w+"</p>").join("");
+  li.appendChild(ans);
+
+  list.appendChild(li);
+});
+
+function sync(){
+  const done = picks.filter(v=>v!==null).length;
+  countEl.textContent = done + " of " + N + " answered";
+  barEl.style.width = (done/N*100) + "%";
+  submitBtn.disabled = done < N || marked;
+  hintEl.textContent = marked
+    ? "Answers are shown below each item."
+    : (done < N ? "Answer all " + N + " items to enable submission." : "Ready — submit to see your score.");
+}
+
+restore();
+picks.forEach((v,i)=>{
+  if(v===null) return;
+  const inp = document.querySelector('input[name="q'+i+'"][value="'+v+'"]');
+  if(inp){ inp.checked = true; inp.closest(".opt").classList.add("chosen"); }
+});
+nameEl.addEventListener("input", save);
+sync();
+
+submitBtn.addEventListener("click", ()=>{
+  if(picks.some(v=>v===null)) return;
+  marked = true;
+  document.body.classList.add("marked");
+
+  let right = 0, moveRight = 0, moveTot = 0, shiftRight = 0, shiftTot = 0;
+
+  document.querySelectorAll(".item").forEach((li,i)=>{
+    const it = ITEMS[i], chosen = picks[i], ok = chosen === it.ans;
+    if(ok) right++;
+    if(it.kind === "move"){ moveTot++; if(ok) moveRight++; } else { shiftTot++; if(ok) shiftRight++; }
+
+    const opts = li.querySelectorAll(".opt");
+    opts.forEach((el,k)=>{
+      el.classList.remove("chosen");
+      el.querySelector("input").disabled = true;
+      const m = el.querySelector(".mark");
+      if(k === it.ans){ el.classList.add("correct"); m.textContent = "Correct"; }
+      else if(k === chosen){ el.classList.add("wrong"); m.textContent = "Your answer"; }
+    });
+    li.querySelector(".answer").hidden = false;
+  });
+
+  const pct = Math.round(right / N * 100);
+  scoreEl.innerHTML =
+    '<h2>Your score</h2>' +
+    '<p class="bignum">' + right + ' / ' + N + '</p>' +
+    '<p class="split">' + pct + '%. Movement items <b>' + moveRight + ' of ' + moveTot +
+    '</b>, shift items <b>' + shiftRight + ' of ' + shiftTot + '</b>.</p>';
+  scoreEl.hidden = false;
+  reviewEl.hidden = false;
+  afterEl.hidden = false;
+  emailHint.hidden = false;
+  retakeBtn.hidden = false;
+  sync();
+  scoreEl.scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+document.getElementById("emailbtn").addEventListener("click", ()=>{
+  const nm = (nameEl.value || "").trim() || "(name not given)";
+  const right = picks.filter((v,i)=>v===ITEMS[i].ans).length;
+  const rows = picks.map((v,i)=>
+    String(i+1).padStart(2,"0") + "  answered " + LET[v] +
+    "  correct " + LET[ITEMS[i].ans] +
+    (v===ITEMS[i].ans ? "  ok" : "  X")
+  ).join("\n");
+  const subject = "Demand quiz result - " + nm + " - " + right + "/" + N;
+  const body =
+    "Name: " + nm + "\n" +
+    "Score: " + right + " / " + N + "\n" +
+    "Set: Movement vs shift in demand\n\n" +
+    rows + "\n";
+  window.location.href = "mailto:" + INSTRUCTOR +
+    "?subject=" + encodeURIComponent(subject) +
+    "&body=" + encodeURIComponent(body);
+});
+
+retakeBtn.addEventListener("click", ()=>{
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  location.reload();
+});
+</script>
+
+</body>
+</html>

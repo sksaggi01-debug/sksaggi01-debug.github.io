@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Evaluation Samples — Dr. Sarabjeet Kaur Bedi</title>
+<meta name="description" content="Original economics problems with planted traps and an annotated review of a model response, written to show evaluation method.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Evaluation Samples — Dr. Sarabjeet Kaur Bedi">
+<meta property="og:description" content="Original economics problems with planted traps and an annotated review of a model response, written to show evaluation method.">
+<meta property="og:url" content="https://sksaggi01-debug.github.io/ai-evaluation/">
+<meta property="og:image" content="https://sksaggi01-debug.github.io/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://sksaggi01-debug.github.io/ai-evaluation/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="name" href="../">Dr. Sarabjeet Kaur Bedi</a>
+    <nav><a href="../#ai">Back to portfolio</a><a href="#review">Model review</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Evaluation method · original samples</div>
+    <h1>How I build and check an expert economics item.</h1>
+    <p class="lede">Three problems written for this page only. None is taken from, or modelled on, a client submission. Each shows the verified answer, the derivation, and the wrong answers a model is most likely to reach. All numbers were checked with exact arithmetic.</p>
+  </section>
+
+  <section class="block">
+    <h2>Sample 1 · Public economics</h2>
+    <div class="prob">
+      <p class="stem">A harbour ferry sells 1,000 tickets a week at a fare of $20 and 600 at $30. Operators supply 200 tickets a week when they net $10 per ticket and 800 when they net $25. Both schedules are linear. The town already levies a $4 per-ticket tax on operators and proposes raising it to $8. What is the marginal excess burden of the increase, defined as the additional deadweight loss per additional dollar of tax revenue?</p>
+      <p><b>Answer:</b> 3/14 ≈ 0.214</p>
+      <details><summary>Derivation</summary>
+<div class="work">Demand   Q = 1800 − 40P        Supply   Q = 40P − 200
+No tax   P = 25, Q = 800
+Tax t    Pd = 25 + t/2,  Q = 800 − 20t
+
+DWL(t) = ½ · t · 20t = 10t²         Revenue R(t) = t(800 − 20t)
+t = 4    DWL = 160    R = 2,880
+t = 8    DWL = 640    R = 5,120
+
+MEB = (640 − 160) / (5,120 − 2,880) = 480 / 2,240 = 3/14 ≈ 0.214</div>
+      </details>
+      <details><summary>Planted traps</summary>
+        <div class="tablewrap"><table class="traps">
+          <tr><th>Value</th><th>Error that produces it</th></tr>
+          <tr><td>0.125</td><td>Average excess burden at $8 (640 / 5,120), not the marginal burden of the increase.</td></tr>
+          <tr><td>0.167</td><td>Mechanical revenue: $4 × 720 = 2,880, ignoring that the base shrinks to 640.</td></tr>
+          <tr><td>0.071</td><td>Ignores the existing tax: prices the new $4 wedge as a fresh triangle (160 / 2,240). The rectangle between the old and new wedge is the part most often missed.</td></tr>
+          <tr><td>0.286</td><td>Puts the total deadweight loss at $8 over the revenue change (640 / 2,240).</td></tr>
+        </table></div>
+      </details>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Sample 2 · Industrial organization</h2>
+    <div class="prob">
+      <p class="stem">Inverse market demand is P = 120 − Q. Firm 1 has constant marginal cost 20 and firm 2 has constant marginal cost 30; neither has fixed costs. Compare simultaneous quantity choice (Cournot) with the case in which firm 1 commits to its quantity first and firm 2 observes it (Stackelberg, firm 1 leading). By how much does total surplus change?</p>
+      <p><b>Answer:</b> rises by 27,775/72 ≈ 385.76</p>
+      <details><summary>Derivation</summary>
+<div class="work">Cournot       q1 = 110/3, q2 = 80/3, Q = 190/3, P = 170/3
+              CS = 2,005.56   π1 = 1,344.44   π2 = 711.11   TS = 4,061.11
+
+Follower      q2 = (90 − q1)/2
+Leader        P = 75 − q1/2,  π1 = (55 − q1/2)·q1  →  q1 = 55
+              q2 = 17.5, Q = 72.5, P = 47.5
+              CS = 2,628.13   π1 = 1,512.50   π2 = 306.25   TS = 4,446.88
+
+ΔTS = 4,446.875 − 4,061.111 = 27,775/72 ≈ 385.76</div>
+        <p class="note">Two effects stack: total output rises, and output shifts toward the lower-cost firm. With equal costs of 25 the gain is only 219.36.</p>
+      </details>
+      <details><summary>Planted traps</summary>
+        <div class="tablewrap"><table class="traps">
+          <tr><th>Value</th><th>Error that produces it</th></tr>
+          <tr><td>+622.57</td><td>Reports the change in consumer surplus only.</td></tr>
+          <tr><td>−236.81</td><td>Reports the change in producer surplus only.</td></tr>
+          <tr><td>+168.06</td><td>Reports the leader's profit gain.</td></tr>
+          <tr><td>+219.36</td><td>Averages the costs to 25 and solves a symmetric game, losing the cost-reallocation effect.</td></tr>
+        </table></div>
+      </details>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Sample 3 · Macroeconomics, with a reviewer's flag</h2>
+    <div class="prob">
+      <p class="stem">Output is Y = K<sup>1/3</sup>(AL)<sup>2/3</sup>. Population grows at 1%, technology at 2%, and capital depreciates at 5% a year. The saving rate is 20%. A planner moves the economy to the golden-rule saving rate. By what percentage does steady-state consumption per effective worker change?</p>
+      <p><b>Answer:</b> rises by ≈ 7.58%</p>
+      <details><summary>Derivation</summary>
+<div class="work">k* = (s / (n + g + δ))^(3/2),   y* = (s / (n + g + δ))^(1/2),   c* = (1 − s)·y*
+
+s = 0.20       k* = 3.953   y* = 1.581   c* = 1.265
+s = 1/3 (GR)   k* = 8.505   y* = 2.041   c* = 1.361
+
+c change = 1.361 / 1.265 − 1 = 7.58%</div>
+      </details>
+      <details><summary>Planted traps</summary>
+        <div class="tablewrap"><table class="traps">
+          <tr><th>Value</th><th>Error that produces it</th></tr>
+          <tr><td>+29.1%</td><td>Compares output per effective worker instead of consumption.</td></tr>
+          <tr><td>+115.2%</td><td>Compares capital per effective worker.</td></tr>
+          <tr><td>−23.9%</td><td>Sets the golden-rule saving rate equal to labor's share (2/3) instead of capital's share.</td></tr>
+        </table></div>
+      </details>
+      <p class="note"><b>Reviewer's flag:</b> this item is weak as a benchmark question. The ratio c<sub>GR</sub>/c* = ((1 − α)/(1 − s))·(α/s)<sup>α/(1−α)</sup> does not depend on n, g or δ, so a solver who uses the wrong break-even investment rate (for example δ alone) still gets 7.58%. The growth-rate data are decorative. I would send it back and ask for a question about the level of consumption or the transition path, where n + g + δ matters.</p>
+    </div>
+  </section>
+
+  <section class="block" id="review">
+    <h2>Annotated review of a model response</h2>
+    <p class="sub">A constructed response to Sample 1, scored the way I score model outputs: find the first incorrect step, name the error, and trace its effect on the final answer.</p>
+    <div class="prob">
+      <p><b>Model response (excerpt):</b></p>
+<div class="work">"Equilibrium is P = 25, Q = 800. With the $4 tax, quantity falls to 720,
+so DWL = ½ × 4 × 80 = 160. Raising the tax to $8 lowers quantity to 640,
+so DWL = ½ × 8 × 160 = 640, and the extra DWL is 480.
+Each extra dollar of tax is collected on the 720 tickets now sold, so
+extra revenue = 4 × 720 = 2,880. Marginal excess burden = 480 / 2,880 = 0.167."</div>
+      <p><b>Verdict:</b> Incorrect final answer (0.167; correct value 0.214).</p>
+      <ul>
+        <li><b>Correct steps:</b> the demand and supply lines, the no-tax equilibrium, both quantities (720 and 640), and both deadweight losses (160 and 640).</li>
+        <li><b>First error:</b> the revenue change. The response multiplies the $4 increase by the pre-increase base of 720. That charges the new $4 on 80 tickets that are no longer sold (+320) and ignores the $4 per ticket already collected on those 80 tickets, which is now lost (−320). The correct change is 8 × 640 − 4 × 720 = 2,240.</li>
+        <li><b>Effect:</b> revenue gain is overstated by 640, so the marginal excess burden is understated by about 22% (0.167 vs 0.214).</li>
+        <li><b>Rubric note:</b> the answer matches planted trap 0.167 exactly, which confirms the item separates mechanical from behavioral revenue as designed.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Original work by Dr. Sarabjeet Kaur Bedi. Not affiliated with or endorsed by Mercor or Snorkel.</div>
+</footer>
+</body>
+</html>

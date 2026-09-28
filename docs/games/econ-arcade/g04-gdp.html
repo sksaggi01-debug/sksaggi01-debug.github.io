@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>4. GDP Sprint</title>
+<style>*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d1117; --panel:#161b26; --panel2:#1c2231; --line:#2a3345;
+  --ink:#e8edf7; --dim:#93a1bd; --acc:#5aa9ff; --acc2:#ffc65a;
+  --good:#3ddc97; --bad:#ff6b6b; --pur:#b78cff;
+  --r:14px; --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--f);
+  font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+body{padding:14px 14px 40px;max-width:820px;margin:0 auto}
+h1{font-size:1.5rem;margin:.1em 0 .1em;letter-spacing:-.02em}
+h2{font-size:1.1rem;margin:0 0 .4em}
+.sub{color:var(--dim);font-size:.86rem;margin:0 0 14px}
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--acc);
+  border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0}
+.card.tight{padding:10px 12px}
+button{font-family:var(--f);font-size:1rem;cursor:pointer}
+.btn{display:block;width:100%;background:var(--acc);color:#06213d;border:0;border-radius:12px;
+  padding:14px 16px;font-weight:800;margin:8px 0;transition:transform .06s,filter .15s}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sec{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:var(--acc2);color:#3a2a00}
+.choice{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;margin:8px 0;font-weight:600;
+  transition:border-color .12s,background .12s}
+.choice:hover{border-color:var(--acc)}
+.choice.right{border-color:var(--good);background:rgba(61,220,151,.14)}
+.choice.wrong{border-color:var(--bad);background:rgba(255,107,107,.14)}
+.choice .k{display:inline-block;width:24px;color:var(--dim);font-weight:800}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1}
+input,select{font-family:var(--f);font-size:1rem;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:10px;padding:12px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:1px}
+label{display:block;font-size:.8rem;color:var(--dim);margin:10px 0 4px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.4rem;font-weight:800;
+  letter-spacing:.28em;color:var(--acc2);text-align:center;margin:6px 0 2px}
+.bar{height:9px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .25s}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:.92rem}
+.hud .t{color:var(--acc2)}
+canvas{width:100%;height:auto;display:block;background:#0a0e15;border:1px solid var(--line);border-radius:10px;margin:6px 0}
+.lb{margin:6px 0}
+.lb .r{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--panel2);margin:5px 0}
+.lb .r.me{outline:1.5px solid var(--acc)}
+.lb .r .p{width:22px;color:var(--dim);font-weight:800}
+.lb .r .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .r .s{font-weight:800;color:var(--acc2)}
+.lb .r .dn{font-size:.7rem;color:var(--good);font-weight:800}
+.fb{border-radius:12px;padding:11px 13px;margin:10px 0;font-size:.93rem;border:1px solid}
+.fb.g{background:rgba(61,220,151,.1);border-color:rgba(61,220,151,.5)}
+.fb.b{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.5)}
+.fb b{display:block;margin-bottom:3px}
+.note{font-size:.82rem;color:var(--dim)}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:800;
+  background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+.pill.on{color:var(--good);border-color:rgba(61,220,151,.5)}
+.pill.off{color:var(--acc2);border-color:rgba(255,198,90,.5)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{background:var(--panel2);color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}
+.big{font-size:2.6rem;font-weight:800;text-align:center;color:var(--acc2);margin:4px 0}
+.ctr{text-align:center}
+.sl{width:100%;margin:10px 0}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;padding:0;border:0;height:34px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;background:var(--panel2);border-radius:99px;border:1px solid var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:30px;width:30px;border-radius:50%;
+  background:var(--acc);margin-top:-12px;border:3px solid #0d1117}
+input[type=range]::-moz-range-track{height:8px;background:var(--panel2);border-radius:99px}
+input[type=range]::-moz-range-thumb{height:26px;width:26px;border-radius:50%;background:var(--acc);border:3px solid #0d1117}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line);font-size:.92rem}
+.kv:last-child{border:0}
+.kv b{color:var(--acc2)}
+.hide{display:none!important}
+.fade{animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+footer{color:var(--dim);font-size:.75rem;text-align:center;margin-top:22px}
+</style>
+</head><body>
+<div id="app"></div>
+<script>/* ==========================================================
+   Gfx — small canvas chart kit for the economics diagrams
+   ========================================================== */
+(function (W) {
+  'use strict';
+  var INK = '#e8edf7', DIM = '#7d8ba6', GRID = '#1e2637';
+  var C = { d: '#5aa9ff', s: '#ffc65a', d2: '#8ecbff', s2: '#ffe0a0', las: '#b78cff', good: '#3ddc97', bad: '#ff6b6b', ppf: '#5aa9ff', ppf2: '#3ddc97' };
+
+  function plot(ctx, w, h, o) {
+    o = o || {};
+    var m = { l: 54, r: 18, t: 18, b: 46 };
+    var x0 = m.l, y0 = h - m.b, x1 = w - m.r, y1 = m.t;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#0a0e15'; ctx.fillRect(0, 0, w, h);
+    // grid
+    ctx.strokeStyle = GRID; ctx.lineWidth = 1;
+    for (var i = 1; i <= 4; i++) {
+      var gy = y0 + (y1 - y0) * i / 5, gx = x0 + (x1 - x0) * i / 5;
+      ctx.beginPath(); ctx.moveTo(x0, gy); ctx.lineTo(x1, gy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gx, y1); ctx.lineTo(gx, y0); ctx.stroke();
+    }
+    // axes
+    ctx.strokeStyle = DIM; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x0, y1); ctx.lineTo(x0, y0); ctx.lineTo(x1, y0); ctx.stroke();
+    ctx.fillStyle = DIM; ctx.font = '700 21px -apple-system,Segoe UI,Roboto,sans-serif';
+    ctx.textAlign = 'center'; ctx.fillText(o.xl || '', (x0 + x1) / 2, h - 12);
+    ctx.save(); ctx.translate(15, (y0 + y1) / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText(o.yl || '', 0, 0); ctx.restore();
+
+    var P = {
+      ctx: ctx,
+      X: function (v) { return x0 + (x1 - x0) * (v / 100); },
+      Y: function (v) { return y0 + (y1 - y0) * (v / 100); },
+      line: function (a, b, col, lab, dash, lw) {
+        ctx.save();
+        ctx.strokeStyle = col; ctx.lineWidth = lw || 4;
+        if (dash) ctx.setLineDash([8, 6]);
+        ctx.beginPath(); ctx.moveTo(P.X(a[0]), P.Y(a[1])); ctx.lineTo(P.X(b[0]), P.Y(b[1])); ctx.stroke();
+        ctx.restore();
+        if (lab) {
+          ctx.fillStyle = col; ctx.font = '800 25px -apple-system,Segoe UI,Roboto,sans-serif';
+          var far = b[0] > 86;
+          var lx = Math.min(P.X(b[0]) + (far ? -8 : 6), x1 - 4);
+          var ly = Math.max(y1 + 14, Math.min(y0 - 6, P.Y(b[1]) + (b[1] > 78 ? -10 : 15)));
+          ctx.textAlign = far ? 'right' : 'left';
+          ctx.fillText(lab, lx, ly);
+        }
+      },
+      curve: function (pts, col, lab, dash, lw) {
+        ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = lw || 4;
+        if (dash) ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        pts.forEach(function (p, i) { var fx = P.X(p[0]), fy = P.Y(p[1]); i ? ctx.lineTo(fx, fy) : ctx.moveTo(fx, fy); });
+        ctx.stroke(); ctx.restore();
+        if (lab) {
+          var e = pts[pts.length - 1], fr = e[0] > 86;
+          ctx.fillStyle = col; ctx.font = '800 25px -apple-system,Segoe UI,Roboto,sans-serif';
+          ctx.textAlign = fr ? 'right' : 'left';
+          ctx.fillText(lab, Math.min(P.X(e[0]) + (fr ? -8 : 6), x1 - 4),
+            Math.max(y1 + 14, Math.min(y0 - 6, P.Y(e[1]) + (e[1] > 78 ? -10 : 15))));
+        }
+      },
+      dot: function (x, y, lab, col) {
+        col = col || C.good;
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc(P.X(x), P.Y(y), 7.5, 0, 7); ctx.fill();
+        ctx.strokeStyle = '#0a0e15'; ctx.lineWidth = 2; ctx.stroke();
+        if (lab) {
+          ctx.fillStyle = INK; ctx.font = '800 22px -apple-system,Segoe UI,Roboto,sans-serif';
+          ctx.textAlign = 'left'; ctx.fillText(lab, P.X(x) + 9, P.Y(y) - 8);
+        }
+      },
+      guides: function (x, y, col) {
+        ctx.save(); ctx.setLineDash([4, 5]); ctx.strokeStyle = col || DIM; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(x0, P.Y(y)); ctx.lineTo(P.X(x), P.Y(y)); ctx.lineTo(P.X(x), y0); ctx.stroke();
+        ctx.restore();
+      },
+      tick: function (x, y, xt, yt) {
+        ctx.fillStyle = DIM; ctx.font = '700 19px -apple-system,Segoe UI,Roboto,sans-serif';
+        if (yt) { ctx.textAlign = 'right'; ctx.fillText(yt, x0 - 6, P.Y(y) + 5); }
+        if (xt) { ctx.textAlign = 'center'; ctx.fillText(xt, P.X(x), y0 + 20); }
+      },
+      arrow: function (ax, ay, bx, by, col) {
+        var X = P.X, Y = P.Y;
+        ctx.save(); ctx.strokeStyle = col || '#fff'; ctx.fillStyle = col || '#fff'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(X(ax), Y(ay)); ctx.lineTo(X(bx), Y(by)); ctx.stroke();
+        var ang = Math.atan2(Y(by) - Y(ay), X(bx) - X(ax));
+        ctx.beginPath(); ctx.moveTo(X(bx), Y(by));
+        ctx.lineTo(X(bx) - 11 * Math.cos(ang - 0.4), Y(by) - 11 * Math.sin(ang - 0.4));
+        ctx.lineTo(X(bx) - 11 * Math.cos(ang + 0.4), Y(by) - 11 * Math.sin(ang + 0.4));
+        ctx.closePath(); ctx.fill(); ctx.restore();
+      },
+      note: function (txt, col) {
+        ctx.fillStyle = col || DIM; ctx.font = '700 18px -apple-system,Segoe UI,Roboto,sans-serif';
+        ctx.textAlign = 'right'; ctx.fillText(txt, x1, y1 + 12);
+      },
+      legend: function (items) {
+        ctx.save();
+        ctx.font = '800 19px -apple-system,Segoe UI,Roboto,sans-serif'; ctx.textAlign = 'left';
+        items.forEach(function (it, i) {
+          var ly = y1 + 14 + i * 20;
+          ctx.strokeStyle = it.col; ctx.lineWidth = 3.2;
+          if (it.dash) ctx.setLineDash([6, 4]); else ctx.setLineDash([]);
+          ctx.beginPath(); ctx.moveTo(x0 + 10, ly - 4); ctx.lineTo(x0 + 34, ly - 4); ctx.stroke();
+          ctx.fillStyle = it.col; ctx.fillText(it.lab, x0 + 40, ly);
+        });
+        ctx.restore();
+      }
+    };
+    return P;
+  }
+
+  /* ---- ready-made diagrams ---- */
+  var Gfx = {
+    C: C,
+    plot: plot,
+
+    /* demand & supply; shift = {curve:'D'|'S', dir:+1|-1, size:n} or null */
+    ds: function (ctx, w, h, shift, opt) {
+      opt = opt || {};
+      var P = plot(ctx, w, h, { xl: opt.xl || 'Quantity', yl: opt.yl || 'Price' });
+      P.line([12, 88], [88, 22], C.d, 'D', false);     // downward
+      P.line([12, 20], [88, 86], C.s, 'S', false);     // upward
+      P.dot(50, 54, opt.e0 || 'E₀', C.good); P.guides(50, 54);
+      if (shift) {
+        var d = shift.size || 16, k = shift.dir;
+        if (shift.curve === 'D') {
+          P.line([12 + d * k, 88], [88 + d * k, 22], C.d2, 'D₁', true);
+          P.arrow(50, 40, 50 + 14 * k, 40, C.d2);
+        } else {
+          P.line([12 + d * k, 20], [88 + d * k, 86], C.s2, 'S₁', true);
+          P.arrow(50, 68, 50 + 14 * k, 68, C.s2);
+        }
+      }
+      return P;
+    },
+
+    /* AS–AD.  shift = {curve:'AD'|'SAS'|'LAS', dir:+1|-1} */
+    asad: function (ctx, w, h, shift, opt) {
+      opt = opt || {};
+      var P = plot(ctx, w, h, { xl: 'Real GDP (trillions)', yl: 'Price level' });
+      var lx = opt.lasX === undefined ? 52 : opt.lasX;
+      P.line([10, 86], [88, 20], C.d, 'AD', false);              // AD downward
+      P.curve([[10, 16], [40, 40], [64, 62], [88, 80]], C.s, 'SAS', false); // SAS upward
+      if (opt.las !== false) P.line([lx, 8], [lx, 92], C.las, 'LAS', false, 2.6);
+      if (opt.eq !== false) { P.dot(52, 50, opt.eqLab || '', C.good); P.guides(52, 50); }
+      if (shift) {
+        var k = shift.dir, d = shift.size || 16;
+        if (shift.curve === 'AD') { P.line([10 + d * k, 86], [88 + d * k, 20], C.d2, 'AD₁', true); P.arrow(45, 45, 45 + 13 * k, 45, C.d2); }
+        if (shift.curve === 'SAS') { P.curve([[10, 16 - d * k], [40, 40 - d * k], [64, 62 - d * k], [88, 80 - d * k]], C.s2, 'SAS₁', true); P.arrow(60, 62, 60, 62 - 13 * k, C.s2); }
+        if (shift.curve === 'LAS') { P.line([56 + d * k, 8], [56 + d * k, 92], '#d5bcff', 'LAS₁', true); P.arrow(56, 25, 56 + 13 * k, 25, '#d5bcff'); }
+      }
+      return P;
+    },
+
+    /* bowed-out PPF; pts = [[x,y,label],...] to mark */
+    ppf: function (ctx, w, h, pts, opt) {
+      opt = opt || {};
+      var P = plot(ctx, w, h, { xl: opt.xl || 'Good X', yl: opt.yl || 'Good Y' });
+      // bowed-out quarter ellipse from (8,90) top-left to (86,12) bottom-right
+      var curve = [], i, t;
+      for (i = 0; i <= 44; i++) {
+        t = i / 44 * (Math.PI / 2);
+        curve.push([8 + 78 * Math.sin(t), 90 - 78 * (1 - Math.cos(t))]);
+      }
+      P.curve(curve, C.ppf, opt.lab || 'PPF');
+      if (opt.grow) {
+        var c2 = curve.map(function (p) { return [Math.min(96, 8 + (p[0] - 8) * 1.16), Math.min(96, 12 + (p[1] - 12) * 1.13)]; });
+        P.curve(c2.slice().reverse(), C.ppf2, 'PPF₁', true);
+      }
+      (pts || []).forEach(function (p) { P.dot(p[0], p[1], p[2], p[3] || C.good); });
+      return P;
+    },
+
+    /* marginal benefit / marginal cost */
+    mbmc: function (ctx, w, h, marks) {
+      var P = plot(ctx, w, h, { xl: 'Quantity', yl: 'Dollars per unit' });
+      P.line([10, 84], [88, 20], C.d, 'MB', false);   // MB falls as quantity rises
+      P.line([10, 20], [88, 84], C.s, 'MC', false);   // MC rises as quantity rises
+      (marks || []).forEach(function (m) { P.dot(m[0], m[1], m[2], m[3] || '#fff'); });
+      return P;
+    },
+
+    /* generic time series: series = [{v:[...],col,lab}] */
+    series: function (ctx, w, h, series, opt) {
+      opt = opt || {};
+      var P = plot(ctx, w, h, { xl: opt.xl || 'Time', yl: opt.yl || 'Value' });
+      var lo = opt.lo, hi = opt.hi;
+      if (lo === undefined) {
+        lo = Infinity; hi = -Infinity;
+        series.forEach(function (s) { s.v.forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); }); });
+        var pad = (hi - lo) * .2 || 1; lo -= pad; hi += pad;
+      }
+      var Yv = function (v) { return 8 + 84 * ((v - lo) / (hi - lo || 1)); };
+      if (opt.target !== undefined) {
+        var ty = Yv(opt.target);
+        P.line([88, ty], [6, ty], '#3ddc97', '', true, 2);
+        ctx.fillStyle = '#3ddc97'; ctx.font = '700 18px -apple-system,Segoe UI,Roboto,sans-serif';
+        ctx.textAlign = 'right'; ctx.fillText(opt.targetLab || 'target', P.X(88), P.Y(ty) - 6);
+      }
+      series.forEach(function (s) {
+        var n = s.v.length, pts = s.v.map(function (v, i) {
+          return [8 + 80 * (n === 1 ? .5 : i / (n - 1)), Yv(v)];
+        });
+        P.curve(pts, s.col, '', s.dash);
+        if (opt.dots !== false) pts.forEach(function (p) { P.dot(p[0], p[1], '', s.col); });
+      });
+      P.legend(series.map(function (s) { return { col: s.col, lab: s.lab, dash: s.dash }; }));
+      for (var g = 0; g <= 4; g++) {
+        var vv = lo + (hi - lo) * g / 4;
+        P.tick(0, Yv(vv), '', (Math.round(vv * 10) / 10));
+      }
+      var nn = series[0] ? series[0].v.length : 0;
+      for (var t2 = 0; t2 < nn; t2++) {
+        if (nn <= 8 || t2 % 2 === 0) P.tick(8 + 80 * (nn === 1 ? .5 : t2 / (nn - 1)), 0, String(t2 + 1), '');
+      }
+      return P;
+    }
+  };
+  W.Gfx = Gfx;
+})(window);
+</script>
+<script>/* ========================================================================
+   ECON ARCADE — shared engine
+   No accounts, no downloads, no build step. One HTML file per game.
+   Multiplayer relay: public PubNub demo keys over HTTPS/443 (firewall
+   friendly), with a public MQTT-over-WSS broker as a backup transport.
+   If neither connects, the game falls back to Pass-and-Play / Solo.
+   ======================================================================== */
+(function (W) {
+  'use strict';
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'html') e.innerHTML = attrs[k];
+      else if (k === 'text') e.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c) e.appendChild(c); });
+    return e;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+  function byId(id) { return document.getElementById(id); }
+
+  /* ---------- deterministic RNG (so every device gets the same round order) ---------- */
+  function hash32(str) {
+    var hv = 2166136261 >>> 0;
+    for (var i = 0; i < str.length; i++) { hv ^= str.charCodeAt(i); hv = Math.imul(hv, 16777619) >>> 0; }
+    return hv >>> 0;
+  }
+  function mulberry(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function makeRng(seedStr) {
+    var r = mulberry(hash32(seedStr));
+    r.int = function (n) { return Math.floor(r() * n); };
+    r.pick = function (arr) { return arr[Math.floor(r() * arr.length)]; };
+    r.shuffle = function (arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    };
+    return r;
+  }
+
+  /* =======================================================================
+     TRANSPORT 1 — PubNub demo keys over plain HTTPS (port 443)
+     Public demo keys, no signup. Long-poll subscribe + REST publish.
+     ======================================================================= */
+  function PubNubLite(channel, onMsg) {
+    var self = this, alive = true, tt = '0', myTag = Math.random().toString(36).slice(2, 10);
+    var base = 'https://ps.pndsn.com';
+    var uuid = 'ea-' + myTag;
+    self.ok = false;
+    self.tag = myTag;
+
+    function loop() {
+      if (!alive) return;
+      var url = base + '/subscribe/demo/' + encodeURIComponent(channel) + '/0/' + tt + '?uuid=' + uuid;
+      fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+        if (!alive) return;
+        if (j && j.t && j.t.t) tt = j.t.t;
+        else if (j && j[1]) tt = j[1];
+        self.ok = true;
+        var msgs = (j && j.m) ? j.m.map(function (x) { return x.d; }) : (j && j[0]) || [];
+        msgs.forEach(function (m) { try { onMsg(m); } catch (e) { } });
+        loop();
+      }).catch(function () { if (alive) setTimeout(loop, 1500); });
+    }
+
+    self.start = function () {
+      // first call establishes a timetoken, then we long-poll
+      fetch(base + '/time/0').then(function (r) { return r.json(); }).then(function (j) {
+        tt = String(j[0]); self.ok = true; loop();
+      }).catch(function () { loop(); });
+    };
+    self.send = function (obj) {
+      var p = encodeURIComponent(JSON.stringify(obj));
+      fetch(base + '/publish/demo/demo/0/' + encodeURIComponent(channel) + '/0/' + p + '?uuid=' + uuid,
+        { cache: 'no-store' }).catch(function () { });
+    };
+    self.stop = function () { alive = false; };
+  }
+
+  /* =======================================================================
+     TRANSPORT 2 — minimal MQTT 3.1.1 over secure WebSocket (backup)
+     ======================================================================= */
+  function MqttLite(url, topic, onMsg) {
+    var self = this, ws = null, ping = null, buf = new Uint8Array(0), dead = false;
+    self.ok = false;
+    function enc(str) { var o = []; for (var i = 0; i < str.length; i++) { var c = str.charCodeAt(i); if (c < 128) o.push(c); else if (c < 2048) { o.push(192 | c >> 6, 128 | c & 63); } else { o.push(224 | c >> 12, 128 | (c >> 6) & 63, 128 | c & 63); } } return o; }
+    function dec(arr) { var s = ''; for (var i = 0; i < arr.length;) { var c = arr[i++]; if (c < 128) s += String.fromCharCode(c); else if (c < 224) { s += String.fromCharCode(((c & 31) << 6) | (arr[i++] & 63)); } else { s += String.fromCharCode(((c & 15) << 12) | ((arr[i++] & 63) << 6) | (arr[i++] & 63)); } } return s; }
+    function vlen(n) { var o = []; do { var d = n % 128; n = Math.floor(n / 128); if (n > 0) d |= 128; o.push(d); } while (n > 0); return o; }
+    function str(s) { var b = enc(s); return [b.length >> 8, b.length & 255].concat(b); }
+    function pkt(type, body) { return new Uint8Array([type].concat(vlen(body.length), body)); }
+    function send(a) { try { ws.send(a); } catch (e) { } }
+
+    self.start = function () {
+      try { ws = new WebSocket(url, ['mqtt']); } catch (e) { return; }
+      ws.binaryType = 'arraybuffer';
+      ws.onopen = function () {
+        var cid = 'ea' + Math.random().toString(16).slice(2, 12);
+        var body = str('MQTT').concat([4, 2, 0, 60], str(cid));
+        send(pkt(0x10, body));
+        ping = setInterval(function () { send(new Uint8Array([0xC0, 0x00])); }, 30000);
+      };
+      ws.onmessage = function (ev) {
+        var inc = new Uint8Array(ev.data), n = new Uint8Array(buf.length + inc.length);
+        n.set(buf); n.set(inc, buf.length); buf = n;
+        for (; ;) {
+          if (buf.length < 2) return;
+          var mult = 1, val = 0, i = 1, d;
+          do { if (i >= buf.length) return; d = buf[i++]; val += (d & 127) * mult; mult *= 128; } while (d & 128);
+          var total = i + val;
+          if (buf.length < total) return;
+          var type = buf[0] >> 4, body = buf.subarray(i, total);
+          buf = buf.subarray(total);
+          if (type === 2) { // CONNACK
+            self.ok = true;
+            var sb = [0, 1].concat(str(topic), [0]);
+            send(pkt(0x82, sb));
+          } else if (type === 3) { // PUBLISH (qos 0)
+            var tl = (body[0] << 8) | body[1];
+            try { onMsg(JSON.parse(dec(body.subarray(2 + tl)))); } catch (e) { }
+          }
+        }
+      };
+      ws.onclose = function () { self.ok = false; clearInterval(ping); if (!dead) setTimeout(self.start, 3000); };
+      ws.onerror = function () { };
+    };
+    self.send = function (obj) {
+      if (!self.ok) return;
+      send(pkt(0x30, str(topic).concat(enc(JSON.stringify(obj)))));
+    };
+    self.stop = function () { dead = true; self.ok = false; try { ws.close(); } catch (e) { } clearInterval(ping); };
+  }
+
+  /* =======================================================================
+     NET — room membership + score sync over whichever transport works
+     ======================================================================= */
+  function Net(gameId, code, me) {
+    var self = this;
+    var chan = 'accecon2026-' + gameId + '-' + code;
+    var links = [];
+    self.peers = {};          // id -> {n,s,d,seen}
+    self.connected = false;
+    self.onChange = function () { };
+    self.onStart = function () { };
+
+    function handle(m) {
+      if (!m || !m.id || m.id === me.id) return;
+      if (m.k === 'start') { self.onStart(); return; }
+      if (m.k === 'bye') { delete self.peers[m.id]; self.onChange(); return; }
+      self.peers[m.id] = { n: String(m.n || '?').slice(0, 14), s: +m.s || 0, d: !!m.d, seen: Date.now() };
+      self.onChange();
+    }
+    self.start = function () {
+      var a = new PubNubLite(chan, handle); a.start(); links.push(a);
+      var b = new MqttLite('wss://broker.emqx.io:8084/mqtt', chan, handle); b.start(); links.push(b);
+      setInterval(function () {          // heartbeat + drop stale peers
+        self.beat();
+        var now = Date.now(), ch = false;
+        for (var k in self.peers) if (now - self.peers[k].seen > 25000) { delete self.peers[k]; ch = true; }
+        if (ch) self.onChange();
+        var up = links.some(function (l) { return l.ok; });
+        if (up !== self.connected) { self.connected = up; self.onChange(); }
+      }, 2500);
+      setTimeout(function () {
+        self.connected = links.some(function (l) { return l.ok; });
+        self.onChange();
+      }, 3000);
+    };
+    self.push = function (obj) { links.forEach(function (l) { l.send(obj); }); };
+    self.beat = function () { self.push({ k: 'p', id: me.id, n: me.name, s: me.score, d: me.done ? 1 : 0 }); };
+    self.go = function () { self.push({ k: 'start', id: me.id }); };
+    self.bye = function () { self.push({ k: 'bye', id: me.id }); };
+  }
+
+  /* =======================================================================
+     ARCADE — screens, lobby, quiz runner, sim harness
+     ======================================================================= */
+  var A = {};
+  A.h = h; A.esc = esc; A.makeRng = makeRng; A.Net = Net;
+
+  var G = null, me = null, net = null, root = null, mode = 'live', players = [];
+
+  function screen(nodes) {
+    root.innerHTML = '';
+    nodes.forEach(function (n) { if (n) root.appendChild(n); });
+    root.classList.remove('fade'); void root.offsetWidth; root.classList.add('fade');
+    window.scrollTo(0, 0);
+  }
+  A.screen = screen;
+
+  function header() {
+    return h('div', {}, [
+      h('span', { class: 'tag', text: G.chapter }),
+      h('h1', { text: G.title }),
+      h('p', { class: 'sub', text: G.tagline })
+    ]);
+  }
+
+  function roomCode() {
+    var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', s = '';
+    for (var i = 0; i < 4; i++) s += L[Math.floor(Math.random() * L.length)];
+    return s;
+  }
+
+  /* ---------- HOME ---------- */
+  function home() {
+    var saved = '';
+    try { saved = localStorage.getItem('ea_name') || ''; } catch (e) { }
+    var nameIn = h('input', { id: 'nm', maxlength: '14', placeholder: 'e.g. Maria B.', value: saved });
+    var codeIn = h('input', { id: 'cd', maxlength: '4', placeholder: 'ABCD', style: 'text-transform:uppercase;letter-spacing:.2em;font-weight:800' });
+
+    function nm() {
+      var v = (nameIn.value || '').trim().slice(0, 14);
+      if (!v) { nameIn.focus(); nameIn.style.borderColor = 'var(--bad)'; return null; }
+      try { localStorage.setItem('ea_name', v); } catch (e) { }
+      return v;
+    }
+    screen([
+      header(),
+      h('div', { class: 'card' }, [
+        h('h2', { text: 'How to play' }),
+        h('div', { class: 'note', html: G.rules })
+      ]),
+      h('div', { class: 'card' }, [
+        h('label', { text: 'Your name' }), nameIn,
+        h('button', {
+          class: 'btn', text: 'Create a room', onclick: function () {
+            var v = nm(); if (v) lobby(roomCode(), v, true);
+          }
+        }),
+        h('div', { class: 'row', style: 'margin-top:14px' }, [
+          h('div', { class: 'grow' }, [h('label', { text: 'Join with code' }), codeIn]),
+          h('button', {
+            class: 'btn', style: 'width:auto;margin:18px 0 0', text: 'Join', onclick: function () {
+              var v = nm(); var c = (codeIn.value || '').trim().toUpperCase();
+              if (v && c.length === 4) lobby(c, v, false);
+              else if (v) { codeIn.style.borderColor = 'var(--bad)'; }
+            }
+          })
+        ])
+      ]),
+      h('div', { class: 'card tight' }, [
+        h('button', {
+          class: 'btn sec', text: 'Pass-and-play on this device', onclick: function () {
+            var v = nm(); if (v) passAndPlay(v);
+          }
+        }),
+        h('p', { class: 'note', text: 'No wifi for the relay? Two students share one screen and play the identical set of rounds in turn. Always works, nothing to connect.' })
+      ]),
+      h('footer', { text: 'Econ Arcade · ACC Principles of Macroeconomics' })
+    ]);
+  }
+
+  /* ---------- LOBBY ---------- */
+  function lobby(code, name, host) {
+    me = { id: Math.random().toString(36).slice(2, 10), name: name, score: 0, done: false, code: code };
+    mode = 'live';
+    net = new Net(G.id, code, me);
+    var list = h('div', { class: 'lb' });
+    var status = h('span', { class: 'pill off', text: 'connecting…' });
+    var startBtn = h('button', { class: 'btn', text: 'Start the round', onclick: function () { net.go(); begin(); } });
+
+    function render() {
+      players = Object.keys(net.peers).map(function (k) { return net.peers[k]; });
+      list.innerHTML = '';
+      list.appendChild(h('div', { class: 'r me' }, [h('div', { class: 'p', text: '•' }), h('div', { class: 'n', text: name + ' (you)' })]));
+      players.forEach(function (p) {
+        list.appendChild(h('div', { class: 'r' }, [h('div', { class: 'p', text: '•' }), h('div', { class: 'n', text: p.n })]));
+      });
+      status.className = 'pill ' + (net.connected ? 'on' : 'off');
+      status.textContent = net.connected ? 'connected' : 'no relay on this network';
+      var warn = byId('offwarn');
+      if (warn) warn.className = net.connected ? 'note hide' : 'note';
+    }
+    net.onChange = render;
+    net.onStart = function () { begin(); };
+    net.start(); net.beat();
+
+    screen([
+      header(),
+      h('div', { class: 'card ctr' }, [
+        h('div', { class: 'note', text: 'Room code — everyone types this on their own device' }),
+        h('div', { class: 'code', text: code }),
+        status
+      ]),
+      h('div', { class: 'card' }, [h('h2', { text: 'In the room' }), list,
+      h('p', { class: 'note', text: 'Anyone can press start. Everyone gets the exact same rounds in the same order, so it is a fair race.' })]),
+      startBtn,
+      h('p', { id: 'offwarn', class: 'note hide', html: '⚠️ This network is blocking the live relay, so other devices will not appear here. Go back and use <b>Pass-and-play</b> on one shared device instead — the rounds are identical.' }),
+      h('button', { class: 'btn sec', text: '← Back', onclick: function () { net.bye(); net = null; home(); } }),
+      h('footer', { text: 'Econ Arcade · ACC Principles of Macroeconomics' })
+    ]);
+    render();
+  }
+
+  /* ---------- PASS AND PLAY ---------- */
+  var ppState = null;
+  function passAndPlay(name) {
+    ppState = ppState || { code: roomCode(), scores: [] };
+    mode = 'pass';
+    me = { id: 'local', name: name, score: 0, done: false, code: ppState.code };
+    net = null;
+    begin();
+  }
+
+  /* ---------- countdown then run ---------- */
+  function begin() {
+    if (me.started) return; me.started = true;
+    var n = 3;
+    var big = h('div', { class: 'big', text: '3' });
+    screen([header(), h('div', { class: 'card ctr' }, [h('h2', { text: 'Get ready' }), big,
+    h('p', { class: 'note', text: G.readyNote || 'Read fast. Think faster.' })])]);
+    var iv = setInterval(function () {
+      n--; big.textContent = n > 0 ? String(n) : 'GO!';
+      if (n < 0) { clearInterval(iv); (G.mode === 'sim' ? runSim : runQuiz)(); }
+    }, 800);
+  }
+
+  /* ---------- live side leaderboard ---------- */
+  function boardEl() { return h('div', { class: 'lb', id: 'board' }); }
+  function drawBoard() {
+    var b = byId('board'); if (!b) return;
+    var all = [{ n: me.name, s: me.score, d: me.done, me: 1 }];
+    if (net) for (var k in net.peers) all.push(net.peers[k]);
+    all.sort(function (x, y) { return y.s - x.s; });
+    b.innerHTML = '';
+    all.slice(0, 8).forEach(function (p, i) {
+      b.appendChild(h('div', { class: 'r' + (p.me ? ' me' : '') }, [
+        h('div', { class: 'p', text: '#' + (i + 1) }),
+        h('div', { class: 'n', text: p.n }),
+        p.d ? h('div', { class: 'dn', text: 'DONE' }) : null,
+        h('div', { class: 's', text: String(Math.round(p.s)) })
+      ]));
+    });
+  }
+  A.drawBoard = drawBoard;
+
+  /* ---------- QUIZ RUNNER ---------- */
+  function runQuiz() {
+    var rng = makeRng(G.id + '|' + me.code);
+    var rounds = G.buildRounds(rng);
+    var i = 0, tLeft = G.seconds || 180, qStart = 0, timer = null, log = [];
+    me.score = 0; me.done = false;
+
+    var hud = h('div', { class: 'hud' }, [
+      h('span', { id: 'qn', text: '' }),
+      h('span', { class: 't', id: 'clk', text: '' })
+    ]);
+    var bar = h('div', { class: 'bar' }, [h('i', { id: 'barI', style: 'width:100%' })]);
+    var stage = h('div', {});
+
+    screen([hud, bar, stage, h('div', { class: 'card tight' }, [h('h2', { text: 'Live scores' }), boardEl()])]);
+    drawBoard();
+
+    timer = setInterval(function () {
+      tLeft -= 1;
+      byId('clk').textContent = tLeft + 's';
+      byId('barI').style.width = (100 * tLeft / (G.seconds || 180)) + '%';
+      if (net) net.beat();
+      drawBoard();
+      if (tLeft <= 0) { clearInterval(timer); finishQuiz(log); }
+    }, 1000);
+
+    function show() {
+      if (i >= rounds.length) { clearInterval(timer); finishQuiz(log); return; }
+      var q = rounds[i];
+      byId('qn').textContent = 'Round ' + (i + 1) + ' of ' + rounds.length;
+      qStart = Date.now();
+      stage.innerHTML = '';
+      var card = h('div', { class: 'card' });
+      if (q.setup) card.appendChild(h('div', { class: 'note', html: q.setup }));
+      card.appendChild(h('h2', { html: q.q }));
+      if (q.draw) {
+        var cv = h('canvas', { width: '600', height: '372' });
+        card.appendChild(cv);
+        q.draw(cv.getContext('2d'), cv.width, cv.height);
+      }
+      if (q.table) card.appendChild(h('div', { html: q.table }));
+      stage.appendChild(card);
+      var wrap = h('div', {});
+      q.choices.forEach(function (c, idx) {
+        wrap.appendChild(h('button', {
+          class: 'choice', html: '<span class="k">' + 'ABCDE'[idx] + '</span>' + c,
+          onclick: function () { answer(idx, this, wrap); }
+        }));
+      });
+      stage.appendChild(wrap);
+    }
+
+    function answer(idx, btn, wrap) {
+      var q = rounds[i];
+      Array.prototype.forEach.call(wrap.children, function (b) { b.onclick = null; b.style.pointerEvents = 'none'; });
+      var right = idx === q.a;
+      var secs = (Date.now() - qStart) / 1000;
+      var pts = right ? Math.round(100 + Math.max(0, 60 - secs * 6)) : 0;
+      me.score += pts;
+      log.push({ q: q.q, right: right });
+      btn.className = 'choice ' + (right ? 'right' : 'wrong');
+      if (!right) wrap.children[q.a].className = 'choice right';
+      var fb = h('div', {
+        class: 'fb ' + (right ? 'g' : 'b'),
+        html: '<b>' + (right ? '✓ Correct  +' + pts : '✗ Not quite') + '</b>' + q.why
+      });
+      stage.appendChild(fb);
+      stage.appendChild(h('button', {
+        class: 'btn', text: i === rounds.length - 1 ? 'See results →' : 'Next round →',
+        onclick: function () { i++; show(); }
+      }));
+      if (net) net.beat();
+      drawBoard();
+      fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    show();
+  }
+
+  function finishQuiz(log) {
+    me.done = true;
+    if (net) { net.beat(); }
+    var right = log.filter(function (x) { return x.right; }).length;
+    results([
+      h('div', { class: 'card ctr' }, [
+        h('h2', { text: 'Final score' }),
+        h('div', { class: 'big', text: String(Math.round(me.score)) }),
+        h('p', { class: 'note', text: right + ' of ' + log.length + ' correct' })
+      ])
+    ]);
+  }
+
+  /* ---------- SIM HARNESS ---------- */
+  function runSim() {
+    me.score = 0; me.done = false;
+    var stage = h('div', {});
+    screen([
+      h('div', { class: 'hud' }, [h('span', { text: G.title }), h('span', { class: 't', id: 'clk', text: '' })]),
+      stage,
+      h('div', { class: 'card tight' }, [h('h2', { text: 'Live scores' }), boardEl()])
+    ]);
+    drawBoard();
+    setInterval(function () { if (net) net.beat(); drawBoard(); }, 2500);
+    G.mountSim(stage, {
+      rng: makeRng(G.id + '|' + me.code),
+      setScore: function (s) { me.score = s; if (net) net.beat(); drawBoard(); },
+      finish: function (score, nodes) {
+        me.score = score; me.done = true; if (net) net.beat();
+        results(nodes);
+      },
+      h: h
+    });
+  }
+
+  /* ---------- RESULTS ---------- */
+  function results(nodes) {
+    var kids = [header()].concat(nodes);
+    kids.push(h('div', { class: 'card' }, [h('h2', { text: 'Room leaderboard' }), boardEl(),
+    h('p', { class: 'note', text: mode === 'live' ? 'Scores keep updating until everyone finishes.' : 'Pass the device to the next player — they get the identical rounds.' })]));
+    if (G.debrief) kids.push(h('div', { class: 'card' }, [h('h2', { text: 'Talk about it' }), h('div', { class: 'note', html: G.debrief })]));
+    if (mode === 'pass') {
+      kids.push(h('button', {
+        class: 'btn warn', text: 'Next player on this device →', onclick: function () {
+          ppState.scores.push({ n: me.name, s: me.score });
+          var nm = prompt('Next player, type your name:');
+          if (nm) { me = { id: 'l' + ppState.scores.length, name: nm.slice(0, 14), score: 0, done: false, code: ppState.code }; begin(); }
+        }
+      }));
+      if (ppState && ppState.scores.length) {
+        var t = '<table><tr><th>Player</th><th>Score</th></tr>';
+        ppState.scores.concat([{ n: me.name, s: me.score }]).sort(function (a, b) { return b.s - a.s; })
+          .forEach(function (p) { t += '<tr><td>' + esc(p.n) + '</td><td>' + Math.round(p.s) + '</td></tr>'; });
+        kids.push(h('div', { class: 'card' }, [h('h2', { text: 'This device' }), h('div', { html: t + '</table>' })]));
+      }
+    }
+    kids.push(h('button', { class: 'btn sec', text: 'Play again / new room', onclick: function () { if (net) net.bye(); location.reload(); } }));
+    kids.push(h('footer', { text: 'Econ Arcade · ACC Principles of Macroeconomics' }));
+    screen(kids);
+    drawBoard();
+  }
+
+  /* ---------- boot ---------- */
+  A.launch = function (game) {
+    G = game;
+    document.title = game.title + ' · Econ Arcade';
+    root = byId('app') || document.body.appendChild(h('div', { id: 'app' }));
+    home();
+  };
+  W.Arcade = A;
+})(window);
+</script>
+<script>Arcade.launch({
+  id: 'gdp', chapter: 'Chapter 4 · Measuring GDP', title: 'GDP Sprint',
+  tagline: 'C, I, G, NX — or not counted at all. Sort it faster than the room.',
+  mode: 'quiz', seconds: 300,
+  rules: 'Each round is a transaction or a measurement question. Decide where it lands in GDP — or whether it belongs in GDP at all. Watch for used goods, transfers, and financial trades: none of them are production.',
+  readyNote: 'GDP counts NEW, FINAL goods and services produced INSIDE the country THIS year.',
+  debrief: '<b>1.</b> Which items surprised you by <i>not</i> counting?<br><b>2.</b> GDP rose 5% while prices rose 5%. Is the country better off? Why does the real/nominal distinction matter so much?<br><b>3.</b> Name two things that make life better but never show up in GDP — and one thing that raises GDP but makes life worse.',
+  buildRounds: function (rng) {
+    var Q = [
+      {
+        q: 'A family buys a <b>newly built house</b> in Round Rock. In the expenditure approach this counts as:',
+        choices: ['Consumption (C)', 'Investment (I)', 'Government expenditure (G)', 'Not counted in GDP'],
+        a: 1,
+        why: 'New housing is <b>residential investment</b>, not consumption — the one household purchase that lands in I. Everything else households buy (food, cars, haircuts) is C.'
+      },
+      {
+        q: 'Your grandmother receives a $1,900 <b>Social Security</b> check. This counts as:',
+        choices: ['Government expenditure (G)', 'Consumption (C)', 'Not counted in GDP — it is a transfer payment', 'Investment (I)'],
+        a: 2,
+        why: 'A <b>transfer payment</b> moves money without any production in exchange, so it is not in GDP. If she spends it on groceries, <i>that</i> purchase counts as C.'
+      },
+      {
+        q: 'A bakery buys $400 of flour to make bread it sells for $1,200. How much enters GDP?',
+        choices: ['$1,600 — both transactions', '$1,200 — only the final good', '$400 — only the input', '$800 — the difference'],
+        a: 1,
+        why: 'Flour is an <b>intermediate good</b>; its value is already inside the price of the bread. Counting both would be double counting. (Equivalently, sum the value added: $400 by the mill + $800 by the bakery = $1,200.)'
+      },
+      {
+        q: 'You buy a <b>used</b> 2019 Honda from a neighbor for $14,000. GDP…',
+        choices: ['Rises by $14,000', 'Rises by $14,000 next year', 'Does not change — the car was counted when it was produced in 2019', 'Falls by $14,000'],
+        a: 2,
+        why: 'GDP measures <b>current production</b>. The Honda was counted in 2019. Reselling it just moves an existing asset between people. (A dealer\'s commission would count, because that service is produced now.)'
+      },
+      {
+        q: 'You buy 20 shares of Apple stock for $4,000. This is:',
+        choices: ['Investment (I) — the word investment is right there', 'Consumption (C)', 'Not in GDP — buying financial assets is not production', 'Net exports (NX)'],
+        a: 2,
+        why: 'This is the most common trap. In economics <b>investment means newly produced capital</b> — machines, buildings, inventories — not buying paper claims. Trading stock just swaps ownership of an existing company.'
+      },
+      {
+        q: 'A Texas school district pays teacher salaries of $50 million. This counts as:',
+        choices: ['Government expenditure on goods and services (G)', 'A transfer payment, so not counted', 'Consumption (C)', 'Investment (I)'],
+        a: 0,
+        why: 'Government buys the service of teaching, and that service is produced this year — so it enters <b>G</b>. The difference from Social Security: here the government receives something in return.'
+      },
+      {
+        q: 'A U.S. company\'s cars pile up unsold in its warehouse — inventories rise by $2 billion. GDP treats this as:',
+        choices: ['Not counted until someone buys them', 'An addition to investment (I) — inventory investment', 'A subtraction from GDP', 'Consumption (C)'],
+        a: 1,
+        why: 'The cars <b>were produced this year</b>, so they must be counted. Unsold output is treated as the firm buying its own goods: <b>inventory investment</b>. This is also why GDP tracks production even when sales stall.'
+      },
+      {
+        table: '<table><tr><th>Component</th><th>$ trillions</th></tr><tr><td>Consumption</td><td>14.0</td></tr><tr><td>Investment</td><td>3.5</td></tr><tr><td>Government expenditure</td><td>4.0</td></tr><tr><td>Exports</td><td>2.5</td></tr><tr><td>Imports</td><td>3.2</td></tr></table>',
+        q: 'What is GDP?',
+        choices: ['$27.2 trillion', '$21.5 trillion', '$20.8 trillion', '$24.0 trillion'],
+        a: 2,
+        why: 'GDP = C + I + G + (X − M) = 14.0 + 3.5 + 4.0 + (2.5 − 3.2) = <b>$20.8 trillion</b>. Imports are subtracted because they were produced somewhere else — they are already inside C, I, and G and must be removed.'
+      },
+      {
+        q: 'Nominal GDP rose 6% this year while the price level rose 4%. Real GDP grew about:',
+        choices: ['10%', '6%', '2%', '1.5%'],
+        a: 2,
+        why: '<b>Real growth ≈ nominal growth − inflation = 6% − 4% = 2%.</b> Only real GDP tells you whether the country actually produced more <i>stuff</i>; nominal GDP mixes production with price changes.'
+      },
+      {
+        q: 'In 2026 nominal GDP is $22 trillion and real GDP (in base-year dollars) is $20 trillion. The GDP deflator is:',
+        choices: ['91', '110', '210', '2'],
+        a: 1,
+        why: 'GDP deflator = (nominal ÷ real) × 100 = (22 ÷ 20) × 100 = <b>110</b>. Prices are 10% above the base year.'
+      },
+      {
+        q: 'A parent quits a $45,000 job to care for their child full time. Measured GDP:',
+        choices: ['Rises, because child care is valuable', 'Falls, even though useful work is still being done', 'Is unchanged', 'Rises by $45,000'],
+        a: 1,
+        why: 'GDP misses <b>household production</b> because no market transaction occurs. This is a real limitation: the same care purchased from a daycare would count. GDP also omits leisure, volunteering, the underground economy, and environmental damage.'
+      },
+      {
+        q: 'Which statement about the two ways of measuring GDP is correct?',
+        choices: ['Total expenditure always exceeds total income', 'Total expenditure equals total income, because every dollar spent is a dollar earned by someone', 'Income is measured only in rich countries', 'They differ by the amount of imports'],
+        a: 1,
+        why: 'The circular flow guarantees it: whatever buyers spend becomes wages, rent, interest, and profit for someone. <b>Expenditure = Income = Value of production</b> — three doors into the same number.'
+      },
+      {
+        q: 'A U.S. household buys a smartphone made in Vietnam for $900. The net effect on U.S. GDP is:',
+        choices: ['+$900 through C', '−$900 through imports', 'Zero — C rises $900 and imports rise $900', '+$900 through NX'],
+        a: 2,
+        why: 'The purchase adds $900 to <b>C</b>, but the phone was not produced in the U.S., so $900 is subtracted as an <b>import</b>. Net effect on U.S. GDP: <b>zero</b>. That is exactly why the formula subtracts M.'
+      }
+    ];
+    return rng.shuffle(Q).slice(0, 8);
+  }
+});
+</script>
+</body></html>

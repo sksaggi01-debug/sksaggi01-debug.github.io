@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Self-scoring practice exam for ECON 2302 Principles of Microeconomics, Exam 1.">
+<style>
+  html{ color-scheme: light dark; }
+  body{ margin:0; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+</style>
+<title>Micro Exam 1 Practice Set</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#F3F6F4;
+    --surface:#FFFFFF;
+    --surface-2:#E9EFEC;
+    --ink:#141C1A;
+    --muted:#5B6A66;
+    --line:#D2DCD8;
+    --line-strong:#B6C4BF;
+    --accent:#0B6252;
+    --accent-soft:#DBEDE7;
+    --correct:#2C6640;
+    --correct-soft:#DFEFE3;
+    --wrong:#9C3728;
+    --wrong-soft:#F7E3DE;
+    --shadow:0 1px 2px rgba(20,28,26,.05), 0 8px 20px -12px rgba(20,28,26,.18);
+    --serif:"Newsreader", Georgia, "Times New Roman", serif;
+    --sans:"Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0F1513;
+      --surface:#171F1D;
+      --surface-2:#1E2724;
+      --ink:#E7EEEB;
+      --muted:#94A5A0;
+      --line:#2A3835;
+      --line-strong:#3A4B47;
+      --accent:#57C2AA;
+      --accent-soft:#12312C;
+      --correct:#7FC894;
+      --correct-soft:#152E1E;
+      --wrong:#E68C7C;
+      --wrong-soft:#331A15;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0F1513;
+    --surface:#171F1D;
+    --surface-2:#1E2724;
+    --ink:#E7EEEB;
+    --muted:#94A5A0;
+    --line:#2A3835;
+    --line-strong:#3A4B47;
+    --accent:#57C2AA;
+    --accent-soft:#12312C;
+    --correct:#7FC894;
+    --correct-soft:#152E1E;
+    --wrong:#E68C7C;
+    --wrong-soft:#331A15;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 20px -12px rgba(0,0,0,.6);
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:800px; margin:0 auto; padding:0 20px 96px; }
+
+  /* ---------- header ---------- */
+  .bar{
+    position:sticky; top:0; z-index:20;
+    background:var(--ground);
+    background:color-mix(in srgb, var(--ground) 92%, transparent);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar-in{
+    max-width:800px; margin:0 auto; padding:10px 20px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .bar-name{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .bar-stats{ margin-left:auto; display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums; }
+  .stat b{ font-weight:500; }
+  .stat span{ color:var(--muted); }
+  #clock{ color:var(--accent); }
+  #clock.low{ color:var(--wrong); }
+  .progress{ height:3px; background:var(--line); }
+  .progress i{ display:block; height:100%; width:0; background:var(--accent); transition:width .25s ease; }
+
+  /* ---------- masthead ---------- */
+  header.mast{ padding:44px 0 26px; border-bottom:1px solid var(--line); }
+  .eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin:0 0 12px; }
+  h1{ font-family:var(--serif); font-weight:600; font-size:clamp(30px,5.2vw,44px); line-height:1.08; letter-spacing:-.015em; margin:0 0 12px; text-wrap:balance; }
+  .lede{ margin:0; max-width:62ch; color:var(--muted); font-size:16.5px; }
+  .facts{ display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .fact{ font-family:var(--mono); font-size:11.5px; letter-spacing:.03em; padding:5px 9px; border:1px solid var(--line-strong); border-radius:3px; color:var(--muted); }
+  .controls{ display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+  button{ font-family:var(--sans); font-size:13.5px; font-weight:500; color:var(--ink); background:var(--surface); border:1px solid var(--line-strong); border-radius:4px; padding:7px 13px; cursor:pointer; }
+  button:hover{ border-color:var(--accent); color:var(--accent); }
+  button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  /* ---------- parts ---------- */
+  section.part{ margin-top:44px; }
+  .part-head{ display:flex; align-items:baseline; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line-strong); }
+  .part-tag{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+  .part-head h2{ font-family:var(--serif); font-weight:600; font-size:21px; margin:0; letter-spacing:-.01em; }
+  .part-range{ margin-left:auto; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+
+  /* ---------- figures ---------- */
+  .plate{ margin:24px 0 4px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:14px 14px 10px; box-shadow:var(--shadow); }
+  .plate .scroller{ overflow-x:auto; }
+  .plate svg{ display:block; width:100%; max-width:470px; height:auto; margin:0 auto; }
+  .plate figcaption{ margin-top:8px; padding-top:9px; border-top:1px solid var(--line); font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--muted); text-align:center; }
+  svg .ax{ stroke:var(--ink); stroke-width:1.4; fill:none; }
+  svg .curve{ stroke:var(--ink); stroke-width:2.4; fill:none; stroke-linecap:round; }
+  svg .grid{ stroke:var(--line-strong); stroke-width:1; stroke-dasharray:3 3; fill:none; }
+  svg .pt{ fill:var(--surface); stroke:var(--ink); stroke-width:1.5; }
+  svg .num{ font-family:var(--mono); font-size:11px; fill:var(--muted); }
+  svg .cap{ font-family:var(--sans); font-size:11.5px; fill:var(--ink); }
+  svg .mark{ font-family:var(--serif); font-style:italic; font-size:15px; fill:var(--ink); }
+
+  /* ---------- questions ---------- */
+  .q{ margin-top:26px; padding-top:22px; border-top:1px solid var(--line); }
+  .q:first-of-type{ border-top:none; }
+  .q-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:9px; }
+  .q-num{ font-family:var(--mono); font-size:12px; font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .q-tag{ margin-left:auto; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .stem{ margin:0 0 12px; max-width:66ch; }
+  .opts{ display:flex; flex-direction:column; gap:6px; }
+  .opt{
+    display:flex; gap:11px; align-items:flex-start; width:100%; text-align:left;
+    background:var(--surface); border:1px solid var(--line); border-radius:5px;
+    padding:10px 12px; font-size:15px; line-height:1.45; color:var(--ink);
+    cursor:pointer; font-weight:400;
+  }
+  .opt:hover{ border-color:var(--accent); color:var(--ink); }
+  .opt .ltr{ font-family:var(--mono); font-size:12.5px; color:var(--muted); padding-top:1px; min-width:14px; }
+  .q.done .opt{ cursor:default; }
+  .q.done .opt:hover{ border-color:var(--line); }
+  .opt.is-correct{ background:var(--correct-soft); border-color:var(--correct); }
+  .opt.is-correct .ltr{ color:var(--correct); }
+  .opt.is-wrong{ background:var(--wrong-soft); border-color:var(--wrong); }
+  .opt.is-wrong .ltr{ color:var(--wrong); }
+  .opt .flag{ margin-left:auto; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; padding-top:2px; }
+  .opt.is-correct .flag{ color:var(--correct); }
+  .opt.is-wrong .flag{ color:var(--wrong); }
+  .why{ margin-top:10px; padding:11px 13px; background:var(--surface-2); border-left:2px solid var(--accent); border-radius:0 4px 4px 0; font-size:14.5px; max-width:70ch; }
+  .why b{ font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:3px; font-weight:500; }
+
+  /* ---------- result ---------- */
+  .result{ margin-top:48px; padding:24px; border:1px solid var(--accent); border-radius:6px; background:var(--surface); box-shadow:var(--shadow); }
+  .result h3{ font-family:var(--serif); font-size:22px; margin:0 0 6px; font-weight:600; }
+  .result .big{ font-family:var(--mono); font-size:34px; font-variant-numeric:tabular-nums; color:var(--accent); }
+  .breakdown{ margin-top:16px; display:grid; gap:7px; }
+  .brow{ display:flex; align-items:center; gap:10px; font-size:14px; }
+  .brow .bname{ min-width:0; flex:1; }
+  .brow .bbar{ width:110px; height:6px; background:var(--line); border-radius:3px; overflow:hidden; }
+  .brow .bbar i{ display:block; height:100%; background:var(--accent); }
+  .brow .bnum{ font-family:var(--mono); font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  footer{ margin-top:48px; padding-top:18px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="bar-in">
+    <span class="bar-name">ECON 2302 &middot; Practice Exam 1</span>
+    <span class="bar-stats">
+      <span class="stat"><b id="answered">0</b><span>/40 answered</span></span>
+      <span class="stat"><b id="score">0</b><span>correct</span></span>
+      <span class="stat" id="clock">50:00</span>
+    </span>
+  </div>
+  <div class="progress"><i id="pbar"></i></div>
+</div>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="eyebrow">Principles of Microeconomics &middot; Austin Community College</p>
+  <h1>Practice Exam 1</h1>
+  <p class="lede">Forty multiple-choice questions built to match the structure and difficulty of Exam 1: scarcity and opportunity cost, the production possibilities frontier, marginal analysis, demand, supply, shifts, market equilibrium, and positive versus normative statements. Pick an answer and the reasoning appears immediately.</p>
+  <div class="facts">
+    <span class="fact">40 questions &middot; 1 point each</span>
+    <span class="fact">50-minute clock</span>
+    <span class="fact">Chapters 1&ndash;3</span>
+    <span class="fact">6 figures</span>
+  </div>
+  <div class="controls">
+    <button id="btn-reset" type="button">Start over</button>
+    <button id="btn-reveal" type="button">Reveal unanswered</button>
+    <button id="btn-timer" type="button">Start timer</button>
+  </div>
+</header>
+
+<main id="exam"></main>
+
+<div class="result" id="result" hidden>
+  <h3>Your score</h3>
+  <div class="big" id="result-score">0 / 40</div>
+  <div id="result-note" style="color:var(--muted);font-size:14.5px;margin-top:4px"></div>
+  <div class="breakdown" id="result-breakdown"></div>
+</div>
+
+<footer>
+  Practice material for ECON&nbsp;2302. Every figure here is redrawn with new values, so read each graph before answering rather than recalling a number from class.
+</footer>
+
+</div>
+
+<!-- ======================= FIGURES ======================= -->
+<template id="fig-ppf">
+<svg viewBox="0 0 460 380" role="img" aria-label="Production possibilities frontier for Good A and Good B with points A, B and C on the frontier, point F inside it, and point G outside it.">
+  <path class="ax" d="M 80 40 V 320 M 80 320 H 425"/>
+  <path class="curve" d="M 80 80 Q 250 95 360 320"/>
+  <circle class="pt" cx="146" cy="94" r="5"/>
+  <circle class="pt" cx="221" cy="136" r="5"/>
+  <circle class="pt" cx="301" cy="221" r="5"/>
+  <circle class="pt" cx="170" cy="250" r="5"/>
+  <circle class="pt" cx="350" cy="110" r="5"/>
+  <text class="mark" x="155" y="88">A</text>
+  <text class="mark" x="230" y="130">B</text>
+  <text class="mark" x="310" y="216">C</text>
+  <text class="mark" x="161" y="243" text-anchor="end">F</text>
+  <text class="mark" x="341" y="104" text-anchor="end">G</text>
+  <text class="num" x="70" y="337" text-anchor="middle">0</text>
+  <text class="cap" x="30" y="180" text-anchor="middle" transform="rotate(-90 30 180)">Good A (units per month)</text>
+  <text class="cap" x="255" y="360" text-anchor="middle">Good B (units per month)</text>
+</svg>
+</template>
+
+<template id="fig-mbmc">
+<svg viewBox="0 0 470 385" role="img" aria-label="Marginal benefit curve falling from 6 to 2 and marginal cost curve rising from 2 to 6 as corn output goes from 1 to 3 million bushels, crossing at 2 million bushels and 4 pounds of soybeans.">
+  <path class="grid" d="M 155 92 V 320 M 225 168 V 320 M 295 92 V 320 M 85 92 H 295 M 85 168 H 225 M 85 244 H 295"/>
+  <path class="ax" d="M 85 40 V 320 M 85 320 H 425"/>
+  <path class="curve" d="M 155 92 L 295 244"/>
+  <path class="curve" d="M 155 244 L 295 92"/>
+  <circle class="pt" cx="155" cy="92" r="5"/>
+  <circle class="pt" cx="295" cy="244" r="5"/>
+  <circle class="pt" cx="155" cy="244" r="5"/>
+  <circle class="pt" cx="295" cy="92" r="5"/>
+  <circle class="pt" cx="225" cy="168" r="5"/>
+  <text class="mark" x="304" y="250">MB</text>
+  <text class="mark" x="304" y="90">MC</text>
+  <text class="num" x="76" y="286" text-anchor="end">1</text>
+  <text class="num" x="76" y="248" text-anchor="end">2</text>
+  <text class="num" x="76" y="210" text-anchor="end">3</text>
+  <text class="num" x="76" y="172" text-anchor="end">4</text>
+  <text class="num" x="76" y="134" text-anchor="end">5</text>
+  <text class="num" x="76" y="96" text-anchor="end">6</text>
+  <text class="num" x="85" y="338" text-anchor="middle">0</text>
+  <text class="num" x="155" y="338" text-anchor="middle">1</text>
+  <text class="num" x="225" y="338" text-anchor="middle">2</text>
+  <text class="num" x="295" y="338" text-anchor="middle">3</text>
+  <text class="num" x="365" y="338" text-anchor="middle">4</text>
+  <text class="cap" x="24" y="180" text-anchor="middle" transform="rotate(-90 24 180)">Marginal cost and marginal benefit</text>
+  <text class="cap" x="40" y="180" text-anchor="middle" transform="rotate(-90 40 180)">(pounds of soybeans per bushel)</text>
+  <text class="cap" x="255" y="362" text-anchor="middle">Corn (millions of bushels per month)</text>
+</svg>
+</template>
+
+<template id="fig-demand">
+<svg viewBox="0 0 460 380" role="img" aria-label="A downward-sloping demand curve with point e high on the curve, point f lower and to the right on the same curve, point g to the right of f off the curve, and point h directly above f off the curve.">
+  <path class="grid" d="M 80 201 H 252 M 252 201 V 320"/>
+  <path class="ax" d="M 80 40 V 320 M 80 320 H 425"/>
+  <path class="curve" d="M 130 70 Q 230 200 370 290"/>
+  <circle class="pt" cx="183" cy="133" r="5"/>
+  <circle class="pt" cx="252" cy="201" r="5"/>
+  <circle class="pt" cx="310" cy="201" r="5"/>
+  <circle class="pt" cx="252" cy="155" r="5"/>
+  <text class="mark" x="174" y="126" text-anchor="end">e</text>
+  <text class="mark" x="243" y="220" text-anchor="end">f</text>
+  <text class="mark" x="319" y="196">g</text>
+  <text class="mark" x="261" y="150">h</text>
+  <text class="mark" x="379" y="298">D</text>
+  <text class="num" x="70" y="337" text-anchor="middle">0</text>
+  <text class="cap" x="30" y="180" text-anchor="middle" transform="rotate(-90 30 180)">Price (dollars)</text>
+  <text class="cap" x="410" y="352" text-anchor="end">Quantity</text>
+</svg>
+</template>
+
+<template id="fig-supply">
+<svg viewBox="0 0 460 380" role="img" aria-label="An upward-sloping supply curve for maple syrup passing through 1 bottle at 2 dollars, 2 bottles at 3 dollars, 3 bottles at 5 dollars, 4 bottles at 6 dollars, and 5 bottles at 8 dollars.">
+  <path class="grid" d="M 80 252 H 138 M 138 252 V 320 M 80 218 H 196 M 196 218 V 320 M 80 150 H 254 M 254 150 V 320 M 80 116 H 312 M 312 116 V 320 M 80 48 H 370 M 370 48 V 320"/>
+  <path class="ax" d="M 80 30 V 320 M 80 320 H 425"/>
+  <path class="curve" d="M 138 252 C 158 240, 176 230, 196 218 C 218 200, 236 172, 254 150 C 272 133, 292 124, 312 116 C 334 100, 352 76, 370 48"/>
+  <circle class="pt" cx="138" cy="252" r="5"/>
+  <circle class="pt" cx="196" cy="218" r="5"/>
+  <circle class="pt" cx="254" cy="150" r="5"/>
+  <circle class="pt" cx="312" cy="116" r="5"/>
+  <circle class="pt" cx="370" cy="48" r="5"/>
+  <text class="mark" x="196" y="62">Supply of</text>
+  <text class="mark" x="196" y="79">maple syrup</text>
+  <text class="num" x="72" y="290" text-anchor="end">1</text>
+  <text class="num" x="72" y="256" text-anchor="end">2</text>
+  <text class="num" x="72" y="222" text-anchor="end">3</text>
+  <text class="num" x="72" y="188" text-anchor="end">4</text>
+  <text class="num" x="72" y="154" text-anchor="end">5</text>
+  <text class="num" x="72" y="120" text-anchor="end">6</text>
+  <text class="num" x="72" y="86" text-anchor="end">7</text>
+  <text class="num" x="72" y="52" text-anchor="end">8</text>
+  <text class="num" x="80" y="338" text-anchor="middle">0</text>
+  <text class="num" x="138" y="338" text-anchor="middle">1</text>
+  <text class="num" x="196" y="338" text-anchor="middle">2</text>
+  <text class="num" x="254" y="338" text-anchor="middle">3</text>
+  <text class="num" x="312" y="338" text-anchor="middle">4</text>
+  <text class="num" x="370" y="338" text-anchor="middle">5</text>
+  <text class="cap" x="30" y="175" text-anchor="middle" transform="rotate(-90 30 175)">Price (dollars per bottle)</text>
+  <text class="cap" x="255" y="362" text-anchor="middle">Quantity (bottles per month)</text>
+</svg>
+</template>
+
+<template id="fig-shift">
+<svg viewBox="0 0 470 395" role="img" aria-label="A market diagram with two upward-sloping supply curves, S1 on the left and S2 to its right, and two downward-sloping demand curves, D1 on the left and D2 to its right.">
+  <path class="ax" d="M 60 35 V 355 M 60 355 H 440"/>
+  <path class="curve" d="M 110 320 L 310 70"/>
+  <path class="curve" d="M 190 320 L 390 70"/>
+  <path class="curve" d="M 100 90 L 300 340"/>
+  <path class="curve" d="M 180 90 L 380 340"/>
+  <circle class="pt" cx="197" cy="211" r="5"/>
+  <circle class="pt" cx="237" cy="161" r="5"/>
+  <circle class="pt" cx="277" cy="211" r="5"/>
+  <circle class="pt" cx="237" cy="261" r="5"/>
+  <text class="mark" x="316" y="66">S<tspan font-size="10" dy="4">1</tspan></text>
+  <text class="mark" x="396" y="66">S<tspan font-size="10" dy="4">2</tspan></text>
+  <text class="mark" x="304" y="352">D<tspan font-size="10" dy="4">1</tspan></text>
+  <text class="mark" x="384" y="352">D<tspan font-size="10" dy="4">2</tspan></text>
+  <text class="cap" x="26" y="150" text-anchor="middle" transform="rotate(-90 26 150)">Price</text>
+  <text class="cap" x="435" y="378" text-anchor="end">Quantity</text>
+</svg>
+</template>
+
+<template id="fig-eq">
+<svg viewBox="0 0 470 385" role="img" aria-label="A market diagram where the demand curve falls from 14 dollars at zero units to 2 dollars at 1200 units and the supply curve rises from 2 dollars at zero units to 14 dollars at 1200 units, crossing at 600 units and 8 dollars.">
+  <path class="grid" d="M 127 75 V 320 M 183 75 V 320 M 240 75 V 320 M 297 75 V 320 M 353 75 V 320 M 410 75 V 320 M 70 285 H 410 M 70 250 H 410 M 70 215 H 410 M 70 180 H 410 M 70 145 H 410 M 70 110 H 410 M 70 75 H 410"/>
+  <path class="ax" d="M 70 35 V 320 M 70 320 H 440"/>
+  <path class="curve" d="M 70 75 L 410 285"/>
+  <path class="curve" d="M 70 285 L 410 75"/>
+  <circle class="pt" cx="127" cy="110" r="4.5"/>
+  <circle class="pt" cx="183" cy="145" r="4.5"/>
+  <circle class="pt" cx="297" cy="215" r="4.5"/>
+  <circle class="pt" cx="353" cy="250" r="4.5"/>
+  <circle class="pt" cx="127" cy="250" r="4.5"/>
+  <circle class="pt" cx="183" cy="215" r="4.5"/>
+  <circle class="pt" cx="297" cy="145" r="4.5"/>
+  <circle class="pt" cx="353" cy="110" r="4.5"/>
+  <circle class="pt" cx="240" cy="180" r="5.5"/>
+  <text class="mark" x="418" y="291">D</text>
+  <text class="mark" x="418" y="72">S</text>
+  <text class="num" x="62" y="289" text-anchor="end">2</text>
+  <text class="num" x="62" y="254" text-anchor="end">4</text>
+  <text class="num" x="62" y="219" text-anchor="end">6</text>
+  <text class="num" x="62" y="184" text-anchor="end">8</text>
+  <text class="num" x="62" y="149" text-anchor="end">10</text>
+  <text class="num" x="62" y="114" text-anchor="end">12</text>
+  <text class="num" x="62" y="79" text-anchor="end">14</text>
+  <text class="num" x="70" y="338" text-anchor="middle">0</text>
+  <text class="num" x="127" y="338" text-anchor="middle">200</text>
+  <text class="num" x="183" y="338" text-anchor="middle">400</text>
+  <text class="num" x="240" y="338" text-anchor="middle">600</text>
+  <text class="num" x="297" y="338" text-anchor="middle">800</text>
+  <text class="num" x="353" y="338" text-anchor="middle">1000</text>
+  <text class="num" x="410" y="338" text-anchor="middle">1200</text>
+  <text class="cap" x="24" y="178" text-anchor="middle" transform="rotate(-90 24 178)">Price (dollars)</text>
+  <text class="cap" x="255" y="362" text-anchor="middle">Quantity (units per day)</text>
+</svg>
+</template>
+
+<script>
+(function(){
+  "use strict";
+
+  var Q = [
+    // ---- Part A ----
+    {n:1, tag:"Scarcity", stem:"Every economic question is ultimately a question about",
+     o:["how to make a profit.","what the government should produce.","how to cope with scarcity.","how to satisfy every want we have."], a:2,
+     w:"Scarcity — wants that outrun the resources available to satisfy them — is what forces people to choose, and choice is what economics studies. Option D describes something scarcity makes impossible."},
+    {n:2, tag:"Incentives", stem:"An incentive",
+     o:["can be either a reward or a penalty.","can only be a reward.","can only be a penalty.","is another name for an opportunity cost."], a:0,
+     w:"An incentive is anything that encourages or discourages an action, so a fine works as an incentive exactly as a bonus does."},
+    {n:3, tag:"Definition", stem:"Economics is best defined as the study of",
+     o:["how firms maximize profit in the stock market.","how to choose among an unlimited supply of goods and services.","how a household keeps a budget balanced.","the choices people make to cope with unlimited wants and scarce resources."], a:3,
+     w:"Economics is the social science of choice under scarcity, at both the individual and the economy-wide level. The other options name particular activities, not the discipline."},
+    {n:4, tag:"Micro vs. macro", stem:"Macroeconomics is the study of",
+     o:["the choices made by individual households and firms.","the performance of the national and global economy as a whole.","how a single market, such as the market for coffee, sets its price.","how one firm decides how much to produce."], a:1,
+     w:"Macro looks at aggregates — total output, the price level, unemployment. The other three options are all microeconomics: individual units and single markets."},
+    {n:5, tag:"Resources", stem:"The factors of production are",
+     o:["money, machines, and management.","land, labor, capital, and entrepreneurship.","labor and capital only, because land is fixed in supply.","the goods and services a country produces."], a:1,
+     w:"Money is not a factor of production — it buys resources but does not itself produce anything. And “land” here means all natural resources — mineral deposits, water, forests — not just acreage, so option C's premise is wrong twice over."},
+    {n:6, tag:"Opportunity cost", stem:"The highest-valued alternative that is given up when a choice is made is called",
+     o:["marginal benefit.","a tradeoff.","opportunity cost.","scarcity."], a:2,
+     w:"Opportunity cost counts only the best forgone alternative, not everything you did not choose. A tradeoff is the fact that you must give something up; opportunity cost is what you gave up."},
+
+    // ---- Part B ----
+    {n:7, fig:"ppf", tag:"PPF", stem:"Point B on the production possibilities frontier in the figure above illustrates",
+     o:["a combination that achieves production efficiency.","a combination that cannot be produced with current resources.","a combination that leaves some resources unemployed.","the combination that people most prefer."], a:0,
+     w:"Any point on the frontier uses all available resources fully, so producing more of one good requires producing less of the other. Which point on the frontier is best depends on preferences, which the PPF alone does not show."},
+    {n:8, fig:"ppf", tag:"PPF", stem:"In the figure above, which point represents a production combination that is unattainable?",
+     o:["point A","point F","point G","point C"], a:2,
+     w:"Point G lies outside the frontier, so producing it would require more resources or better technology than the economy currently has."},
+    {n:9, fig:"ppf", tag:"PPF", stem:"In the figure above, which point is attainable but production inefficient?",
+     o:["point C","point F","point G","point B"], a:1,
+     w:"Point F lies inside the frontier. The economy can reach it, but resources are unemployed or misallocated — more of one good could be produced without giving up any of the other."},
+    {n:10, tag:"Marginal benefit", stem:"As a person consumes more of a good during a given period, the marginal benefit of an additional unit",
+     o:["increases.","stays constant.","becomes negative immediately.","decreases."], a:3,
+     w:"This is decreasing marginal benefit: each extra unit is worth less than the one before, so a buyer is willing to pay less for it. That willingness to pay is what the demand curve traces out."},
+    {n:11, fig:"mbmc", tag:"Marginal analysis", stem:"According to the figure above, what is the marginal benefit of the 3 millionth bushel of corn per month?",
+     o:["6 pounds of soybeans per bushel","4 pounds of soybeans per bushel","3 pounds of soybeans per bushel","2 pounds of soybeans per bushel"], a:3,
+     w:"Read the MB curve — the falling one — at a quantity of 3 million bushels: it sits at 2 pounds. The value 6 belongs to the MC curve at that quantity, which is the usual mix-up."},
+    {n:12, fig:"mbmc", tag:"Marginal analysis", stem:"According to the figure above, what is the marginal cost of producing the 3 millionth bushel of corn per month?",
+     o:["6 pounds of soybeans per bushel","4 pounds of soybeans per bushel","3 pounds of soybeans per bushel","2 pounds of soybeans per bushel"], a:0,
+     w:"Read the rising MC curve at 3 million bushels: 6 pounds. Because MC (6) exceeds MB (2) at that quantity, the efficient quantity is smaller — 2 million bushels, where the curves cross."},
+
+    // ---- Part C ----
+    {n:13, tag:"Law of demand", stem:"The law of demand states that, other things remaining the same, the quantity of a good demanded varies",
+     o:["inversely with its price.","directly with its price.","inversely with income.","directly with the price of a substitute."], a:0,
+     w:"Higher price, smaller quantity demanded — holding everything else constant. Options C and D each describe a relationship that does hold in the right circumstances (C for an inferior good), but both involve changing something the law of demand holds fixed, so neither is the law itself."},
+    {n:14, tag:"Substitution effect", stem:"The price of ground beef rises. As a result, households grill fewer hamburgers and cook more chicken. This behavior is an example of",
+     o:["a decrease in the quantity demanded of beef because of the substitution effect.","a decrease in the demand for beef because of the income effect.","a decrease in the supply of beef because of the substitution effect.","an increase in the supply of chicken because of the income effect."], a:0,
+     w:"The good's own price changed, so households move along the beef demand curve — a change in quantity demanded, not in demand. Switching to a now relatively cheaper alternative is the substitution effect."},
+    {n:15, tag:"Substitutes", stem:"Which of the following pairs of goods are most likely substitutes?",
+     o:["printers and ink cartridges","butter and margarine","hot dogs and hot dog buns","gasoline and dish soap"], a:1,
+     w:"Substitutes serve the same purpose, so one can replace the other. Options A and C are complements — used together — and D is an unrelated pair."},
+    {n:16, tag:"Complements", stem:"A complement is a good that is",
+     o:["of lower quality than another good.","used in place of another good.","bought only when income falls.","used together with another good."], a:3,
+     w:"Complements are consumed jointly, so a rise in the price of one decreases the demand for the other. Option B defines a substitute; option C describes an inferior good."},
+    {n:17, tag:"Inferior goods", stem:"An inferior good is a good for which demand",
+     o:["increases when income increases.","decreases when income increases.","decreases when its own price falls.","does not respond to income at all."], a:1,
+     w:"Income up, demand down defines an inferior good. Option C confuses a change in demand with a movement along the demand curve, and gets the direction wrong besides."},
+    {n:18, tag:"Normal goods", stem:"If restaurant meals are a normal good, a decrease in income will cause",
+     o:["an increase in the demand for restaurant meals.","a decrease in the demand for restaurant meals.","an increase in the supply of restaurant meals.","a decrease in the quantity demanded with no change in demand."], a:1,
+     w:"For a normal good, income and demand move together, so lower income shifts the demand curve leftward. Income is not the good's own price, so the curve shifts rather than the buyer moving along it — which rules out D."},
+    {n:19, fig:"demand", tag:"Movement vs. shift", stem:"In the figure above, an increase in the quantity demanded is represented by a movement from point e to",
+     o:["point g only.","point h only.","point f.","both points g and h."], a:2,
+     w:"A change in quantity demanded is a movement along one demand curve, caused by a change in the good's own price. Only f lies on the curve, at a lower price and a larger quantity. Points g and h are off the curve, so reaching either one requires demand itself to shift."},
+
+    // ---- Part D ----
+    {n:20, tag:"Quantity supplied", stem:"The quantity supplied of a good is",
+     o:["the same as the quantity demanded at every price.","the amount producers plan to sell at a particular price during a given time period.","the amount producers actually manage to sell.","the maximum a firm could produce if resources were free."], a:1,
+     w:"Quantity supplied is a planned amount, tied to one specific price and one time period. Buyers' and sellers' plans are both realized only at the equilibrium price — above it, sellers cannot sell everything they planned to."},
+    {n:21, fig:"supply", tag:"Supply price", stem:"In the figure above, what is the minimum supply price for the fourth bottle of maple syrup?",
+     o:["$3.00","$5.00","$6.00","$8.00"], a:2,
+     w:"Read the supply curve at a quantity of 4 bottles: $6.00. The minimum supply price of a unit is the lowest price at which a producer will offer it, which equals the marginal cost of producing it."},
+    {n:22, tag:"Shifts in supply", stem:"Which of the following shifts the supply curve of wheat rightward?",
+     o:["a rise in the price of wheat","an increase in the demand for bread","a shortage of wheat at the current price","a fall in the price of the fertilizer used to grow wheat"], a:3,
+     w:"A cheaper input lowers production cost, so more is supplied at every price. A change in wheat's own price moves the market along the supply curve, and a change in demand does not shift supply at all."},
+
+    // ---- Part E ----
+    {n:23, fig:"shift", tag:"Demand shift", stem:"The figure above shows the market for sugary breakfast cereal. A widely reported study links the cereal to weight gain, which buyers want to avoid. As a result,",
+     o:["the demand curve shifts from D₂ to D₁ and the supply curve does not shift.","the demand curve shifts from D₁ to D₂ and the supply curve shifts from S₁ to S₂.","the demand curve shifts from D₂ to D₁ and the supply curve shifts from S₂ to S₁.","the demand curve does not shift and the supply curve shifts from S₁ to S₂."], a:0,
+     w:"A change in preferences against the good decreases demand, which is the leftward shift from D₂ to D₁. Nothing happened to producers' costs or technology, so supply stays where it is. Price and quantity both fall."},
+    {n:24, fig:"shift", tag:"Supply shift", stem:"The figure above shows the market for lithium. A new extraction technology sharply lowers the cost of producing it. As a result,",
+     o:["the demand curve shifts from D₁ to D₂ and the supply curve does not shift.","the supply curve shifts from S₂ to S₁ and the demand curve does not shift.","the supply curve shifts from S₁ to S₂ and the demand curve does not shift.","both curves shift rightward."], a:2,
+     w:"Better technology increases supply, the rightward shift from S₁ to S₂. Buyers' willingness to pay has not changed, so demand does not move. Price falls and quantity rises."},
+    {n:25, fig:"shift", tag:"Supply shift", stem:"The figure above shows the market for orange juice. A hard freeze destroys a large share of the orange crop. As a result,",
+     o:["the demand curve shifts from D₂ to D₁ and the supply curve does not shift.","the supply curve shifts from S₂ to S₁ and the demand curve does not shift.","the supply curve shifts from S₁ to S₂ and the demand curve does not shift.","the demand curve shifts from D₁ to D₂ and the supply curve shifts from S₁ to S₂."], a:1,
+     w:"Losing the key input decreases supply — the leftward shift from S₂ to S₁. Demand is untouched, so price rises and quantity falls. The higher price is the result of the shift, not a second cause."},
+    {n:26, fig:"shift", tag:"Demand shift", stem:"The figure above shows the market for running shoes. A marathon craze sweeps the city and far more people take up running. As a result,",
+     o:["the demand curve for running shoes shifts from D₂ to D₁.","the supply curve of running shoes shifts from S₁ to S₂.","neither curve shifts; there is only a movement along the demand curve.","the demand curve for running shoes shifts from D₁ to D₂."], a:3,
+     w:"More buyers with a stronger preference increases demand, the rightward shift from D₁ to D₂. Option C is wrong because nothing acted on the price of shoes directly — the preference change shifted demand, and the higher price is the result of that shift, not its cause."},
+
+    // ---- Part F ----
+    {n:27, fig:"eq", tag:"Equilibrium", stem:"The equilibrium price in the figure above is",
+     o:["$4.","$6.","$8.","$10."], a:2,
+     w:"Equilibrium is where the curves cross. There, quantity demanded equals quantity supplied at 600 units and the price is $8."},
+    {n:28, fig:"eq", tag:"Equilibrium", stem:"The equilibrium quantity in the figure above is",
+     o:["400 units.","600 units.","800 units.","1,000 units."], a:1,
+     w:"The curves intersect at 600 units. At that quantity buyers' plans and sellers' plans match exactly, so there is no pressure on the price."},
+    {n:29, fig:"eq", tag:"Surplus", stem:"At a price of $12 in the figure above, there is",
+     o:["a surplus of 400 units.","a shortage of 400 units.","a surplus of 800 units.","a shortage of 800 units."], a:2,
+     w:"At $12, quantity demanded is 200 units and quantity supplied is 1,000 units. The excess of supply over demand is 800 units, and that surplus pushes the price down toward $8."},
+    {n:30, fig:"eq", tag:"Shortage", stem:"At a price of $6 in the figure above,",
+     o:["the quantity supplied is 800 units.","there is a surplus of 400 units.","the equilibrium quantity is 800 units.","there is a shortage of 400 units."], a:3,
+     w:"At $6, quantity demanded is 800 units and quantity supplied is 400 units, so 400 units are short. Note that 800 is the quantity demanded, not supplied, and the equilibrium quantity is still 600 — a price below equilibrium does not change where the curves cross."},
+    {n:31, fig:"eq", tag:"Comparative statics", stem:"If the good in the figure above is a normal good and buyers' incomes rise, the new equilibrium quantity",
+     o:["is less than 600 units.","is 600 units.","is more than 600 units.","could be less than, equal to, or more than 600 units."], a:2,
+     w:"Higher income increases demand for a normal good, shifting demand rightward along a fixed supply curve. Both the equilibrium price and the equilibrium quantity rise, so the quantity exceeds 600 units."},
+    {n:32, fig:"eq", tag:"Comparative statics", stem:"Starting from the curves in the figure above, a technological advance lowers the cost of producing the good. The new equilibrium price",
+     o:["is less than $8.","is $8.","is more than $8.","could be less than, equal to, or more than $8."], a:0,
+     w:"The advance increases supply, shifting the supply curve rightward while demand stays put. Price falls below $8 and quantity rises above 600 units."},
+    {n:33, fig:"eq", tag:"Comparative statics", stem:"Starting from the curves in the figure above, the price of a factor of production used to make the good rises. The new equilibrium price",
+     o:["is less than $8.","is $8.","is more than $8.","could be less than, equal to, or more than $8."], a:2,
+     w:"A costlier input decreases supply, shifting the supply curve leftward. Price rises above $8 and quantity falls below 600 units. The answer is determinate because only one curve moved."},
+
+    // ---- Part G ----
+    {n:34, tag:"Positive vs. normative", stem:"Which of the following is a positive statement?",
+     o:["The federal government should spend more on public transit.","A 10 percent increase in the cigarette tax reduces teen smoking by about 4 percent.","Reducing income inequality is the most important goal for policy.","Employers ought to pay a living wage."], a:1,
+     w:"A positive statement is a claim about what is, and it can be checked against evidence. The other three are value judgments about what ought to be, and no amount of data settles them."},
+    {n:35, tag:"Positive vs. normative", stem:"The statement “A rise in the minimum wage will reduce employment among teenagers” is",
+     o:["a normative statement.","a political statement.","an opinion that cannot be evaluated.","a positive statement."], a:3,
+     w:"It predicts what will happen, so evidence can confirm or refute it. A statement stays positive whether or not it turns out to be true — being testable is what counts."},
+    {n:36, tag:"Opportunity cost", stem:"Opportunity cost is best defined as",
+     o:["the dollar price paid for a good.","the highest-valued alternative forgone when a choice is made.","the money one person loses so that another may gain.","the total of every alternative given up when a choice is made."], a:1,
+     w:"Only the single best forgone alternative counts, which rules out D. And cost is measured in what you give up, which need not be money — time is the most common example."},
+    {n:37, tag:"Comparative statics", stem:"When the demand for a good decreases, its equilibrium price ________ and its equilibrium quantity ________.",
+     o:["rises; increases","rises; decreases","falls; increases","falls; decreases"], a:3,
+     w:"A leftward shift in demand along an upward-sloping supply curve lowers both price and quantity. Sketch it: the new intersection sits down and to the left of the old one."},
+    {n:38, tag:"Comparative statics", stem:"If good B is an inferior good and buyers' incomes increase, the equilibrium price of B ________ and the equilibrium quantity of B ________.",
+     o:["rises; increases","rises; decreases","falls; decreases","falls; increases"], a:2,
+     w:"Higher income decreases the demand for an inferior good, so demand shifts leftward and both price and quantity fall. The trap is assuming higher income always raises demand."},
+    {n:39, tag:"Scarcity", stem:"The fundamental economic problem is",
+     o:["inflation.","scarcity.","poverty.","unemployment."], a:1,
+     w:"Scarcity is the condition that makes economics necessary: wants exceed the resources available to satisfy them. Inflation, poverty, and unemployment are problems economies face, not the reason economics exists."},
+    {n:40, tag:"Scarcity", stem:"All economic questions arise because we",
+     o:["have unlimited wants but limited resources.","want more than we need.","have an abundance of resources.","have limited wants that are easily satisfied."], a:0,
+     w:"That gap between unlimited wants and limited resources is the definition of scarcity, and it is what makes every choice involve an opportunity cost."}
+  ];
+
+  var PARTS = [
+    {tag:"Part A", name:"Scarcity, Choice, and Opportunity Cost", from:1,  to:6},
+    {tag:"Part B", name:"Production Possibilities and Marginal Analysis", from:7,  to:12},
+    {tag:"Part C", name:"Demand", from:13, to:19},
+    {tag:"Part D", name:"Supply", from:20, to:22},
+    {tag:"Part E", name:"Shifts in Demand and Supply", from:23, to:26},
+    {tag:"Part F", name:"Market Equilibrium", from:27, to:33},
+    {tag:"Part G", name:"Positive Analysis and Review", from:34, to:40}
+  ];
+
+  var FIGCAP = {
+    ppf:    "Figure 1 · Production possibilities frontier — used for questions 7–9",
+    mbmc:   "Figure 2 · Marginal benefit and marginal cost — used for questions 11–12",
+    demand: "Figure 3 · A demand curve — used for question 19",
+    supply: "Figure 4 · Supply of maple syrup — used for question 21",
+    shift:  "Figure 5 · Shifts in demand and supply — used for questions 23–26",
+    eq:     "Figure 6 · Market equilibrium — used for questions 27–33"
+  };
+
+  var LTR = ["A","B","C","D"];
+  var KEY = "acc-econ2302-practice-exam1-v1";
+  var answers = new Array(40).fill(null);
+  var revealed = new Array(40).fill(false);
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(!raw) return;
+      var v = JSON.parse(raw);
+      if(Array.isArray(v) && v.length === 40) answers = v;
+    }catch(e){}
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(answers)); }catch(e){}
+  }
+
+  function figure(key){
+    var tpl = document.getElementById("fig-" + key);
+    var fig = document.createElement("figure");
+    fig.className = "plate";
+    var sc = document.createElement("div");
+    sc.className = "scroller";
+    sc.appendChild(tpl.content.cloneNode(true));
+    fig.appendChild(sc);
+    var cap = document.createElement("figcaption");
+    cap.textContent = FIGCAP[key];
+    fig.appendChild(cap);
+    return fig;
+  }
+
+  function questionNode(q){
+    var idx = q.n - 1;
+    var el = document.createElement("article");
+    el.className = "q";
+    el.id = "q" + q.n;
+
+    var head = document.createElement("div");
+    head.className = "q-head";
+    var num = document.createElement("span");
+    num.className = "q-num";
+    num.textContent = String(q.n).padStart(2, "0");
+    var tag = document.createElement("span");
+    tag.className = "q-tag";
+    tag.textContent = q.tag;
+    head.appendChild(num);
+    head.appendChild(tag);
+    el.appendChild(head);
+
+    var stem = document.createElement("p");
+    stem.className = "stem";
+    stem.textContent = q.stem;
+    el.appendChild(stem);
+
+    var opts = document.createElement("div");
+    opts.className = "opts";
+    q.o.forEach(function(text, i){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.dataset.i = String(i);
+      var l = document.createElement("span");
+      l.className = "ltr";
+      l.textContent = LTR[i] + ".";
+      var t = document.createElement("span");
+      t.textContent = text;
+      b.appendChild(l);
+      b.appendChild(t);
+      b.addEventListener("click", function(){
+        if(answers[idx] !== null) return;
+        answers[idx] = i;
+        save();
+        startTimer();
+        mark(el, q);
+        tally();
+      });
+      opts.appendChild(b);
+    });
+    el.appendChild(opts);
+
+    var why = document.createElement("div");
+    why.className = "why";
+    why.hidden = true;
+    var lab = document.createElement("b");
+    lab.textContent = "Why";
+    var body = document.createElement("span");
+    body.textContent = q.w;
+    why.appendChild(lab);
+    why.appendChild(body);
+    el.appendChild(why);
+
+    if(answers[idx] !== null || revealed[idx]) mark(el, q);
+    return el;
+  }
+
+  function mark(el, q){
+    var idx = q.n - 1;
+    var chosen = answers[idx];
+    el.classList.add("done");
+    var buttons = el.querySelectorAll(".opt");
+    for(var i = 0; i < buttons.length; i++){
+      var b = buttons[i];
+      b.classList.remove("is-correct", "is-wrong");
+      var old = b.querySelector(".flag");
+      if(old) old.remove();
+      if(i === q.a){
+        b.classList.add("is-correct");
+        addFlag(b, chosen === null ? "Revealed" : (chosen === q.a ? "Correct" : "Correct answer"));
+      } else if(i === chosen){
+        b.classList.add("is-wrong");
+        addFlag(b, "Your answer");
+      }
+    }
+    el.querySelector(".why").hidden = false;
+  }
+
+  function addFlag(b, text){
+    var f = document.createElement("span");
+    f.className = "flag";
+    f.textContent = text;
+    b.appendChild(f);
+  }
+
+  function tally(){
+    var done = 0, right = 0;
+    for(var i = 0; i < 40; i++){
+      if(answers[i] === null) continue;
+      done++;
+      if(answers[i] === Q[i].a) right++;
+    }
+    document.getElementById("answered").textContent = String(done);
+    document.getElementById("score").textContent = String(right);
+    document.getElementById("pbar").style.width = (done / 40 * 100) + "%";
+
+    var res = document.getElementById("result");
+    if(done === 40){
+      res.hidden = false;
+      var pct = Math.round(right / 40 * 100);
+      document.getElementById("result-score").textContent = right + " / 40  ·  " + pct + "%";
+      var note = pct >= 90 ? "Exam-ready. Skim the rationales on anything you guessed."
+               : pct >= 80 ? "Solid. Work the two weakest parts below before the exam."
+               : pct >= 70 ? "Passing, but the graph questions will decide your grade. Redo Parts B and F."
+               : "Rebuild the fundamentals: opportunity cost, movement vs. shift, and reading equilibrium off a graph.";
+      document.getElementById("result-note").textContent = note;
+      var bd = document.getElementById("result-breakdown");
+      bd.textContent = "";
+      PARTS.forEach(function(p){
+        var c = 0, tot = p.to - p.from + 1;
+        for(var k = p.from; k <= p.to; k++){ if(answers[k-1] === Q[k-1].a) c++; }
+        var row = document.createElement("div");
+        row.className = "brow";
+        var nm = document.createElement("span");
+        nm.className = "bname";
+        nm.textContent = p.name;
+        var bar = document.createElement("span");
+        bar.className = "bbar";
+        var fill = document.createElement("i");
+        fill.style.width = (c / tot * 100) + "%";
+        bar.appendChild(fill);
+        var n = document.createElement("span");
+        n.className = "bnum";
+        n.textContent = c + "/" + tot;
+        row.appendChild(nm);
+        row.appendChild(bar);
+        row.appendChild(n);
+        bd.appendChild(row);
+      });
+    } else {
+      res.hidden = true;
+    }
+  }
+
+  function render(){
+    var main = document.getElementById("exam");
+    main.textContent = "";
+    PARTS.forEach(function(p){
+      var sec = document.createElement("section");
+      sec.className = "part";
+      var h = document.createElement("div");
+      h.className = "part-head";
+      var t = document.createElement("span");
+      t.className = "part-tag";
+      t.textContent = p.tag;
+      var h2 = document.createElement("h2");
+      h2.textContent = p.name;
+      var r = document.createElement("span");
+      r.className = "part-range";
+      r.textContent = "Q" + p.from + "–" + p.to;
+      h.appendChild(t);
+      h.appendChild(h2);
+      h.appendChild(r);
+      sec.appendChild(h);
+
+      var lastFig = null;
+      for(var k = p.from; k <= p.to; k++){
+        var q = Q[k-1];
+        if(q.fig && q.fig !== lastFig){
+          sec.appendChild(figure(q.fig));
+          lastFig = q.fig;
+        }
+        if(!q.fig) lastFig = null;
+        sec.appendChild(questionNode(q));
+      }
+      main.appendChild(sec);
+    });
+    tally();
+  }
+
+  // ---------- timer ----------
+  var remaining = 50 * 60, ticking = false, handle = null;
+  function paint(){
+    var m = Math.floor(remaining / 60), s = remaining % 60;
+    var c = document.getElementById("clock");
+    c.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+    c.classList.toggle("low", remaining <= 300);
+  }
+  function startTimer(){
+    if(ticking) return;
+    ticking = true;
+    document.getElementById("btn-timer").textContent = "Pause timer";
+    handle = setInterval(function(){
+      remaining--;
+      if(remaining <= 0){
+        remaining = 0;
+        stopTimer();
+        document.getElementById("clock").textContent = "time up";
+      }
+      paint();
+    }, 1000);
+  }
+  function stopTimer(){
+    ticking = false;
+    if(handle) clearInterval(handle);
+    handle = null;
+    document.getElementById("btn-timer").textContent = "Start timer";
+  }
+
+  document.getElementById("btn-timer").addEventListener("click", function(){
+    if(ticking) stopTimer(); else startTimer();
+  });
+  document.getElementById("btn-reset").addEventListener("click", function(){
+    answers = new Array(40).fill(null);
+    revealed = new Array(40).fill(false);
+    save();
+    stopTimer();
+    remaining = 50 * 60;
+    paint();
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.getElementById("btn-reveal").addEventListener("click", function(){
+    for(var i = 0; i < 40; i++){ if(answers[i] === null) revealed[i] = true; }
+    render();
+  });
+
+  load();
+  render();
+  paint();
+})();
+</script>
+</body>
+</html>

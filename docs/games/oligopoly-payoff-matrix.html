@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oligopoly Payoff Matrix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f0f14;
+    color: #e8e4d9;
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.1rem;
+    color: #f0ebe0;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 0.72rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #5c6475;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  /* Scenario switcher */
+  .scenario-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .scenario-btn {
+    background: transparent;
+    border: 1px solid #252530;
+    color: #5c6475;
+    padding: 7px 18px;
+    border-radius: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .scenario-btn:hover { border-color: #c8a96e; color: #c8a96e; }
+  .scenario-btn.active {
+    background: #c8a96e;
+    border-color: #c8a96e;
+    color: #0f0f14;
+    font-weight: 600;
+  }
+
+  /* Matrix layout */
+  .matrix-container {
+    display: flex;
+    gap: 0;
+    max-width: 640px;
+    width: 100%;
+  }
+
+  .side-axis {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #4a9eff66;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 8px;
+    white-space: nowrap;
+  }
+
+  .matrix-body { flex: 1; }
+
+  .col-headers {
+    display: grid;
+    grid-template-columns: 130px 1fr 1fr;
+    margin-bottom: 0;
+  }
+
+  .col-spacer {}
+
+  .col-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #c8a96e55;
+  }
+
+  .firm-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: #c8a96e;
+    margin-bottom: 2px;
+  }
+
+  .strat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: #4a5060;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .data-rows { display: grid; grid-template-rows: 1fr 1fr; }
+
+  .data-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 1fr;
+  }
+
+  .row-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    padding-right: 16px;
+    border-right: 2px solid #4a9eff55;
+    gap: 3px;
+    min-height: 120px;
+  }
+
+  .row-firm-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: #4a9eff;
+  }
+
+  .row-strat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: #4a5060;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* Cells */
+  .cell {
+    border: 1px solid #1a1a24;
+    position: relative;
+    min-height: 120px;
+    cursor: default;
+    transition: border-color 0.2s;
+    overflow: hidden;
+  }
+
+  .cell:hover { border-color: #2e2e40; }
+
+  .cell-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 120px;
+    position: relative;
+  }
+
+  .top-right {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 12px 14px 0 14px;
+  }
+
+  .bottom-left {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0 14px 12px 14px;
+  }
+
+  .diag-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .payoff { display: flex; flex-direction: column; align-items: center; }
+
+  .payoff-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.45rem;
+    font-weight: 600;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+
+  .payoff-who {
+    font-size: 0.6rem;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.1em;
+    opacity: 0.45;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .payoff-b .payoff-val { color: #c8a96e; }
+  .payoff-a .payoff-val { color: #4a9eff; }
+
+  /* Nash badge */
+  .nash-badge {
+    position: absolute;
+    bottom: 7px; right: 7px;
+    background: #e8415a;
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    border-radius: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .cell.nash { background: #e8415a07; border-color: #e8415a33; }
+  .cell.nash .nash-badge { opacity: 1; }
+
+  /* Hover tooltip */
+  .cell-tip {
+    position: absolute;
+    top: 5px; left: 5px;
+    background: #0c0c12ee;
+    border: 1px solid #252530;
+    padding: 5px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.61rem;
+    color: #7a8499;
+    pointer-events: none;
+    white-space: nowrap;
+    line-height: 1.55;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 5;
+  }
+
+  .cell:hover .cell-tip { opacity: 1; }
+
+  /* Bottom axis */
+  .bottom-axis {
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c8a96e66;
+    padding-top: 10px;
+    grid-column: 2 / 4;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 24px;
+    margin-top: 26px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.72rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #5c6475;
+    letter-spacing: 0.04em;
+  }
+
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+  /* Insight */
+  .insight-box {
+    margin-top: 22px;
+    max-width: 640px;
+    width: 100%;
+    border: 1px solid #1a1a24;
+    border-left: 3px solid #e8415a;
+    padding: 14px 20px;
+    background: #0c0c12;
+  }
+
+  .insight-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e8415a;
+    margin-bottom: 7px;
+  }
+
+  .insight-text {
+    font-size: 0.82rem;
+    color: #8a9099;
+    line-height: 1.65;
+  }
+</style>
+</head>
+<body>
+
+<h1>Oligopoly Payoff Matrix</h1>
+<p class="subtitle">Game Theory · Strategic Interaction · Nash Equilibrium</p>
+
+<div class="scenario-bar">
+  <button class="scenario-btn active" onclick="setScenario('price', this)">Price War</button>
+  <button class="scenario-btn" onclick="setScenario('advertise', this)">Advertising</button>
+  <button class="scenario-btn" onclick="setScenario('cartel', this)">Cartel / Collusion</button>
+</div>
+
+<div class="matrix-container">
+  <div class="side-axis">Firm A's Strategy →</div>
+  <div class="matrix-body">
+
+    <!-- Column headers -->
+    <div class="col-headers">
+      <div class="col-spacer"></div>
+      <div class="col-header">
+        <span class="firm-label">Firm B</span>
+        <span class="strat-label" id="colHead1">Low Price</span>
+      </div>
+      <div class="col-header">
+        <span class="firm-label">&nbsp;</span>
+        <span class="strat-label" id="colHead2">High Price</span>
+      </div>
+    </div>
+
+    <!-- Data rows -->
+    <div class="data-rows">
+
+      <!-- Row 1 -->
+      <div class="data-row">
+        <div class="row-header">
+          <span class="row-firm-label">Firm A</span>
+          <span class="row-strat-label" id="rowHead1">Low Price</span>
+        </div>
+
+        <!-- Cell (0,0) -->
+        <div class="cell nash" id="cell-00">
+          <div class="cell-inner">
+            <div class="top-right">
+              <div class="payoff payoff-b">
+                <span class="payoff-val" id="v-00-b">3</span>
+                <span class="payoff-who">Firm B</span>
+              </div>
+            </div>
+            <svg class="diag-svg" viewBox="0 0 200 120" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="200" y2="120" stroke="#222232" stroke-width="1.5"/>
+            </svg>
+            <div class="bottom-left">
+              <div class="payoff payoff-a">
+                <span class="payoff-val" id="v-00-a">3</span>
+                <span class="payoff-who">Firm A</span>
+              </div>
+            </div>
+          </div>
+          <div class="nash-badge">Nash ★</div>
+          <div class="cell-tip" id="tip-00">Both compete aggressively<br>Mutual low profits</div>
+        </div>
+
+        <!-- Cell (0,1) -->
+        <div class="cell" id="cell-01">
+          <div class="cell-inner">
+            <div class="top-right">
+              <div class="payoff payoff-b">
+                <span class="payoff-val" id="v-01-b">1</span>
+                <span class="payoff-who">Firm B</span>
+              </div>
+            </div>
+            <svg class="diag-svg" viewBox="0 0 200 120" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="200" y2="120" stroke="#222232" stroke-width="1.5"/>
+            </svg>
+            <div class="bottom-left">
+              <div class="payoff payoff-a">
+                <span class="payoff-val" id="v-01-a">5</span>
+                <span class="payoff-who">Firm A</span>
+              </div>
+            </div>
+          </div>
+          <div class="nash-badge">Nash ★</div>
+          <div class="cell-tip" id="tip-01">A undercuts B<br>A gains market share</div>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="data-row">
+        <div class="row-header">
+          <span class="row-firm-label">&nbsp;</span>
+          <span class="row-strat-label" id="rowHead2">High Price</span>
+        </div>
+
+        <!-- Cell (1,0) -->
+        <div class="cell" id="cell-10">
+          <div class="cell-inner">
+            <div class="top-right">
+              <div class="payoff payoff-b">
+                <span class="payoff-val" id="v-10-b">5</span>
+                <span class="payoff-who">Firm B</span>
+              </div>
+            </div>
+            <svg class="diag-svg" viewBox="0 0 200 120" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="200" y2="120" stroke="#222232" stroke-width="1.5"/>
+            </svg>
+            <div class="bottom-left">
+              <div class="payoff payoff-a">
+                <span class="payoff-val" id="v-10-a">1</span>
+                <span class="payoff-who">Firm A</span>
+              </div>
+            </div>
+          </div>
+          <div class="nash-badge">Nash ★</div>
+          <div class="cell-tip" id="tip-10">B undercuts A<br>B gains market share</div>
+        </div>
+
+        <!-- Cell (1,1) -->
+        <div class="cell" id="cell-11">
+          <div class="cell-inner">
+            <div class="top-right">
+              <div class="payoff payoff-b">
+                <span class="payoff-val" id="v-11-b">4</span>
+                <span class="payoff-who">Firm B</span>
+              </div>
+            </div>
+            <svg class="diag-svg" viewBox="0 0 200 120" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="200" y2="120" stroke="#222232" stroke-width="1.5"/>
+            </svg>
+            <div class="bottom-left">
+              <div class="payoff payoff-a">
+                <span class="payoff-val" id="v-11-a">4</span>
+                <span class="payoff-who">Firm A</span>
+              </div>
+            </div>
+          </div>
+          <div class="nash-badge">Nash ★</div>
+          <div class="cell-tip" id="tip-11">Both cooperate tacitly<br>Mutual high profits</div>
+        </div>
+      </div>
+
+    </div><!-- /data-rows -->
+
+    <!-- Bottom axis label -->
+    <div style="display:grid;grid-template-columns:130px 1fr 1fr;">
+      <div></div>
+      <div class="bottom-axis" style="grid-column:2/4;">Firm B's Strategy →</div>
+    </div>
+
+  </div><!-- /matrix-body -->
+</div><!-- /matrix-container -->
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#4a9eff"></div> Firm A's payoff (bottom-left)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#c8a96e"></div> Firm B's payoff (top-right)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e8415a"></div> Nash Equilibrium</div>
+</div>
+
+<div class="insight-box">
+  <div class="insight-title" id="insightTitle">Price War · Prisoner's Dilemma</div>
+  <div class="insight-text" id="insightText">
+    Both firms are tempted to cut prices to steal market share. The Nash Equilibrium (Low, Low) yields only <strong style="color:#e8e4d9">3, 3</strong> — but mutual cooperation at (High, High) would yield <strong style="color:#e8e4d9">4, 4</strong>. This is the classic <strong style="color:#e8e4d9">Prisoner's Dilemma</strong>: individual rationality leads to a collectively worse outcome.
+  </div>
+</div>
+
+<script>
+const scenarios = {
+  price: {
+    col1: 'Low Price', col2: 'High Price',
+    row1: 'Low Price', row2: 'High Price',
+    cells: {
+      '00': { a: 3, b: 3, nash: true,  tip: 'Both compete aggressively<br>Mutual low profits' },
+      '01': { a: 5, b: 1, nash: false, tip: 'A undercuts B<br>A gains market share' },
+      '10': { a: 1, b: 5, nash: false, tip: 'B undercuts A<br>B gains market share' },
+      '11': { a: 4, b: 4, nash: false, tip: 'Both cooperate tacitly<br>Mutual high profits' },
+    },
+    title: "Price War · Prisoner's Dilemma",
+    insight: 'Both firms are tempted to cut prices to steal market share. The Nash Equilibrium (Low, Low) yields only <strong style="color:#e8e4d9">3, 3</strong> — but mutual cooperation at (High, High) would yield <strong style="color:#e8e4d9">4, 4</strong>. This is the classic <strong style="color:#e8e4d9">Prisoner\'s Dilemma</strong>: individual rationality leads to a collectively worse outcome.'
+  },
+  advertise: {
+    col1: 'Advertise', col2: "Don't Advertise",
+    row1: 'Advertise', row2: "Don't Advertise",
+    cells: {
+      '00': { a: 2, b: 2, nash: true,  tip: 'Both spend on ads<br>Cancel each other out' },
+      '01': { a: 6, b: 0, nash: false, tip: 'Only A advertises<br>A dominates market' },
+      '10': { a: 0, b: 6, nash: false, tip: 'Only B advertises<br>B dominates market' },
+      '11': { a: 4, b: 4, nash: false, tip: 'Neither advertises<br>Shared market, low cost' },
+    },
+    title: 'Advertising Game · Dominant Strategy',
+    insight: 'Advertising is a <strong style="color:#e8e4d9">dominant strategy</strong> for each firm — regardless of what the rival does, advertising yields a higher individual payoff. Yet when both advertise, profits (2, 2) are lower than if neither did (4, 4). Wasteful ad arms races are the predicted equilibrium.'
+  },
+  cartel: {
+    col1: 'Cheat', col2: 'Cooperate',
+    row1: 'Cheat', row2: 'Cooperate',
+    cells: {
+      '00': { a: 1, b: 1, nash: true,  tip: 'Cartel collapses<br>Both defect' },
+      '01': { a: 7, b: 0, nash: false, tip: 'A cheats on agreement<br>A profits, B loses' },
+      '10': { a: 0, b: 7, nash: false, tip: 'B cheats on agreement<br>B profits, A loses' },
+      '11': { a: 5, b: 5, nash: false, tip: 'Cartel holds<br>Shared monopoly profits' },
+    },
+    title: 'Cartel Stability · Collusion Dilemma',
+    insight: 'Cartels are <strong style="color:#e8e4d9">inherently unstable</strong>. Each firm has a strong incentive to secretly cheat and capture extra profits. The Nash Equilibrium — mutual defection (1, 1) — is far worse than the cartel outcome (5, 5), explaining why antitrust authorities focus on preventing and breaking up collusion.'
+  }
+};
+
+function setScenario(key, btn) {
+  const s = scenarios[key];
+  document.getElementById('colHead1').textContent = s.col1;
+  document.getElementById('colHead2').textContent = s.col2;
+  document.getElementById('rowHead1').textContent = s.row1;
+  document.getElementById('rowHead2').textContent = s.row2;
+
+  ['00','01','10','11'].forEach(id => {
+    const d = s.cells[id];
+    document.getElementById('v-' + id + '-a').textContent = d.a;
+    document.getElementById('v-' + id + '-b').textContent = d.b;
+    document.getElementById('tip-' + id).innerHTML = d.tip;
+    const cell = document.getElementById('cell-' + id);
+    cell.classList.toggle('nash', d.nash);
+  });
+
+  document.getElementById('insightTitle').textContent = s.title;
+  document.getElementById('insightText').innerHTML = s.insight;
+
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

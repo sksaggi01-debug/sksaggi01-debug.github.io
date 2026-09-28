@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Econ Arcade — Instructor Guide</title>
+<style>*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d1117; --panel:#161b26; --panel2:#1c2231; --line:#2a3345;
+  --ink:#e8edf7; --dim:#93a1bd; --acc:#5aa9ff; --acc2:#ffc65a;
+  --good:#3ddc97; --bad:#ff6b6b; --pur:#b78cff;
+  --r:14px; --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--f);
+  font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+body{padding:14px 14px 40px;max-width:820px;margin:0 auto}
+h1{font-size:1.5rem;margin:.1em 0 .1em;letter-spacing:-.02em}
+h2{font-size:1.1rem;margin:0 0 .4em}
+.sub{color:var(--dim);font-size:.86rem;margin:0 0 14px}
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--acc);
+  border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0}
+.card.tight{padding:10px 12px}
+button{font-family:var(--f);font-size:1rem;cursor:pointer}
+.btn{display:block;width:100%;background:var(--acc);color:#06213d;border:0;border-radius:12px;
+  padding:14px 16px;font-weight:800;margin:8px 0;transition:transform .06s,filter .15s}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sec{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:var(--acc2);color:#3a2a00}
+.choice{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;margin:8px 0;font-weight:600;
+  transition:border-color .12s,background .12s}
+.choice:hover{border-color:var(--acc)}
+.choice.right{border-color:var(--good);background:rgba(61,220,151,.14)}
+.choice.wrong{border-color:var(--bad);background:rgba(255,107,107,.14)}
+.choice .k{display:inline-block;width:24px;color:var(--dim);font-weight:800}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1}
+input,select{font-family:var(--f);font-size:1rem;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:10px;padding:12px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:1px}
+label{display:block;font-size:.8rem;color:var(--dim);margin:10px 0 4px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.4rem;font-weight:800;
+  letter-spacing:.28em;color:var(--acc2);text-align:center;margin:6px 0 2px}
+.bar{height:9px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .25s}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:.92rem}
+.hud .t{color:var(--acc2)}
+canvas{width:100%;height:auto;display:block;background:#0a0e15;border:1px solid var(--line);border-radius:10px;margin:6px 0}
+.lb{margin:6px 0}
+.lb .r{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--panel2);margin:5px 0}
+.lb .r.me{outline:1.5px solid var(--acc)}
+.lb .r .p{width:22px;color:var(--dim);font-weight:800}
+.lb .r .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .r .s{font-weight:800;color:var(--acc2)}
+.lb .r .dn{font-size:.7rem;color:var(--good);font-weight:800}
+.fb{border-radius:12px;padding:11px 13px;margin:10px 0;font-size:.93rem;border:1px solid}
+.fb.g{background:rgba(61,220,151,.1);border-color:rgba(61,220,151,.5)}
+.fb.b{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.5)}
+.fb b{display:block;margin-bottom:3px}
+.note{font-size:.82rem;color:var(--dim)}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:800;
+  background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+.pill.on{color:var(--good);border-color:rgba(61,220,151,.5)}
+.pill.off{color:var(--acc2);border-color:rgba(255,198,90,.5)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{background:var(--panel2);color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}
+.big{font-size:2.6rem;font-weight:800;text-align:center;color:var(--acc2);margin:4px 0}
+.ctr{text-align:center}
+.sl{width:100%;margin:10px 0}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;padding:0;border:0;height:34px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;background:var(--panel2);border-radius:99px;border:1px solid var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:30px;width:30px;border-radius:50%;
+  background:var(--acc);margin-top:-12px;border:3px solid #0d1117}
+input[type=range]::-moz-range-track{height:8px;background:var(--panel2);border-radius:99px}
+input[type=range]::-moz-range-thumb{height:26px;width:26px;border-radius:50%;background:var(--acc);border:3px solid #0d1117}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line);font-size:.92rem}
+.kv:last-child{border:0}
+.kv b{color:var(--acc2)}
+.hide{display:none!important}
+.fade{animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+footer{color:var(--dim);font-size:.75rem;text-align:center;margin-top:22px}
+</style>
+</head><body>
+<div id="app">
+<span class="tag">Instructor guide</span>
+<h1>Econ Arcade — how to run these in class</h1>
+<p class="sub">Ten browser games for Principles of Macroeconomics. Each is built for a <b>10-minute block</b>: about a minute to get everyone in, four to five minutes of play, and three to four minutes of debrief — which is where most of the learning actually happens.</p>
+
+<div class="card">
+<h2>The 60-second version</h2>
+<p class="note">Post the <code>.html</code> file in Blackboard as a content item. Students click it, type a name, and either <b>create a room</b> (they read the 4-letter code aloud) or <b>join</b> with that code. Everyone gets the identical rounds in the same order, and the live scoreboard updates as they play. No downloads, no accounts, no logins — works on any phone or laptop.</p>
+</div>
+
+<div class="card">
+<h2>Before the first time you use these</h2>
+<p class="note">Open <b>connection-test.html</b> on the campus wifi you will actually be teaching on, on two devices. It tells you in about five seconds whether the live relay works there.</p>
+<p class="note">If it is blocked — some campus networks filter it — nothing breaks. Every game has a <b>Pass-and-play</b> button on the first screen: two to four students share one device, each plays the same set of rounds in turn, and the app compares their scores at the end. Pair work, zero network. Plan for pairs and you are safe either way.</p>
+</div>
+
+<div class="card">
+<h2>Running a round</h2>
+<div class="kv"><span><b>0:00</b> Post the link, say the room code out loud</span><b>1 min</b></div>
+<div class="kv"><span><b>1:00</b> Anyone presses Start — play</span><b>4–5 min</b></div>
+<div class="kv"><span><b>6:00</b> Put the winner's screen up, run the debrief questions</span><b>3–4 min</b></div>
+<p class="note" style="margin-top:10px">The debrief questions are printed on the results screen of every game, so students see them at the same moment you do. The single highest-value question is almost always: <i>"Which round split the room, and why?"</i></p>
+</div>
+
+<div class="card">
+<h2>The ten games</h2>
+<table>
+<tr><th>File</th><th>Game</th><th>Chapter</th><th>Drills</th></tr>
+<tr><td>g01</td><td>Marginal Call</td><td>1</td><td>MB vs MC, opportunity cost, sunk cost, positive vs normative</td></tr>
+<tr><td>g02</td><td>PPF Showdown</td><td>2</td><td>Reading the frontier, increasing opportunity cost, comparative advantage</td></tr>
+<tr><td>g03</td><td>Shift or Slide</td><td>3</td><td>Which curve shifts, shift vs movement along, ceilings and floors</td></tr>
+<tr><td>g04</td><td>GDP Sprint</td><td>4</td><td>C / I / G / NX or not counted, value added, real vs nominal</td></tr>
+<tr><td>g05</td><td>Jobs &amp; Prices Lab</td><td>5</td><td>Unemployment arithmetic, types of unemployment, CPI, real wages</td></tr>
+<tr><td>g06</td><td>Growth Engine <span class="pill">sim</span></td><td>6</td><td>Invest vs consume over four decades, diminishing returns, rule of 70</td></tr>
+<tr><td>g07</td><td>Money Machine</td><td>8</td><td>M1 vs M2, money multiplier, MV = PY, real vs nominal interest</td></tr>
+<tr><td>g08</td><td>AS–AD Architect</td><td>10 &amp; 12</td><td>AD / SAS / LAS shocks, output gaps, demand-pull vs cost-push</td></tr>
+<tr><td>g09</td><td>Fiscal Fix <span class="pill">sim</span></td><td>13</td><td>Close a $600B gap; multipliers, lags, stabilizers, debt</td></tr>
+<tr><td>g10</td><td>Fed Chair Faceoff <span class="pill">sim</span></td><td>14</td><td>Set the funds rate; real vs nominal, lags, the supply-shock dilemma</td></tr>
+</table>
+<p class="note">The seven quiz games draw 8 rounds from a bank of 12, so a second play in the same room code gives a different mix. The three marked <b>sim</b> are multi-turn decision games and are the ones worth 12–15 minutes if you have the room.</p>
+</div>
+
+<div class="card">
+<h2>What the sims are secretly teaching</h2>
+<p class="note"><b>Growth Engine.</b> Pure strategies lose. All-consumption ends up poor; all-capital hits diminishing returns and never enjoys anything. The winners balance, and technology only pays off if education came first — which is the point.</p>
+<p class="note"><b>Fiscal Fix.</b> Doing nothing scores about 400. Overspending scores under 100. A well-judged $300–400B in year one scores over 900. Students discover the lag problem by overshooting into inflation.</p>
+<p class="note"><b>Fed Chair Faceoff.</b> Starts at 5.5% inflation. A 6% nominal rate feels aggressive but is <i>loose</i> in real terms — most students learn this the hard way in quarter two. The scoring floor is set so that even a perfect path cannot avoid some unemployment: that unavoidable cost is the sacrifice ratio, and it makes for a good closing discussion.</p>
+</div>
+
+<div class="card">
+<h2>Troubleshooting</h2>
+<div class="kv"><span>Other players do not appear</span><b>relay blocked → pass-and-play</b></div>
+<div class="kv"><span>Someone joined late</span><b>they can play; scores still post</b></div>
+<div class="kv"><span>Two groups want separate games</span><b>different codes = different rooms</b></div>
+<div class="kv"><span>Blackboard shows the code instead of the page</span><b>upload as a file item, not a page paste</b></div>
+<div class="kv"><span>Want a fresh set of rounds</span><b>create a new room code</b></div>
+</div>
+
+<div class="card">
+<h2>Grading, if you want to</h2>
+<p class="note">Nothing is recorded anywhere — no accounts means no gradebook. If you want participation credit, have students screenshot their results screen and drop it in a Blackboard assignment, or simply record the top three each round on paper. The games are designed as formative practice, not assessment.</p>
+</div>
+
+<footer>Econ Arcade &middot; ACC Principles of Macroeconomics &middot; every file is self-contained and works offline once loaded</footer>
+</div>
+
+
+</body></html>

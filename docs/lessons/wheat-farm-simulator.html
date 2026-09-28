@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheat Farm Simulator — Perfect Competition</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wheat: #D4A853;
+    --wheat-light: #F5DFA0;
+    --wheat-pale: #FDF6E3;
+    --soil: #3D2B1F;
+    --soil-mid: #6B4226;
+    --sky: #4A7C9E;
+    --sky-light: #B8D4E8;
+    --green: #5A7A3A;
+    --red: #C0392B;
+    --profit: #2E7D32;
+    --loss: #C62828;
+    --ink: #1A1208;
+    --paper: #FEFAF2;
+    --rule: #D4C4A0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* Header */
+  header {
+    background: var(--soil);
+    color: var(--wheat-light);
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 4px solid var(--wheat);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: '🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾🌾';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    font-size: 1.4rem;
+    letter-spacing: 0.1rem;
+    opacity: 0.25;
+    white-space: nowrap;
+  }
+
+  .header-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--wheat-light);
+  }
+
+  header p {
+    margin-top: 0.5rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--sky-light);
+    font-size: 0.95rem;
+  }
+
+  /* Progress Bar */
+  .progress-bar-wrap {
+    background: var(--soil);
+    padding: 0.6rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 2px solid var(--wheat);
+  }
+
+  .progress-steps {
+    display: flex;
+    gap: 0.3rem;
+    flex: 1;
+  }
+
+  .step-pip {
+    flex: 1;
+    height: 5px;
+    border-radius: 2px;
+    background: var(--soil-mid);
+    transition: background 0.4s ease;
+  }
+  .step-pip.done { background: var(--wheat); }
+  .step-pip.active { background: var(--wheat-light); }
+
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--wheat);
+    white-space: nowrap;
+    letter-spacing: 0.1em;
+  }
+
+  /* Main layout */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* Activity Card */
+  .activity {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .activity.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section label */
+  .act-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--soil-mid);
+    margin-bottom: 0.4rem;
+  }
+
+  .act-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--soil);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .act-intro {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #3D3020;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+    font-style: italic;
+  }
+
+  /* Info box */
+  .info-box {
+    background: #FFF9EC;
+    border-left: 3px solid var(--wheat);
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1.2rem;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--soil);
+  }
+  .info-box strong { color: var(--soil-mid); }
+
+  /* Divider */
+  hr.wheat-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 1.5rem 0;
+  }
+
+  /* ========== ACTIVITY 1: Market Scenario Poll ========== */
+  .scenario-grid {
+    display: grid;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .scenario-btn {
+    background: white;
+    border: 2px solid var(--rule);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    transition: all 0.2s;
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    line-height: 1.5;
+  }
+
+  .scenario-btn:hover {
+    border-color: var(--wheat);
+    background: var(--wheat-pale);
+  }
+
+  .scenario-btn.selected {
+    border-color: var(--soil);
+    background: var(--wheat-light);
+  }
+
+  .scenario-btn.correct {
+    border-color: var(--profit);
+    background: #E8F5E9;
+  }
+
+  .scenario-btn.wrong {
+    border-color: var(--loss);
+    background: #FFEBEE;
+  }
+
+  .choice-letter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    background: var(--soil);
+    color: var(--wheat-light);
+    border-radius: 3px;
+    padding: 0.1rem 0.4rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  .scenario-btn.correct .choice-letter { background: var(--profit); }
+  .scenario-btn.wrong .choice-letter { background: var(--loss); }
+
+  .feedback-box {
+    display: none;
+    padding: 1rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: #E8F5E9; border: 1.5px solid var(--profit); color: #1B5E20; }
+  .feedback-box.wrong-fb { background: #FFEBEE; border: 1.5px solid var(--loss); color: #7F1313; }
+
+  /* ========== ACTIVITY 2: Slider Simulator ========== */
+  .farm-display {
+    background: var(--soil);
+    border-radius: 10px;
+    padding: 1.5rem;
+    color: var(--wheat-light);
+    margin-bottom: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .farm-display::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40px;
+    background: repeating-linear-gradient(90deg, var(--soil-mid) 0, var(--soil-mid) 6px, transparent 6px, transparent 14px);
+    opacity: 0.3;
+  }
+
+  .farm-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-box {
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px;
+    padding: 0.8rem;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wheat);
+    margin-bottom: 0.3rem;
+    opacity: 0.8;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .stat-value.positive { color: #81C784; }
+  .stat-value.negative { color: #EF9A9A; }
+
+  .profit-banner {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.6rem;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    position: relative;
+    z-index: 1;
+  }
+
+  .profit-banner .label { font-size: 0.6rem; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--wheat); display: block; margin-bottom: 0.2rem; }
+
+  /* Slider */
+  .slider-section {
+    margin-bottom: 1.2rem;
+  }
+
+  .slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+  }
+
+  .slider-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--soil-mid);
+    text-transform: uppercase;
+  }
+
+  .slider-val {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--soil);
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--wheat) 0%, var(--wheat) var(--pct, 50%), var(--rule) var(--pct, 50%), var(--rule) 100%);
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 0.3rem;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--soil);
+    border: 3px solid var(--wheat);
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: #999;
+  }
+
+  /* Breakdown table */
+  .breakdown {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    font-size: 0.83rem;
+  }
+
+  .breakdown table { width: 100%; border-collapse: collapse; }
+
+  .breakdown th {
+    background: var(--soil);
+    color: var(--wheat-light);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.8rem;
+    text-align: right;
+  }
+  .breakdown th:first-child { text-align: left; }
+
+  .breakdown td {
+    padding: 0.45rem 0.8rem;
+    text-align: right;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+  .breakdown td:first-child { text-align: left; font-weight: 600; }
+  .breakdown tr:last-child td { border-bottom: none; background: var(--wheat-pale); font-weight: 700; }
+  .breakdown tr.highlight td { background: rgba(212,168,83,0.12); }
+
+  /* ========== ACTIVITY 3: Decision Maker ========== */
+  .news-card {
+    background: white;
+    border: 2px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .news-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--soil-mid);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .news-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--wheat);
+    border-radius: 50%;
+  }
+
+  .news-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--soil);
+    margin-bottom: 0.5rem;
+  }
+
+  .news-body {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: #555;
+    font-style: italic;
+  }
+
+  .decision-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 500px) {
+    .decision-choices { grid-template-columns: 1fr; }
+    .farm-stats { grid-template-columns: 1fr 1fr; }
+  }
+
+  .dec-btn {
+    border: 2px solid var(--rule);
+    border-radius: 8px;
+    background: white;
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    line-height: 1.5;
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .dec-btn:hover { border-color: var(--soil); background: var(--wheat-pale); }
+  .dec-btn.chosen-correct { border-color: var(--profit); background: #E8F5E9; }
+  .dec-btn.chosen-wrong { border-color: var(--loss); background: #FFEBEE; }
+
+  .dec-icon { font-size: 1.3rem; display: block; margin-bottom: 0.4rem; }
+
+  /* ========== ACTIVITY 4: Entry/Exit ========== */
+  .market-viz {
+    background: linear-gradient(180deg, #E8F4FD 0%, #FDF6E3 60%, #D4C4A0 100%);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    min-height: 180px;
+    border: 1px solid var(--rule);
+    overflow: hidden;
+  }
+
+  .market-sky {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--sky);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-bar {
+    position: relative;
+    margin: 1rem 0;
+  }
+
+  .price-track {
+    height: 8px;
+    background: linear-gradient(to right, var(--loss), #FFC107, var(--profit));
+    border-radius: 4px;
+    position: relative;
+  }
+
+  .price-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--soil);
+    border: 3px solid var(--wheat-light);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  .price-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: #888;
+    margin-top: 0.3rem;
+  }
+
+  .market-price-display {
+    text-align: center;
+    margin: 0.8rem 0;
+  }
+
+  .market-price-display .big-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--soil);
+    transition: color 0.5s;
+  }
+
+  .market-price-display .price-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--soil-mid);
+  }
+
+  .farmer-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.8rem 0 0;
+  }
+
+  .farmer-icon {
+    font-size: 1.5rem;
+    transition: all 0.4s ease;
+    cursor: default;
+    filter: grayscale(0);
+  }
+
+  .farmer-icon.exiting {
+    animation: farmExit 0.6s ease forwards;
+  }
+
+  .farmer-icon.entering {
+    animation: farmEnter 0.5s ease;
+  }
+
+  @keyframes farmExit {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0) translateY(-20px); }
+  }
+
+  @keyframes farmEnter {
+    0% { opacity: 0; transform: scale(0); }
+    70% { transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .scenario-controls {
+    display: grid;
+    gap: 0.7rem;
+    margin-bottom: 1rem;
+  }
+
+  .scenario-trigger {
+    background: white;
+    border: 2px solid var(--rule);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    text-align: left;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    line-height: 1.4;
+  }
+
+  .scenario-trigger:hover { border-color: var(--wheat); background: var(--wheat-pale); }
+  .scenario-trigger.active-scenario { border-color: var(--soil); background: var(--wheat-light); }
+
+  .scenario-trigger .s-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .scenario-trigger .s-arrow { margin-left: auto; color: var(--soil-mid); font-size: 0.8rem; }
+
+  /* ========== ACTIVITY 5: Reflection ========== */
+  .reflection-prompt {
+    background: var(--soil);
+    color: var(--wheat-light);
+    border-radius: 10px;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .reflection-prompt h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--wheat);
+  }
+
+  .reflection-prompt p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--sky-light);
+    font-style: italic;
+  }
+
+  .reflection-options {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: 1rem;
+  }
+
+  .ref-option {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.85rem;
+    color: var(--wheat-light);
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+
+  .ref-option:hover, .ref-option.picked { background: rgba(212,168,83,0.2); border-color: var(--wheat); }
+
+  .summary-box {
+    border: 2px solid var(--wheat);
+    border-radius: 8px;
+    padding: 1.2rem;
+    background: var(--wheat-pale);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin-top: 1rem;
+    display: none;
+  }
+  .summary-box.show { display: block; }
+  .summary-box h4 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 0.5rem; color: var(--soil); }
+
+  /* Nav buttons */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.7rem 1.4rem;
+    border-radius: 4px;
+    border: 2px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--soil);
+    color: var(--wheat-light);
+    border-color: var(--soil);
+  }
+
+  .btn-primary:hover { background: var(--soil-mid); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--soil-mid);
+    border-color: var(--rule);
+  }
+
+  .btn-secondary:hover { border-color: var(--soil-mid); color: var(--soil); }
+
+  .step-counter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: #999;
+    letter-spacing: 0.08em;
+  }
+
+  /* Tooltip */
+  .tip {
+    display: inline-block;
+    background: var(--wheat-light);
+    border: 1px solid var(--wheat);
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.4rem;
+    color: var(--soil-mid);
+    vertical-align: middle;
+    cursor: help;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--soil);
+    color: var(--wheat-light);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  .badge-green { background: var(--profit); }
+  .badge-red { background: var(--loss); }
+
+  /* ========== MCQ QUESTIONS ========== */
+  .mcq-section {
+    margin-top: 1.8rem;
+    border-top: 2px dashed var(--wheat);
+    padding-top: 1.4rem;
+  }
+  .mcq-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--soil-mid);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .mcq-label::after { content:''; flex:1; height:1px; background:var(--rule); }
+  .mcq-block {
+    background: white;
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
+  }
+  .mcq-block .q-stem {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--soil);
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+  }
+  .mcq-block .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--wheat);
+    background: var(--soil);
+    border-radius: 3px;
+    padding: 0.1rem 0.45rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
+  .mcq-options { display: grid; gap: 0.5rem; }
+  .mcq-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    background: var(--wheat-pale);
+    border: 1.5px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    text-align: left;
+    line-height: 1.5;
+    transition: all 0.18s;
+    width: 100%;
+  }
+  .mcq-opt:hover { border-color: var(--wheat); background: #FFF3CC; }
+  .mcq-opt .opt-letter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    background: var(--soil);
+    color: var(--wheat-light);
+    border-radius: 3px;
+    padding: 0.1rem 0.42rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+  .mcq-opt.correct-opt { border-color: var(--profit); background: #E8F5E9; }
+  .mcq-opt.correct-opt .opt-letter { background: var(--profit); }
+  .mcq-opt.wrong-opt { border-color: var(--loss); background: #FFEBEE; }
+  .mcq-opt.wrong-opt .opt-letter { background: var(--loss); }
+  .mcq-opt:disabled, .mcq-opt[disabled] { cursor: default; }
+  .mcq-feedback {
+    display: none;
+    margin-top: 0.6rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    padding: 0.6rem 0.9rem;
+    border-radius: 5px;
+  }
+  .mcq-feedback.show { display: block; }
+  .mcq-feedback.fb-correct { background: #E8F5E9; border: 1.5px solid var(--profit); color: #1B5E20; }
+  .mcq-feedback.fb-wrong   { background: #FFEBEE; border: 1.5px solid var(--loss);   color: #7F1313; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">Economics · Perfect Competition · Interactive Class Activity</div>
+  <h1>The Wheat Farm Simulator</h1>
+  <p>Five activities to explore revenue, cost, and market equilibrium through Farmer Jane's eyes.</p>
+  <p style="margin-top:0.8rem; font-style:normal; font-size:0.8rem; color:var(--wheat); font-family:'IBM Plex Mono', monospace; letter-spacing:0.08em;">Course Instructor: Dr. Sarabjeet Bedi</p>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-steps" id="progressSteps"></div>
+  <div class="progress-label" id="progressLabel">Activity 1 of 5</div>
+</div>
+
+<main>
+
+  <!-- ===================== ACTIVITY 1 ===================== -->
+  <div class="activity active" id="act1">
+    <div class="act-label">Activity 1 · Warm-Up Poll</div>
+    <h2 class="act-title">What Does It Mean to Be a Price Taker?</h2>
+    <p class="act-intro">Before we dive into numbers, let's check your intuition. Read the scenario and choose what you think Farmer Jane should do.</p>
+
+    <div class="info-box">
+      📋 <strong>Scenario:</strong> It's harvest season. The Chicago Board of Trade posts wheat at <strong>$6.50 per bushel</strong>. Farmer Jane is annoyed — her neighbor got $6.80 last month. She thinks her wheat is higher quality and wants to charge <strong>$7.00 per bushel</strong> to mills and food processors.
+    </div>
+
+    <p style="font-size:0.88rem; color:#555; margin-bottom:1rem; font-weight:600;">What will happen if Farmer Jane tries to charge $7.00?</p>
+
+    <div class="scenario-grid" id="q1options">
+      <button class="scenario-btn" onclick="answerQ1('a')">
+        <span class="choice-letter">A</span>
+        <span>Buyers will pay the premium because her wheat really is better quality — branding matters even in agriculture.</span>
+      </button>
+      <button class="scenario-btn" onclick="answerQ1('b')">
+        <span class="choice-letter">B</span>
+        <span>Buyers will simply purchase from other farmers at $6.50 — Grade No.2 wheat is identical regardless of who grows it.</span>
+      </button>
+      <button class="scenario-btn" onclick="answerQ1('c')">
+        <span class="choice-letter">C</span>
+        <span>The government will intervene and force her to charge the market price.</span>
+      </button>
+      <button class="scenario-btn" onclick="answerQ1('d')">
+        <span class="choice-letter">D</span>
+        <span>Other farmers will copy her and raise their prices too, forming a cartel at $7.00.</span>
+      </button>
+    </div>
+
+    <div class="feedback-box" id="q1feedback"></div>
+
+    <hr class="wheat-rule">
+
+    <div class="info-box" style="display:none" id="q1followup">
+      🌾 <strong>Key Insight:</strong> Because wheat is a <em>homogeneous product</em>, buyers have no reason to pay more than the market price. This is exactly what "price taker" means — Farmer Jane faces a perfectly horizontal demand curve at $6.50. She has <em>zero</em> pricing power.
+    </div>
+
+    <div class="mcq-section">
+      <div class="mcq-label">📝 Check Your Understanding</div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q1</span> Which of the following best describes a "price taker" in a perfectly competitive market?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','A price taker sets prices based on their production costs plus a standard markup.')"><span class="opt-letter">A</span> A firm that sets prices based on production costs plus a standard markup.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! A price taker has no market power and must accept the price determined by supply and demand in the broader market.')"><span class="opt-letter">B</span> A firm that must accept the market price as given and cannot influence it.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','A price taker is a dominant buyer who negotiates prices with suppliers — that describes a monopsony, not a competitive seller.')"><span class="opt-letter">C</span> A dominant buyer who negotiates prices below the market rate.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','A price taker does not collude — that would create a cartel, which is the opposite of competitive behaviour.')"><span class="opt-letter">D</span> A firm that collaborates with competitors to stabilise market prices.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q2</span> Wheat is described as a "homogeneous product." What does this mean for Farmer Jane's ability to charge a premium price?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Organic certification creates product differentiation — but standard Grade No.2 wheat carries no such distinction.')"><span class="opt-letter">A</span> She can charge more if she markets her wheat as organic and locally grown.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Government subsidies affect farm income but do not give Farmer Jane the power to charge above market price.')"><span class="opt-letter">B</span> She can charge a premium if the government provides her with a subsidy.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! Because all Grade No.2 wheat is identical, buyers will simply purchase from cheaper sellers. Homogeneity eliminates any pricing power.')"><span class="opt-letter">C</span> She cannot charge a premium because her wheat is indistinguishable from any other farmer\'s wheat.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Quantity alone does not grant pricing power in a perfectly competitive market with many sellers.')"><span class="opt-letter">D</span> She can charge more if she sells in larger quantities directly to mills.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" disabled>← Back</button>
+      <span class="step-counter">1 / 5</span>
+      <button class="btn btn-primary" id="next1" onclick="goTo(2)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 2 ===================== -->
+  <div class="activity" id="act2">
+    <div class="act-label">Activity 2 · Interactive Simulator</div>
+    <h2 class="act-title">Find Farmer Jane's Sweet Spot</h2>
+    <p class="act-intro">Use the sliders to control Farmer Jane's farm. Watch how revenue, costs, and profit respond. Your goal: find the output level that maximizes her profit.</p>
+
+    <div class="farm-display" id="farmDisplay">
+      <div class="farm-stats">
+        <div class="stat-box">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="dispRevenue">$130,000</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total Cost</div>
+          <div class="stat-value" id="dispCost">$108,000</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Cost/Bushel</div>
+          <div class="stat-value" id="dispCPB">$5.40</div>
+        </div>
+      </div>
+      <div class="profit-banner" id="profitBanner">
+        <span class="label">Profit / Loss</span>
+        <span id="profitVal">+$22,000</span>
+      </div>
+    </div>
+
+    <div class="slider-section">
+      <div class="slider-header">
+        <span class="slider-name">📦 Output (Bushels)</span>
+        <span class="slider-val" id="outputVal">20,000 bu</span>
+      </div>
+      <input type="range" id="outputSlider" min="5" max="55" value="20" step="1" oninput="updateSim()" style="--pct:30%">
+      <div class="range-labels"><span>5,000</span><span>30,000</span><span>55,000</span></div>
+    </div>
+
+    <div class="slider-section">
+      <div class="slider-header">
+        <span class="slider-name">💰 Market Price ($/bu)</span>
+        <span class="slider-val" id="priceVal">$6.50</span>
+      </div>
+      <input type="range" id="priceSlider" min="4" max="10" value="6.5" step="0.25" oninput="updateSim()" style="--pct:50%">
+      <div class="range-labels"><span>$4.00</span><span>$7.00</span><span>$10.00</span></div>
+    </div>
+
+    <div class="breakdown">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Fixed Costs (land, equipment)</td><td id="brkFixed">$40,000</td></tr>
+          <tr><td>Variable Costs (seeds, labour, fuel)</td><td id="brkVar">$68,000</td></tr>
+          <tr class="highlight"><td>Total Revenue</td><td id="brkRev">$130,000</td></tr>
+          <tr><td>Net Profit / Loss</td><td id="brkProfit">+$22,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="feedback-box show" id="simHint" style="background:#FFF9EC; border-color:var(--wheat); color:var(--soil)">
+      🎯 <strong>Challenge:</strong> Drag the Output slider until you find maximum profit. Then try raising or lowering the market price — what happens to the optimal output?
+    </div>
+
+    <div class="feedback-box" id="simWin"></div>
+
+    <div class="mcq-section">
+      <div class="mcq-label">📝 Check Your Understanding</div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q3</span> Farmer Jane's total revenue increases as she produces more bushels, yet her profit eventually falls. What is the most likely reason?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','The market price does not fall as she produces more — she is a price taker and the price stays at $6.50 regardless of her output.')"><span class="opt-letter">A</span> The market price falls as she sells more, reducing her revenue per bushel.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! Diminishing returns cause variable costs to rise faster than revenue at high output levels, squeezing the profit margin on each additional bushel.')"><span class="opt-letter">B</span> Variable costs rise faster than revenue at high output due to diminishing returns.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Fixed costs do not increase with output — they remain constant regardless of how many bushels are produced.')"><span class="opt-letter">C</span> Fixed costs increase sharply when she exceeds a certain production level.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Taxes are not the reason profit falls in this model. The issue is the relationship between revenue and variable costs.')"><span class="opt-letter">D</span> She must pay higher taxes on revenues above a certain threshold.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q4</span> In the simulator, what happens to cost per bushel as Farmer Jane increases output from 5,000 to 30,000 bushels?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Cost per bushel does not stay constant — fixed costs get spread across more units, reducing the per-unit cost as output initially rises.')"><span class="opt-letter">A</span> It stays constant because fixed costs are spread evenly at all output levels.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Cost per bushel rises only after the optimal output point. In the early range it falls as fixed costs are spread over more units.')"><span class="opt-letter">B</span> It rises steadily because each additional bushel requires more resources.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! As output rises, fixed costs are spread across more bushels, reducing cost per bushel. This continues until diminishing returns cause variable costs to dominate.')"><span class="opt-letter">C</span> It falls as fixed costs are spread over more units, reaching a minimum around the optimal output.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Cost per bushel does not double — it actually falls initially, then rises gradually after the optimal point.')"><span class="opt-letter">D</span> It doubles with every 10,000 additional bushels produced.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goTo(1)">← Back</button>
+      <span class="step-counter">2 / 5</span>
+      <button class="btn btn-primary" onclick="goTo(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 3 ===================== -->
+  <div class="activity" id="act3">
+    <div class="act-label">Activity 3 · Decision Maker</div>
+    <h2 class="act-title">Breaking News — What Would You Do?</h2>
+    <p class="act-intro">Three news events shake the wheat market. For each one, decide what Farmer Jane should do and why. There are no trick answers — think like an economist.</p>
+
+    <div id="newsContainer"></div>
+
+    <div class="mcq-section">
+      <div class="mcq-label">📝 Check Your Understanding</div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q5</span> A drought causes the wheat price to jump from $6.50 to $8.00 per bushel. Assuming Farmer Jane's costs are unchanged, what happens to her profit per bushel?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Profit per bushel does not stay the same — revenue per bushel has risen while costs are unchanged, so the gap (profit) widens.')"><span class="opt-letter">A</span> It stays the same because her costs have not changed.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Profit per bushel falls only when costs rise faster than price. Here the price rose while costs stayed fixed, so profit increases.')"><span class="opt-letter">B</span> It falls because buyers will look for cheaper alternatives.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! Revenue per bushel rose by $1.50 while costs stayed fixed — so profit per bushel increases by $1.50. This is why price increases are so impactful in a price-taker market.')"><span class="opt-letter">C</span> It increases because revenue per bushel rose while costs stayed the same.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Profit is determined by revenue minus cost, not by weather patterns directly. The drought affects profit only through the resulting price change.')"><span class="opt-letter">D</span> It becomes unpredictable because droughts make farming unreliable.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q6</span> The market price collapses to $4.50, which is below Farmer Jane's variable cost per bushel. What should she do in the short run?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Producing at a loss deepens losses when price is below variable cost. Every bushel sold costs more in variable inputs than it earns in revenue.')"><span class="opt-letter">A</span> Continue producing at full capacity to generate as much revenue as possible.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Raising the price is not an option for a price taker — buyers will simply go to other farmers at $4.50.')"><span class="opt-letter">B</span> Raise her selling price above $4.50 to cover variable costs.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! When price falls below variable cost, each unit produced increases total loss. Shutting down means only paying fixed costs — a smaller loss than also losing money on every bushel produced.')"><span class="opt-letter">C</span> Shut down production temporarily and absorb only the fixed costs.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Increasing output would multiply the per-bushel loss, making the total loss much larger rather than smaller.')"><span class="opt-letter">D</span> Increase output to spread fixed costs over more bushels and recover losses.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goTo(2)">← Back</button>
+      <span class="step-counter">3 / 5</span>
+      <button class="btn btn-primary" onclick="goTo(4)" id="next3">Next →</button>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 4 ===================== -->
+  <div class="activity" id="act4">
+    <div class="act-label">Activity 4 · Market Dynamics</div>
+    <h2 class="act-title">Watch the Market Self-Correct</h2>
+    <p class="act-intro">This is where perfect competition gets fascinating. Click each scenario to see how the entire market reacts — prices shift, farmers enter or exit, and equilibrium restores itself.</p>
+
+    <div class="market-viz">
+      <div class="market-sky">Global Wheat Market — Live Price Ticker</div>
+      <div class="market-price-display">
+        <div class="price-label">Current Market Price</div>
+        <div class="big-price" id="bigPrice">$6.50</div>
+        <div class="price-label">per bushel</div>
+      </div>
+      <div class="price-bar">
+        <div class="price-track"></div>
+        <div class="price-thumb" id="priceThumb" style="left:50%"></div>
+        <div class="price-labels"><span>$4.00 (loss)</span><span>$5.33 (break even)</span><span>$8.00+ (profits)</span></div>
+      </div>
+      <div class="farmer-row" id="farmerRow"></div>
+    </div>
+
+    <div class="scenario-controls">
+      <button class="scenario-trigger" id="sc1" onclick="runScenario(1)">
+        <span class="s-icon">☀️</span>
+        <span><strong>Perfect growing season</strong> — record harvests nationwide. Massive surplus of wheat hits the market.</span>
+        <span class="s-arrow">▶</span>
+      </button>
+      <button class="scenario-trigger" id="sc2" onclick="runScenario(2)">
+        <span class="s-icon">🌍</span>
+        <span><strong>Export boom</strong> — a trade deal opens up Asian markets. Demand for U.S. wheat surges dramatically.</span>
+        <span class="s-arrow">▶</span>
+      </button>
+      <button class="scenario-trigger" id="sc3" onclick="runScenario(3)">
+        <span class="s-icon">⏳</span>
+        <span><strong>Long-run equilibrium</strong> — years pass, entry/exit plays out. Watch the market settle.</span>
+        <span class="s-arrow">▶</span>
+      </button>
+    </div>
+
+    <div class="feedback-box show" id="scenarioFeedback" style="background:#FFF9EC; border-color:var(--wheat); color:var(--soil); min-height:3rem;">
+      ← Click a scenario above to watch the market react.
+    </div>
+
+    <div class="mcq-section">
+      <div class="mcq-label">📝 Check Your Understanding</div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q7</span> An export boom causes wheat prices to surge to $7.80. Many new farmers enter the market. What is the long-run effect of this entry on the market price?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Price does not stay at $7.80 permanently. New entrants increase supply, which puts downward pressure on price until excess profits are competed away.')"><span class="opt-letter">A</span> The price stays at $7.80 because demand has permanently increased.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! More farmers increase total wheat supply. With more supply chasing the same demand, prices are bid back down toward the minimum cost per bushel — the long-run equilibrium.')"><span class="opt-letter">B</span> The price falls back toward the minimum cost per bushel as new supply enters the market.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Price rising further would require demand to outpace the new supply — but the entry of new farmers increases supply, exerting downward pressure on price.')"><span class="opt-letter">C</span> The price rises further because more farmers compete for the same customers.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Prices in competitive markets are not set by government bodies — they emerge from the interaction of supply and demand.')"><span class="opt-letter">D</span> The government sets a new price ceiling to protect existing farmers.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q8</span> In the long-run equilibrium of a perfectly competitive market, where does the price settle?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','The price does not settle at the highest cost — that would drive away buyers. Only the most efficient farms survive long-run competition.')"><span class="opt-letter">A</span> At the highest cost per bushel, to ensure all farmers can remain profitable.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','The average of all farmers\' costs would allow some farmers to earn above-normal profits, which would attract further entry and push prices down further.')"><span class="opt-letter">B</span> At the average cost per bushel across all farmers in the market.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','A price of zero would mean no revenue at all — no rational farmer would produce at a zero price.')"><span class="opt-letter">C</span> At zero, because competition eliminates all profit including normal returns.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! The long-run equilibrium price settles at the minimum average cost per bushel. Above this point profits attract entry; below it losses cause exit. Only at the minimum cost is the market stable.')"><span class="opt-letter">D</span> At the minimum cost per bushel — the only point where entry and exit are both in balance.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goTo(3)">← Back</button>
+      <span class="step-counter">4 / 5</span>
+      <button class="btn btn-primary" onclick="goTo(5)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 5 ===================== -->
+  <div class="activity" id="act5">
+    <div class="act-label">Activity 5 · Class Reflection</div>
+    <h2 class="act-title">The Big Picture</h2>
+    <p class="act-intro">You've run the farm, watched prices shift, and made real decisions. Now step back. Which of these best captures what you've learned about perfect competition?</p>
+
+    <div class="reflection-prompt">
+      <h3>💬 Discussion Prompt</h3>
+      <p>A classmate says: <em>"If everyone in perfect competition eventually earns zero economic profit, what's the point of being efficient? Why bother cutting costs if the market just takes your gains away?"</em></p>
+      <p style="margin-top:0.7rem;">How would you respond? Choose the best argument:</p>
+      <div class="reflection-options" id="reflectionOpts">
+        <button class="ref-option" onclick="pickReflection(this, 'a')">A. "You're right — perfect competition destroys all motivation to improve. Monopoly is actually better for innovation."</button>
+        <button class="ref-option" onclick="pickReflection(this, 'b')">B. "The point is that efficiency gains give you a temporary profit advantage before others catch up — it's the race that drives innovation, not the permanent prize."</button>
+        <button class="ref-option" onclick="pickReflection(this, 'c')">C. "Zero economic profit just means you're earning a normal return — you're still covering all costs including your own time and capital. The efficient farm survives; the inefficient one doesn't."</button>
+        <button class="ref-option" onclick="pickReflection(this, 'd')">D. "The consumer benefits — resources get allocated to their most productive use, prices stay low, and the market rewards the farmers society actually needs."</button>
+      </div>
+    </div>
+
+    <div class="summary-box" id="reflectionSummary"></div>
+
+    <hr class="wheat-rule">
+
+    <div class="info-box" style="margin-top:1rem">
+      <strong>🎓 Key Takeaways to Remember:</strong><br><br>
+      <strong>1. Price takers, not price makers</strong> — In perfect competition, the market price is fixed externally. Your only lever is costs.<br><br>
+      <strong>2. Profit = Revenue − Cost</strong> — Revenue grows at a constant rate (price × output). Costs rise faster as output expands. The sweet spot is where the gap is widest.<br><br>
+      <strong>3. Profits attract entry; losses cause exit</strong> — The market corrects itself automatically. No regulator needed.<br><br>
+      <strong>4. Long-run equilibrium = zero economic profit</strong> — Not zero accounting profit. You earn a fair return, but no windfall.
+    </div>
+
+    <div class="mcq-section">
+      <div class="mcq-label">📝 Check Your Understanding</div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q9</span> In long-run perfect competition, firms earn zero economic profit. What does this actually mean for a farmer like Jane?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Zero economic profit does not mean the farm generates no money. Accounting profit (cash revenue minus cash costs) can still be positive and meaningful.')"><span class="opt-letter">A</span> The farm generates no revenue and the farmer earns absolutely nothing.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Bankruptcy implies losses beyond what can be sustained. Zero economic profit means the farm is viable — just not earning a windfall above normal returns.')"><span class="opt-letter">B</span> The farmer is on the verge of bankruptcy and should exit the industry.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! Zero economic profit means all costs — including the farmer\'s own time, land, and capital — are being covered at the rate they could earn elsewhere. The farm is healthy; it\'s just not earning above-normal returns.')"><span class="opt-letter">C</span> The farmer earns a normal return on all resources, with no excess profit above what could be earned elsewhere.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Market price is determined by supply and demand, not by government regulation in a perfectly competitive market.')"><span class="opt-letter">D</span> The government has regulated the price to ensure no farmer earns a profit.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+
+      <div class="mcq-block">
+        <div class="q-stem"><span class="q-num">Q10</span> Which of the following is the single most important competitive advantage a farmer can have in a perfectly competitive wheat market?</div>
+        <div class="mcq-options">
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Advertising has little impact in a commodity market where buyers already know the product is identical. Spending on advertising would reduce profit without increasing revenue.')"><span class="opt-letter">A</span> Heavy investment in advertising and brand recognition among mills.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Charging a higher price is not possible for a price taker — buyers will simply purchase from other sellers at the market price.')"><span class="opt-letter">B</span> Charging a price slightly above the market rate to signal premium quality.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'wrong','Lobbying may provide short-term benefits through subsidies, but in a competitive market, sustainable advantage comes from internal efficiency rather than external support.')"><span class="opt-letter">C</span> Lobbying the government for crop subsidies and trade protections.</button>
+          <button class="mcq-opt" onclick="answerMCQ(this,'correct','Correct! Since price is fixed by the market, the only way to earn more profit — or survive longer — is to produce at a lower cost than competitors. Efficiency is the only lever available to a price taker.')"><span class="opt-letter">D</span> Producing at a lower cost per bushel than competitors through better technology or land.</button>
+        </div>
+        <div class="mcq-feedback"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="goTo(4)">← Back</button>
+      <span class="step-counter">5 / 5</span>
+      <button class="btn btn-primary" onclick="goTo(1)">↺ Restart</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ============================================================
+//  NAVIGATION
+// ============================================================
+let currentAct = 1;
+const TOTAL = 5;
+
+function buildProgress() {
+  const wrap = document.getElementById('progressSteps');
+  wrap.innerHTML = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const pip = document.createElement('div');
+    pip.className = 'step-pip' + (i < currentAct ? ' done' : i === currentAct ? ' active' : '');
+    wrap.appendChild(pip);
+  }
+  document.getElementById('progressLabel').textContent = `Activity ${currentAct} of ${TOTAL}`;
+}
+
+function goTo(n) {
+  document.getElementById('act' + currentAct).classList.remove('active');
+  currentAct = n;
+  document.getElementById('act' + currentAct).classList.add('active');
+  buildProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (n === 4) initFarmers();
+}
+
+buildProgress();
+
+// ============================================================
+//  ACTIVITY 1 — Quiz
+// ============================================================
+function answerQ1(choice) {
+  const btns = document.querySelectorAll('#q1options .scenario-btn');
+  btns.forEach((b, i) => {
+    const letters = ['a','b','c','d'];
+    if (letters[i] === 'b') b.classList.add('correct');
+    else b.classList.add('wrong');
+    b.disabled = true;
+  });
+  const fb = document.getElementById('q1feedback');
+  fb.classList.add('show');
+  if (choice === 'b') {
+    fb.className = 'feedback-box show correct-fb';
+    fb.innerHTML = '✅ <strong>Correct!</strong> Because wheat is a standardized commodity, Grade No.2 is Grade No.2 everywhere. Buyers have no reason to pay a premium — they simply buy from the next farmer at $6.50.';
+  } else {
+    fb.className = 'feedback-box show wrong-fb';
+    const explain = {
+      a: "Branding doesn't work with commodities. There is no 'premium' wheat brand at the commodity level — mills test for grade, not origin.",
+      c: "Government intervention is not part of this market mechanism. Price-taking emerges organically from competition, not regulation.",
+      d: "Wheat farming has thousands of sellers who can't coordinate — attempting to form a cartel would immediately collapse as any individual farmer can gain by undercutting."
+    };
+    fb.innerHTML = `❌ <strong>Not quite.</strong> ${explain[choice]} The correct answer is B.`;
+  }
+  document.getElementById('q1followup').style.display = 'block';
+  document.getElementById('next1').disabled = false;
+}
+
+// ============================================================
+//  ACTIVITY 2 — Simulator
+// ============================================================
+function calcCosts(output) {
+  const fixed = 40000;
+  // Variable cost curve: rises slowly then steeply (diminishing returns)
+  const v = output * 1.8 + Math.pow(output / 1000, 2.4) * 22;
+  return { fixed, variable: Math.round(v), total: Math.round(fixed + v) };
+}
+
+let bestProfit = -Infinity;
+let bestOutput = 0;
+
+function updateSim() {
+  const outputK = parseFloat(document.getElementById('outputSlider').value);
+  const price = parseFloat(document.getElementById('priceSlider').value);
+  const output = outputK * 1000;
+
+  const costs = calcCosts(outputK);
+  const revenue = Math.round(output * price);
+  const profit = revenue - costs.total;
+  const cpb = (costs.total / output).toFixed(2);
+
+  // Update slider backgrounds
+  const oSlider = document.getElementById('outputSlider');
+  const oPct = ((outputK - 5) / (55 - 5) * 100).toFixed(1);
+  oSlider.style.setProperty('--pct', oPct + '%');
+
+  const pSlider = document.getElementById('priceSlider');
+  const pPct = ((price - 4) / (10 - 4) * 100).toFixed(1);
+  pSlider.style.setProperty('--pct', pPct + '%');
+
+  document.getElementById('outputVal').textContent = (outputK * 1000).toLocaleString() + ' bu';
+  document.getElementById('priceVal').textContent = '$' + price.toFixed(2);
+
+  document.getElementById('dispRevenue').textContent = '$' + revenue.toLocaleString();
+  document.getElementById('dispCost').textContent = '$' + costs.total.toLocaleString();
+  document.getElementById('dispCPB').textContent = '$' + cpb;
+
+  const profitStr = (profit >= 0 ? '+' : '') + '$' + Math.abs(profit).toLocaleString();
+  document.getElementById('profitVal').textContent = profitStr;
+  document.getElementById('brkFixed').textContent = '$' + costs.fixed.toLocaleString();
+  document.getElementById('brkVar').textContent = '$' + costs.variable.toLocaleString();
+  document.getElementById('brkRev').textContent = '$' + revenue.toLocaleString();
+  document.getElementById('brkProfit').textContent = profitStr;
+
+  const pv = document.getElementById('profitVal');
+  const bp = document.getElementById('brkProfit');
+  if (profit >= 0) {
+    pv.className = 'positive'; bp.style.color = 'var(--profit)';
+  } else {
+    pv.className = 'negative'; bp.style.color = 'var(--loss)';
+  }
+
+  // Check win state
+  if (profit > bestProfit) {
+    bestProfit = profit;
+    bestOutput = outputK;
+    if (profit > 30000) {
+      const winBox = document.getElementById('simWin');
+      winBox.className = 'feedback-box show correct-fb';
+      winBox.innerHTML = `🏆 <strong>Great profit!</strong> At ${(outputK*1000).toLocaleString()} bushels × $${price.toFixed(2)}, you're earning $${profit.toLocaleString()}. Try adjusting to squeeze out even more — or see what happens at 50,000 bushels!`;
+    }
+  }
+}
+
+updateSim();
+
+// ============================================================
+//  ACTIVITY 3 — News Decisions
+// ============================================================
+const news = [
+  {
+    tag: "Market News",
+    headline: "Drought Cuts Kansas Wheat Harvest by 30%",
+    body: "Severe drought conditions across the Great Plains have reduced total wheat supply significantly. Analysts predict the market price will rise from $6.50 to $8.00 per bushel within two weeks.",
+    choices: [
+      { icon: "📈", text: "Produce as much as possible immediately — profit per bushel just rose dramatically.", correct: true },
+      { icon: "🏦", text: "Lock in old contracts at $6.50 before the price rises, to guarantee revenue.", correct: false }
+    ],
+    correctFeedback: "✅ Exactly right. When market price rises, the gap between price and cost per bushel widens — producing more maximizes total profit. Locking in old prices would forfeit the windfall.",
+    wrongFeedback: "❌ This is backwards. Locking in old prices forfeits the price increase. When market price rises above your cost per bushel, you want to produce MORE, not hedge away the gain."
+  },
+  {
+    tag: "Farm Management",
+    headline: "New Irrigation Technology Cuts Farmer Jane's Water Costs by 40%",
+    body: "A precision irrigation system has slashed Farmer Jane's variable costs. Her cost per bushel at 30,000 output drops from $5.33 to $4.20. The market price remains at $6.50.",
+    choices: [
+      { icon: "🤫", text: "Keep the technology secret — this cost advantage means higher profits than competitors.", correct: false },
+      { icon: "⏳", text: "Enjoy the profits now, but expect competitors to eventually adopt the same technology.", correct: true }
+    ],
+    correctFeedback: "✅ Correct. In perfect competition, information is public and barriers to entry are low. Competitors will observe higher farm profits, investigate, and adopt similar technology. The cost advantage is temporary — profits get competed back to normal in the long run.",
+    wrongFeedback: "❌ Perfect competition assumes perfect information. Competitors will notice Farmer Jane's higher profits, figure out why, and adopt the same technology. The advantage is temporary — long-run profit returns to normal."
+  },
+  {
+    tag: "Business Decision",
+    headline: "Market Price Collapses to $4.50 — Below Farmer Jane's Cost of $5.33/bu",
+    body: "A global wheat surplus has pushed prices below Farmer Jane's minimum cost per bushel. Every bushel she produces now generates a loss. Her fixed costs are $40,000 regardless.",
+    choices: [
+      { icon: "🚜", text: "Keep producing at full capacity — revenue is still coming in, which helps cover some fixed costs.", correct: false },
+      { icon: "🏠", text: "Reduce or stop production — the variable cost loss is worse than just paying fixed costs and waiting.", correct: true }
+    ],
+    correctFeedback: "✅ Smart thinking. When price falls below variable cost per bushel, producing makes the loss WORSE — you're paying more in variable costs than you're earning in revenue. It's better to idle the farm, absorb fixed costs, and wait for prices to recover.",
+    wrongFeedback: "❌ Producing when price < variable cost per bushel deepens your losses. You're better off stopping production and just absorbing the fixed costs. Revenue from below-cost production doesn't 'help' — it adds more losses on top."
+  }
+];
+
+function buildNews() {
+  const container = document.getElementById('newsContainer');
+  container.innerHTML = '';
+  news.forEach((item, idx) => {
+    container.innerHTML += `
+      <div class="news-card" id="news${idx}">
+        <div class="news-tag">${item.tag}</div>
+        <div class="news-headline">${item.headline}</div>
+        <div class="news-body">${item.body}</div>
+        <div class="decision-choices">
+          ${item.choices.map((c, ci) => `
+            <button class="dec-btn" onclick="decisionAnswer(${idx}, ${ci}, ${c.correct})">
+              <span class="dec-icon">${c.icon}</span>${c.text}
+            </button>
+          `).join('')}
+        </div>
+        <div class="feedback-box" id="newsFb${idx}"></div>
+      </div>
+    `;
+  });
+}
+
+buildNews();
+
+function decisionAnswer(newsIdx, choiceIdx, correct) {
+  const card = document.getElementById(`news${newsIdx}`);
+  const btns = card.querySelectorAll('.dec-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[choiceIdx].classList.add(correct ? 'chosen-correct' : 'chosen-wrong');
+  const fb = document.getElementById(`newsFb${newsIdx}`);
+  fb.classList.add('show');
+  fb.className = 'feedback-box show ' + (correct ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = correct ? news[newsIdx].correctFeedback : news[newsIdx].wrongFeedback;
+}
+
+// ============================================================
+//  ACTIVITY 4 — Market Dynamics
+// ============================================================
+let farmerCount = 12;
+
+function initFarmers() {
+  farmerCount = 12;
+  renderFarmers();
+  document.getElementById('bigPrice').textContent = '$6.50';
+  document.getElementById('priceThumb').style.left = '50%';
+  document.getElementById('bigPrice').style.color = 'var(--soil)';
+  ['sc1','sc2','sc3'].forEach(id => document.getElementById(id).classList.remove('active-scenario'));
+  document.getElementById('scenarioFeedback').innerHTML = '← Click a scenario above to watch the market react.';
+}
+
+function renderFarmers(newCount, direction) {
+  const row = document.getElementById('farmerRow');
+  const old = Array.from(row.children);
+
+  if (direction === 'exit' && newCount < farmerCount) {
+    const toRemove = farmerCount - newCount;
+    old.slice(-toRemove).forEach(el => {
+      el.classList.add('exiting');
+      setTimeout(() => el.remove(), 600);
+    });
+  } else if (direction === 'enter' && newCount > farmerCount) {
+    const toAdd = newCount - farmerCount;
+    for (let i = 0; i < toAdd; i++) {
+      const span = document.createElement('span');
+      span.className = 'farmer-icon entering';
+      span.textContent = '🧑‍🌾';
+      setTimeout(() => row.appendChild(span), i * 120);
+    }
+  } else {
+    row.innerHTML = '';
+    for (let i = 0; i < (newCount || farmerCount); i++) {
+      const span = document.createElement('span');
+      span.className = 'farmer-icon';
+      span.textContent = '🧑‍🌾';
+      row.appendChild(span);
+    }
+  }
+  if (newCount) farmerCount = newCount;
+}
+
+function animatePrice(targetPrice, duration) {
+  const start = parseFloat(document.getElementById('bigPrice').textContent.replace('$',''));
+  const steps = 30;
+  const step = (targetPrice - start) / steps;
+  let i = 0;
+  const interval = setInterval(() => {
+    i++;
+    const val = (start + step * i).toFixed(2);
+    document.getElementById('bigPrice').textContent = '$' + val;
+    const pct = Math.max(5, Math.min(95, ((parseFloat(val) - 4) / (8 - 4)) * 100));
+    document.getElementById('priceThumb').style.left = pct + '%';
+    if (parseFloat(val) > 6.5) document.getElementById('bigPrice').style.color = 'var(--profit)';
+    else if (parseFloat(val) < 5.5) document.getElementById('bigPrice').style.color = 'var(--loss)';
+    else document.getElementById('bigPrice').style.color = 'var(--soil)';
+    if (i >= steps) clearInterval(interval);
+  }, duration / steps);
+}
+
+function runScenario(n) {
+  ['sc1','sc2','sc3'].forEach(id => document.getElementById(id).classList.remove('active-scenario'));
+  document.getElementById('sc'+n).classList.add('active-scenario');
+  const fb = document.getElementById('scenarioFeedback');
+
+  if (n === 1) {
+    fb.innerHTML = '📉 <strong>Supply surge:</strong> Bumper harvest → massive supply increase → price falls to ~$4.80. Farms with high costs start losing money and will eventually exit the market.';
+    animatePrice(4.80, 1500);
+    setTimeout(() => renderFarmers(8, 'exit'), 1800);
+  } else if (n === 2) {
+    fb.innerHTML = '📈 <strong>Demand boom:</strong> New export markets → demand spikes → price rises to ~$7.80. Profits attract new farmers into wheat production.';
+    animatePrice(7.80, 1500);
+    setTimeout(() => renderFarmers(18, 'enter'), 1800);
+  } else if (n === 3) {
+    fb.innerHTML = '⚖️ <strong>Long-run equilibrium:</strong> Entry and exit eventually push price back toward the minimum cost (~$5.33). All remaining farmers earn normal returns — zero economic profit.';
+    animatePrice(5.33, 2500);
+    setTimeout(() => renderFarmers(12, farmerCount > 12 ? 'exit' : 'enter'), 2500);
+  }
+}
+
+// ============================================================
+//  ACTIVITY 5 — Reflection
+// ============================================================
+const reflectionAnswers = {
+  a: { correct: false, text: "❌ Monopoly does promote some types of innovation through patent protection, but perfect competition isn't pointless — it drives efficiency and keeps prices low for consumers. Not all industries require monopoly-scale R&D." },
+  b: { correct: true, text: "✅ Great point! The race itself is the incentive. The farmer who adopts precision irrigation first earns above-normal profits temporarily — that's the reward. When others catch up, the efficiency gain is now baked into lower market prices, which benefits consumers." },
+  c: { correct: true, text: "✅ Excellent distinction! Zero economic profit ≠ zero accounting profit. The efficient farm earns a fair return on its land, labour, and capital. The competitive pressure simply ensures that inefficient farms can't survive long-term — which is actually good for resource allocation." },
+  d: { correct: true, text: "✅ Absolutely. Perfect competition is society's ideal for allocative efficiency. Resources flow to their highest-value use, prices equal marginal cost, and no one earns undeserved market power. The consumer — not the producer — captures most of the surplus." }
+};
+
+function answerMCQ(btn, result, explanation) {
+  const block = btn.closest('.mcq-block');
+  const opts = block.querySelectorAll('.mcq-opt');
+  opts.forEach(o => { o.disabled = true; o.style.pointerEvents = 'none'; });
+  btn.classList.add(result === 'correct' ? 'correct-opt' : 'wrong-opt');
+  const fb = block.querySelector('.mcq-feedback');
+  fb.className = 'mcq-feedback show ' + (result === 'correct' ? 'fb-correct' : 'fb-wrong');
+  fb.innerHTML = (result === 'correct' ? '✅ ' : '❌ ') + explanation;
+}
+
+function pickReflection(btn, choice) {
+  document.querySelectorAll('.ref-option').forEach(b => b.classList.remove('picked'));
+  btn.classList.add('picked');
+  const ans = reflectionAnswers[choice];
+  const box = document.getElementById('reflectionSummary');
+  box.className = 'summary-box show';
+  box.innerHTML = `<h4>${ans.correct ? '🌾 Solid reasoning!' : '🤔 Worth reconsidering'}</h4>${ans.text}<br><br><em>All of B, C, and D are valid — the best economists hold all three perspectives simultaneously. The point of the market isn't the destination (zero profit); it's the journey (efficiency, innovation, consumer welfare).</em>`;
+}
+</script>
+</body>
+</html>

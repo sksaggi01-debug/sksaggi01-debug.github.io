@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Market Movers — A Supply &amp; Demand Duel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
+<!-- PeerJS: free public broker for laptop-to-laptop connection. No account or server needed. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<style>
+  :root{
+    --ink:#0B1020; --ink-2:#111830; --surface:#1A2138; --surface-2:#222B45;
+    --line:rgba(255,255,255,0.09); --line-strong:rgba(255,255,255,0.16);
+    --paper:#EAEEF8; --muted:#8A95AD; --muted-2:#5C6685;
+    --gold:#F6C15B; --gold-dim:rgba(246,193,91,0.14);
+    --teal:#34D9C0; --teal-dim:rgba(52,217,192,0.14);
+    --coral:#FF7A6B; --coral-dim:rgba(255,122,107,0.13);
+    --green:#5FD68A; --green-dim:rgba(95,214,138,0.14);
+    --demand:#FF9F6B; --supply:#6EA8FF;
+    --radius:16px; --shadow:0 24px 60px -20px rgba(0,0,0,0.65);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 600px at 82% -10%, rgba(110,168,255,0.10), transparent 60%),
+      radial-gradient(1000px 620px at 8% 110%, rgba(255,159,107,0.10), transparent 55%),
+      var(--ink);
+    color:var(--paper); min-height:100vh; line-height:1.5; -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'Space Mono',ui-monospace,Menlo,monospace;}
+  .wrap{max-width:940px;margin:0 auto;padding:28px 20px 64px;}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:var(--muted);}
+  .card{background:linear-gradient(180deg,var(--surface),var(--ink-2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .btn{font-family:'Space Grotesk',sans-serif;font-weight:700;border:none;border-radius:12px;cursor:pointer;font-size:16px;padding:15px 22px;transition:transform .12s ease, filter .12s ease;}
+  .btn:active{transform:translateY(1px);}
+  .btn:focus-visible{outline:3px solid var(--teal);outline-offset:2px;}
+  .btn-primary{background:var(--gold);color:#241a02;}
+  .btn-primary:hover{filter:brightness(1.06);}
+  .btn-teal{background:var(--teal);color:#03251f;}
+  .btn-teal:hover{filter:brightness(1.06);}
+  .btn-ghost{background:transparent;color:var(--paper);border:1px solid var(--line-strong);}
+  .btn-ghost:hover{background:rgba(255,255,255,0.05);}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .center{text-align:center;}
+  .hidden{display:none !important;}
+  .screen{display:none;animation:fade .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* landing */
+  .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px;}
+  .brand-mark{width:46px;height:46px;border-radius:12px;background:var(--ink);border:1px solid var(--line-strong);display:grid;place-items:center;box-shadow:0 8px 20px -8px rgba(110,168,255,0.5);}
+  h1.title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(34px,6vw,56px);line-height:1.02;margin:16px 0 10px;letter-spacing:-0.02em;}
+  h1.title .accent{color:var(--supply);}
+  .lede{color:var(--muted);font-size:17px;max-width:580px;margin:0 auto 28px;}
+  .concept-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
+  .chip{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.04em;padding:7px 13px;border-radius:999px;border:1px solid var(--line);color:var(--paper);background:rgba(255,255,255,0.03);}
+  .chip b{color:var(--supply);font-weight:700;}
+  .chip.d b{color:var(--demand);}
+  .name-row{max-width:420px;margin:0 auto 22px;}
+  label.field-label{display:block;font-size:13px;color:var(--muted);margin:0 0 7px;font-weight:500;}
+  .input{width:100%;background:var(--ink);border:1px solid var(--line-strong);color:var(--paper);border-radius:12px;padding:14px 16px;font-size:16px;font-family:'Inter',sans-serif;}
+  .input:focus{outline:none;border-color:var(--supply);box-shadow:0 0 0 3px rgba(110,168,255,0.18);}
+  .input.code-input{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:0.35em;text-align:center;font-size:26px;}
+  .choice-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:640px;margin:0 auto;}
+  .choice-cards .action{padding:26px 22px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-align:left;cursor:pointer;transition:border-color .15s, transform .15s, background .15s;}
+  .choice-cards .action:hover{transform:translateY(-3px);border-color:var(--line-strong);background:var(--surface-2);}
+  .choice-cards .action:focus-visible{outline:3px solid var(--teal);outline-offset:2px;}
+  .action .a-tag{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+  .action .a-title{font-family:'Space Grotesk';font-weight:700;font-size:22px;margin:10px 0 6px;}
+  .action.host .a-title{color:var(--gold);}
+  .action.join .a-title{color:var(--teal);}
+  .action .a-sub{color:var(--muted);font-size:14px;}
+  .how{max-width:640px;margin:34px auto 0;}
+  details.how-box{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,0.02);}
+  details.how-box summary{cursor:pointer;list-style:none;padding:15px 18px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;color:var(--paper);}
+  details.how-box summary::-webkit-details-marker{display:none;}
+  details.how-box summary .caret{color:var(--muted);transition:transform .2s;}
+  details.how-box[open] summary .caret{transform:rotate(180deg);}
+  .how-body{padding:4px 20px 20px;color:var(--muted);font-size:14.5px;}
+  .how-body ol{margin:6px 0 0;padding-left:20px;}
+  .how-body li{margin:9px 0;}
+  .how-body b{color:var(--paper);}
+
+  /* lobby */
+  .status-card{max-width:560px;margin:0 auto;padding:34px 30px;text-align:center;}
+  .code-display{font-family:'Space Mono',monospace;font-size:clamp(40px,9vw,64px);font-weight:700;letter-spacing:0.18em;color:var(--gold);margin:14px 0 6px;background:var(--ink);border:1px dashed var(--line-strong);border-radius:14px;padding:18px 10px;}
+  .copied-flag{color:var(--green);font-size:13px;margin-top:10px;height:16px;font-weight:600;}
+  .spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--line-strong);border-top-color:var(--teal);margin:20px auto 0;animation:spin 0.9s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .status-msg{color:var(--muted);margin-top:12px;font-size:15px;}
+  .err-msg{color:var(--coral);background:var(--coral-dim);border:1px solid rgba(255,122,107,0.3);border-radius:12px;padding:14px 16px;margin:18px auto 0;max-width:520px;font-size:14.5px;text-align:left;}
+
+  /* game top + scoreboard */
+  .game-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+  .round-pill{font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:0.08em;}
+  .round-pill b{color:var(--paper);}
+  .progress-track{display:flex;gap:6px;margin-top:8px;}
+  .progress-track .dot{width:24px;height:5px;border-radius:3px;background:var(--line-strong);}
+  .progress-track .dot.done{background:var(--gold);}
+  .progress-track .dot.now{background:var(--teal);}
+  .scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+  .founder{padding:14px 18px;border-radius:14px;border:1px solid var(--line);background:var(--surface);}
+  .founder.me{border-color:rgba(246,193,91,0.35);}
+  .founder.opp{border-color:rgba(52,217,192,0.30);}
+  .founder .who{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;}
+  .founder .who .swatch{width:11px;height:11px;border-radius:3px;}
+  .founder.me .swatch{background:var(--gold);}
+  .founder.opp .swatch{background:var(--teal);}
+  .founder .who .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:var(--muted);text-transform:uppercase;margin-left:auto;}
+  .cv-line{display:flex;align-items:baseline;gap:8px;margin:8px 0 2px;}
+  .cv-num{font-family:'Space Mono',monospace;font-weight:700;font-size:32px;line-height:1;}
+  .founder.me .cv-num{color:var(--gold);}
+  .founder.opp .cv-num{color:var(--teal);}
+  .cv-label{font-size:12px;color:var(--muted);}
+  .streak{font-family:'Space Mono',monospace;font-size:11px;color:var(--coral);margin-top:4px;height:14px;}
+
+  /* scenario */
+  .scenario{padding:24px 26px 22px;}
+  .s-round{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--supply);}
+  .s-market{font-family:'Space Grotesk';font-weight:700;font-size:clamp(20px,3.4vw,26px);margin:9px 0 4px;letter-spacing:-0.01em;}
+  .s-event{color:var(--paper);font-size:17px;margin:8px 0 4px;background:var(--ink-2);border:1px solid var(--line);border-left:3px solid var(--supply);border-radius:10px;padding:14px 16px;}
+  .s-hint{color:var(--muted);font-size:13px;margin:10px 0 20px;font-style:italic;}
+
+  .qgroup{margin-bottom:16px;}
+  .qlabel{font-family:'Space Grotesk';font-weight:700;font-size:15px;margin-bottom:10px;display:flex;gap:8px;align-items:center;}
+  .qlabel .qnum{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);background:var(--muted);border-radius:6px;padding:2px 7px;}
+  .picks{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pick{text-align:left;padding:14px 16px;border-radius:11px;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:border-color .12s,background .12s,transform .1s;color:var(--paper);font-size:14.5px;font-weight:500;}
+  .pick:hover:not(:disabled){border-color:var(--line-strong);background:var(--surface-2);}
+  .pick:focus-visible{outline:3px solid var(--teal);outline-offset:2px;}
+  .pick.selected{border-color:var(--gold);background:var(--gold-dim);}
+  .pick.correct{border-color:var(--green);background:var(--green-dim);}
+  .pick.wrong{border-color:var(--coral);background:var(--coral-dim);}
+  .pick .p-sub{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:2px;}
+  .pick:disabled{cursor:default;}
+  .lock-row{margin-top:6px;display:flex;justify-content:flex-end;}
+
+  /* reveal: graph + explanation */
+  .reveal-wrap{margin-top:8px;}
+  .market-graph{background:var(--ink);border:1px solid var(--line);border-radius:13px;padding:12px;max-width:440px;margin:0 auto 16px;}
+  .market-graph svg{width:100%;height:auto;display:block;}
+  .graph-cap{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;margin-top:6px;letter-spacing:0.06em;}
+  .explain{border:1px solid rgba(95,214,138,0.35);background:var(--green-dim);border-radius:13px;padding:18px 20px;position:relative;animation:stamp .4s ease;}
+  @keyframes stamp{from{opacity:0;transform:scale(.97);}to{opacity:1;transform:none;}}
+  .explain .stamp{position:absolute;top:-11px;left:18px;background:var(--green);color:#05270f;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.16em;font-weight:700;padding:4px 10px;border-radius:6px;text-transform:uppercase;}
+  .explain .determinant{font-family:'Space Mono',monospace;font-size:12px;color:var(--supply);letter-spacing:0.06em;margin-top:4px;text-transform:uppercase;}
+  .explain .e-body{margin-top:8px;font-size:15px;}
+  .explain .e-body b{color:var(--paper);}
+  .explain .result{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;}
+  .result .pq{font-family:'Space Mono',monospace;font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--line-strong);background:var(--ink);}
+  .result .pq .up{color:var(--green);} .result .pq .down{color:var(--coral);}
+
+  .reveal-answers{margin-top:16px;padding:16px 18px;border-radius:13px;border:1px solid var(--line);background:var(--ink-2);}
+  .reveal-answers h3{font-family:'Space Grotesk';font-size:12px;margin:0 0 12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;}
+  .ra-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .ra-card{padding:12px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);}
+  .ra-card .ra-who{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+  .ra-card .ra-who .swatch{width:9px;height:9px;border-radius:2px;}
+  .ra-card.me .swatch{background:var(--gold);}
+  .ra-card.opp .swatch{background:var(--teal);}
+  .ra-card .ra-line{font-size:13px;margin-top:6px;}
+  .ra-card .ra-pts{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;margin-top:6px;}
+  .tick{color:var(--green);} .cross{color:var(--coral);}
+
+  .waiting-bar{display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px 18px;border-radius:12px;background:var(--ink-2);border:1px solid var(--line);color:var(--muted);font-size:15px;}
+  .waiting-bar .mini-spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--teal);animation:spin .9s linear infinite;flex-shrink:0;}
+  .continue-row{margin-top:16px;display:flex;justify-content:flex-end;}
+
+  /* results */
+  .result-hero{padding:38px 30px;text-align:center;}
+  .r-eyebrow{font-family:'Space Mono',monospace;letter-spacing:0.2em;text-transform:uppercase;font-size:12px;color:var(--muted);}
+  .result-hero h2{font-family:'Space Grotesk';font-weight:700;font-size:clamp(30px,6vw,48px);margin:12px 0 4px;letter-spacing:-0.02em;}
+  .result-hero h2.win{color:var(--gold);} .result-hero h2.lose{color:var(--paper);} .result-hero h2.tie{color:var(--teal);}
+  .extra-credit{display:inline-block;margin-top:16px;background:var(--gold);color:#241a02;font-family:'Space Grotesk';font-weight:700;font-size:17px;padding:12px 22px;border-radius:999px;box-shadow:0 10px 26px -8px rgba(246,193,91,0.55);}
+  .final-scores{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:560px;margin:26px auto 0;}
+  .final-card{padding:18px;border-radius:13px;border:1px solid var(--line);background:var(--surface);}
+  .final-card.winner{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold-dim);}
+  .final-card .fc-name{font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;justify-content:center;}
+  .final-card .fc-name .swatch{width:10px;height:10px;border-radius:3px;}
+  .final-card.me .swatch{background:var(--gold);} .final-card.opp .swatch{background:var(--teal);}
+  .final-card .fc-score{font-family:'Space Mono',monospace;font-weight:700;font-size:40px;margin:8px 0 2px;}
+  .final-card.me .fc-score{color:var(--gold);} .final-card.opp .fc-score{color:var(--teal);}
+  .final-card .fc-break{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+  .recap{max-width:720px;margin:34px auto 0;}
+  .recap h3{font-family:'Space Grotesk';font-size:16px;text-align:center;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px;}
+  .recap-row{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 18px;margin-bottom:10px;}
+  .recap-row .rr-top{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+  .recap-row .rr-event{font-size:14px;margin:4px 0 8px;color:var(--paper);}
+  .recap-row .rr-ans{font-size:13px;color:var(--muted);}
+  .recap-row .rr-ans b{color:var(--paper);}
+  .recap-row .rr-you{font-size:12.5px;margin-top:5px;font-family:'Space Mono',monospace;}
+  .results-actions{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap;}
+  footer.foot{text-align:center;margin-top:44px;color:var(--muted-2);font-size:12px;font-family:'Space Mono',monospace;letter-spacing:0.04em;}
+
+  @media (max-width:620px){
+    .choice-cards,.scoreboard,.picks,.ra-grid,.final-scores{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ LANDING ============ -->
+  <section id="screen-landing" class="screen active">
+    <div class="center">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+            <line x1="4" y1="4" x2="22" y2="22" stroke="#6EA8FF" stroke-width="2.6" stroke-linecap="round"/>
+            <line x1="4" y1="22" x2="22" y2="4" stroke="#FF9F6B" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="eyebrow">Demand · Supply · Shifts · Equilibrium</div>
+      <h1 class="title">Market <span class="accent">Movers</span></h1>
+      <p class="lede">An event hits the market. Which curve shifts — <span style="color:var(--demand)">demand</span> or <span style="color:var(--supply)">supply</span> — and which way? Predict the new equilibrium faster and smarter than your rival to win the extra credit.</p>
+      <div class="concept-chips">
+        <span class="chip d">shift the right <b>curve</b></span>
+        <span class="chip">read the new <b>equilibrium</b></span>
+        <span class="chip d">name the <b>determinant</b></span>
+      </div>
+    </div>
+
+    <div class="name-row">
+      <label class="field-label" for="playerName">Your name (shown to your opponent)</label>
+      <input id="playerName" class="input" maxlength="20" placeholder="e.g. Marcus" autocomplete="off" />
+    </div>
+
+    <div class="choice-cards">
+      <button class="action host" id="btnHostChoice">
+        <div class="a-tag">Player 1</div>
+        <div class="a-title">Host a game</div>
+        <div class="a-sub">Get a 5-character code and share it with your opponent.</div>
+      </button>
+      <button class="action join" id="btnJoinChoice">
+        <div class="a-tag">Player 2</div>
+        <div class="a-title">Join a game</div>
+        <div class="a-sub">Got a code from a classmate? Type it in to connect.</div>
+      </button>
+    </div>
+
+    <div class="how">
+      <details class="how-box">
+        <summary>How to play <span class="caret">▾</span></summary>
+        <div class="how-body">
+          <ol>
+            <li>Both players type a name. <b>One</b> clicks <b>Host</b>, the <b>other</b> clicks <b>Join</b> and enters the code.</li>
+            <li>Each round shows the same real-world event. Make two predictions: <b>(1)</b> which curve shifts and which way, and <b>(2)</b> what happens to equilibrium <b>price</b> and <b>quantity</b>.</li>
+            <li>Lock in your prediction. The graph reveals the shift and the correct answer, with the determinant explained.</li>
+            <li>Score points for each correct call. Nail both in a round to build a <b>streak</b> for bonus points.</li>
+            <li>Highest score after 7 events wins the extra credit.</li>
+          </ol>
+          <p style="margin-top:14px;"><b>On Zoom:</b> two players in a breakout room. <b>In person:</b> two students at two laptops. Either way, same connection.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ HOST LOBBY ============ -->
+  <section id="screen-host" class="screen">
+    <div class="card status-card">
+      <div class="eyebrow">You are the host</div>
+      <p class="status-msg" style="margin-top:14px;">Share this code with your opponent:</p>
+      <div class="code-display" id="hostCode">·····</div>
+      <button class="btn btn-ghost" id="btnCopyCode">Copy code</button>
+      <div class="copied-flag" id="copiedFlag"></div>
+      <div class="spinner"></div>
+      <p class="status-msg" id="hostStatus">Waiting for your opponent to join…</p>
+      <div id="hostError"></div>
+      <button class="btn btn-ghost" style="margin-top:22px;" id="btnHostBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- ============ JOIN ============ -->
+  <section id="screen-join" class="screen">
+    <div class="card status-card">
+      <div class="eyebrow">Join a game</div>
+      <p class="status-msg" style="margin:14px 0 16px;">Enter the 5-character code from the host.</p>
+      <input id="codeInput" class="input code-input" maxlength="5" placeholder="·····" autocomplete="off" autocapitalize="characters" />
+      <div style="margin-top:18px;">
+        <button class="btn btn-teal" id="btnConnect" style="width:100%;">Connect</button>
+      </div>
+      <div id="joinStatus" class="status-msg hidden"><div class="spinner"></div><p>Connecting…</p></div>
+      <div id="joinError"></div>
+      <button class="btn btn-ghost" style="margin-top:22px;" id="btnJoinBack">← Back</button>
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="screen-game" class="screen">
+    <div class="game-top">
+      <div>
+        <div class="round-pill">EVENT <b id="roundNow">1</b> / 7</div>
+        <div class="progress-track" id="progressTrack"></div>
+      </div>
+    </div>
+
+    <div class="scoreboard">
+      <div class="founder me">
+        <div class="who"><span class="swatch"></span><span id="meNameA">You</span><span class="tag">You</span></div>
+        <div class="cv-line"><span class="cv-num" id="meScore">0</span><span class="cv-label">points</span></div>
+        <div class="streak" id="meStreak"></div>
+      </div>
+      <div class="founder opp">
+        <div class="who"><span class="swatch"></span><span id="oppNameA">Opponent</span><span class="tag">Rival</span></div>
+        <div class="cv-line"><span class="cv-num" id="oppScore">0</span><span class="cv-label">points</span></div>
+        <div class="streak" id="oppStreak"></div>
+      </div>
+    </div>
+
+    <div class="card scenario">
+      <div class="s-round" id="sRound">Event 1</div>
+      <div class="s-market" id="sMarket">—</div>
+      <div class="s-event" id="sEvent">—</div>
+      <div class="s-hint" id="sHint"></div>
+
+      <!-- question 1: curve + direction -->
+      <div class="qgroup" id="q1group">
+        <div class="qlabel"><span class="qnum">1</span> Which curve shifts, and which way?</div>
+        <div class="picks" id="picksCurve"></div>
+      </div>
+
+      <!-- question 2: equilibrium -->
+      <div class="qgroup" id="q2group">
+        <div class="qlabel"><span class="qnum">2</span> What happens at the new equilibrium?</div>
+        <div class="picks" id="picksEq"></div>
+      </div>
+
+      <div class="lock-row">
+        <button class="btn btn-primary" id="btnLock" disabled>Lock in prediction</button>
+      </div>
+
+      <!-- reveal -->
+      <div class="reveal-wrap hidden" id="revealWrap">
+        <div class="market-graph">
+          <div id="graphHost"></div>
+          <div class="graph-cap">E₀ = original equilibrium · E₁ = new equilibrium</div>
+        </div>
+        <div class="explain">
+          <span class="stamp" id="explainStamp">Correct answer</span>
+          <div class="determinant" id="explainDeterminant">—</div>
+          <div class="e-body" id="explainBody">—</div>
+          <div class="result" id="explainResult"></div>
+        </div>
+
+        <div class="reveal-answers">
+          <h3>How you both predicted</h3>
+          <div class="ra-grid">
+            <div class="ra-card me">
+              <div class="ra-who"><span class="swatch"></span><span id="raMeName">You</span></div>
+              <div class="ra-line" id="raMeLine">—</div>
+              <div class="ra-pts" id="raMePts">—</div>
+            </div>
+            <div class="ra-card opp">
+              <div class="ra-who"><span class="swatch"></span><span id="raOppName">Opponent</span></div>
+              <div class="ra-line" id="raOppLine">—</div>
+              <div class="ra-pts" id="raOppPts">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="waiting-bar hidden" id="waitingBar">
+          <div class="mini-spin"></div>
+          <span id="waitingText">Locked in. Waiting for your opponent…</span>
+        </div>
+
+        <div class="continue-row">
+          <button class="btn btn-primary hidden" id="btnContinue">Next event →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section id="screen-results" class="screen">
+    <div class="card result-hero">
+      <div class="r-eyebrow">Final results</div>
+      <h2 id="rHeadline">—</h2>
+      <div id="rExtraCredit"></div>
+      <div class="final-scores">
+        <div class="final-card me" id="finalMe">
+          <div class="fc-name"><span class="swatch"></span><span id="finalMeName">You</span></div>
+          <div class="fc-score" id="finalMeScore">0</div>
+          <div class="fc-break" id="finalMeBreak">—</div>
+        </div>
+        <div class="final-card opp" id="finalOpp">
+          <div class="fc-name"><span class="swatch"></span><span id="finalOppName">Opponent</span></div>
+          <div class="fc-score" id="finalOppScore">0</div>
+          <div class="fc-break" id="finalOppBreak">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="recap">
+      <h3>Every event & the correct shift</h3>
+      <div id="recapList"></div>
+    </div>
+    <div class="results-actions">
+      <button class="btn btn-primary" id="btnPlayAgain">Play again</button>
+      <button class="btn btn-ghost" id="btnQuit">Back to start</button>
+    </div>
+  </section>
+
+  <footer class="foot">MARKET MOVERS · A SUPPLY &amp; DEMAND DUEL · DETERMINANTS × EQUILIBRIUM</footer>
+</div>
+
+<script>
+/* =========================================================================
+   MARKET MOVERS — supply & demand prediction duel.
+   Networking via PeerJS (free public broker): one player hosts (short code),
+   the other joins. Correctness is deterministic from the round data, so both
+   laptops compute identical scores; players exchange only their predictions.
+   ========================================================================= */
+
+/* ---------- Content: 7 events across determinants of demand & supply ---------- */
+const ROUNDS = [
+  {
+    market:"The market for coffee",
+    event:"A severe frost destroys much of Brazil's coffee harvest.",
+    hint:"Coffee beans are the main input for producing coffee.",
+    curve:"supply", direction:"decrease",
+    determinant:"Determinant of supply · input / resource availability",
+    explain:"The frost wipes out coffee beans — the key <b>input</b> for making coffee. When inputs get scarce, sellers supply less at every price, so <b>supply shifts left (decreases)</b>. Demand didn't change: buyers' incomes and tastes are the same."
+  },
+  {
+    market:"The market for new smartphones",
+    event:"A booming economy raises almost everyone's income.",
+    hint:"A new smartphone is a normal good — people buy more of it as income rises.",
+    curve:"demand", direction:"increase",
+    determinant:"Determinant of demand · income (normal good)",
+    explain:"Higher <b>income</b> lets buyers afford more. For a <b>normal good</b> like new phones, demand rises at every price, so the <b>demand curve shifts right (increases)</b>."
+  },
+  {
+    market:"The market for coffee",
+    event:"The price of tea — a substitute for coffee — drops sharply.",
+    hint:"When one good gets cheaper, what happens to demand for its substitute?",
+    curve:"demand", direction:"decrease",
+    determinant:"Determinant of demand · price of a related good (substitute)",
+    explain:"Tea and coffee are <b>substitutes</b>. Cheaper tea pulls some buyers away from coffee, so <b>demand for coffee shifts left (decreases)</b>. Careful: the price of a <em>related good</em> changed, so it moves <b>demand</b> — not supply."
+  },
+  {
+    market:"The market for mobile apps",
+    event:"A powerful new tool lets developers build apps in half the time.",
+    hint:"This changes how cheaply and easily producers can make the product.",
+    curve:"supply", direction:"increase",
+    determinant:"Determinant of supply · technology",
+    explain:"Better <b>technology</b> lets developers produce more for less, so they supply more at every price — <b>supply shifts right (increases)</b>."
+  },
+  {
+    market:"The market for video games",
+    event:"Game consoles go on a massive, long-running sale.",
+    hint:"Consoles and games are used together — they're complements.",
+    curve:"demand", direction:"increase",
+    determinant:"Determinant of demand · price of a related good (complement)",
+    explain:"Consoles and games are <b>complements</b>. Cheaper consoles mean more console owners, so demand for <b>games shifts right (increases)</b>. Again it's a related good's price — so <b>demand</b> moves."
+  },
+  {
+    market:"The market for sugary drinks",
+    event:"The government places a new tax on producers of sugary drinks.",
+    hint:"A tax on sellers changes their cost of putting each unit on the market.",
+    curve:"supply", direction:"decrease",
+    determinant:"Determinant of supply · taxes",
+    explain:"A <b>tax on producers</b> raises the cost of selling each unit, so they supply less at every price — <b>supply shifts left (decreases)</b>."
+  },
+  {
+    market:"The market for locally grown vegetables",
+    event:"Dozens of new farms enter the local vegetable market.",
+    hint:"Think about the number of sellers in the market.",
+    curve:"supply", direction:"increase",
+    determinant:"Determinant of supply · number of sellers",
+    explain:"More <b>sellers</b> means more offered at every price — <b>supply shifts right (increases)</b>."
+  },
+];
+
+/* equilibrium outcome from a single-curve shift */
+function eqOutcome(curve, direction){
+  if(curve==="demand") return direction==="increase" ? {p:"up",q:"up"} : {p:"down",q:"down"};
+  return direction==="increase" ? {p:"down",q:"up"} : {p:"up",q:"down"}; // supply
+}
+
+/* ---------- Scoring ---------- */
+const PTS_CURVE = 10, PTS_EQ = 10;
+
+/* ---------- State ---------- */
+const me  = { name:"You",      score:0, streak:0 };
+const opp = { name:"Opponent", score:0, streak:0 };
+let currentRound = 0;
+let selCurve = null, selEq = null;   // my current selections
+let myLocked = false;
+let myAnswers = [];                  // {curvePick, eqPick, curveOK, eqOK}
+const oppPicks = {};                 // round -> {curvePick, eqPick, score}
+let gameStarted = false;
+
+/* ---------- Networking ---------- */
+let peer=null, conn=null, isHost=false, helloSent=false, oppHelloReceived=false;
+const CODE_CHARS="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+function makeCode(){let c="";for(let i=0;i<5;i++)c+=CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];return c;}
+
+const $ = id => document.getElementById(id);
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});}
+function peerLibReady(){return typeof Peer!=="undefined";}
+function libError(t){t.innerHTML='<div class="err-msg">Couldn\'t load the connection library. Your network may be blocking it. Try refreshing or a less restricted network. (Instructor tip: shared-screen play always works if this keeps failing.)</div>';}
+
+/* landing */
+$("btnHostChoice").addEventListener("click",startHost);
+$("btnJoinChoice").addEventListener("click",()=>{me.name=($("playerName").value.trim()||"Player 2");show("screen-join");$("codeInput").focus();});
+$("btnHostBack").addEventListener("click",()=>{teardown();show("screen-landing");});
+$("btnJoinBack").addEventListener("click",()=>{teardown();show("screen-landing");});
+
+function startHost(){
+  me.name=($("playerName").value.trim()||"Player 1");
+  isHost=true; $("hostError").innerHTML="";
+  if(!peerLibReady()){show("screen-host");libError($("hostError"));return;}
+  show("screen-host"); createHostPeer();
+}
+function createHostPeer(){
+  const code=makeCode(); $("hostCode").textContent=code;
+  peer=new Peer(code,{debug:1});
+  peer.on("open",id=>{$("hostCode").textContent=id;});
+  peer.on("connection",c=>{conn=c;setupConn();});
+  peer.on("error",err=>{
+    if(err.type==="unavailable-id"){try{peer.destroy();}catch(e){}createHostPeer();}
+    else if(err.type==="browser-incompatible"){$("hostError").innerHTML='<div class="err-msg">This browser doesn\'t support the connection method. Try Chrome, Edge, or Firefox.</div>';}
+    else if(["network","server-error","socket-error"].includes(err.type)){$("hostError").innerHTML='<div class="err-msg">Trouble reaching the connection server — your network may be blocking it. Refresh to retry.</div>';}
+  });
+}
+$("btnCopyCode").addEventListener("click",()=>{
+  const code=$("hostCode").textContent;
+  navigator.clipboard?.writeText(code).then(()=>{$("copiedFlag").textContent="Copied!";setTimeout(()=>$("copiedFlag").textContent="",1600);}).catch(()=>{$("copiedFlag").textContent="Code: "+code;});
+});
+$("btnConnect").addEventListener("click",doConnect);
+$("codeInput").addEventListener("keydown",e=>{if(e.key==="Enter")doConnect();});
+function doConnect(){
+  const code=$("codeInput").value.trim().toUpperCase(); $("joinError").innerHTML="";
+  if(code.length!==5){$("joinError").innerHTML='<div class="err-msg">Codes are exactly 5 characters. Double-check with the host.</div>';return;}
+  if(!peerLibReady()){libError($("joinError"));return;}
+  isHost=false; $("joinStatus").classList.remove("hidden"); $("btnConnect").disabled=true;
+  peer=new Peer(null,{debug:1});
+  peer.on("open",()=>{
+    conn=peer.connect(code,{reliable:true}); setupConn();
+    setTimeout(()=>{if(!gameStarted){$("joinError").innerHTML='<div class="err-msg">Still trying… make sure the host is on the waiting screen and the code is exact. You can refresh and try again.</div>';}},10000);
+  });
+  peer.on("error",err=>{
+    $("joinStatus").classList.add("hidden"); $("btnConnect").disabled=false;
+    if(err.type==="peer-unavailable"){$("joinError").innerHTML='<div class="err-msg">No game found with that code. Check it with the host — codes must be exact.</div>';}
+    else if(err.type==="browser-incompatible"){$("joinError").innerHTML='<div class="err-msg">This browser doesn\'t support the connection method. Try Chrome, Edge, or Firefox.</div>';}
+    else{$("joinError").innerHTML='<div class="err-msg">Couldn\'t connect — your network may be blocking it. Refresh and try again.</div>';}
+  });
+}
+function setupConn(){
+  conn.on("open",()=>sendHello());
+  conn.on("data",handleData);
+  conn.on("close",handleDisconnect);
+  conn.on("error",()=>{});
+}
+function sendHello(){if(helloSent)return;helloSent=true;safeSend({type:"hello",name:me.name});maybeStartGame();}
+function safeSend(o){try{if(conn&&conn.open)conn.send(o);}catch(e){}}
+function handleData(msg){
+  if(!msg||!msg.type)return;
+  if(msg.type==="hello"){opp.name=(msg.name||"Opponent").slice(0,20);oppHelloReceived=true;maybeStartGame();}
+  else if(msg.type==="predict"){oppPicks[msg.round]=msg;if(gameStarted&&msg.round===currentRound&&myLocked)revealOpponent();}
+  else if(msg.type==="restart"){resetForReplay();renderRound();show("screen-game");}
+  else if(msg.type==="bye"){handleDisconnect();}
+}
+function maybeStartGame(){if(gameStarted)return;if(helloSent&&oppHelloReceived){gameStarted=true;startGame();}}
+function handleDisconnect(){
+  const active=document.querySelector(".screen.active")?.id;
+  const banner='<div class="err-msg">Your opponent disconnected. Head back to start to play again.</div>';
+  if(active==="screen-host"){$("hostError").innerHTML=banner;}
+  else if(active==="screen-join"){$("joinError").innerHTML=banner;}
+  else if(active==="screen-game"||active==="screen-results"){alert(opp.name+" disconnected. Returning to the start screen.");teardown();show("screen-landing");}
+}
+function teardown(){
+  try{safeSend({type:"bye"});}catch(e){}
+  try{if(conn)conn.close();}catch(e){}
+  try{if(peer)peer.destroy();}catch(e){}
+  peer=null;conn=null;helloSent=false;oppHelloReceived=false;gameStarted=false;isHost=false;
+  resetForReplay(); opp.name="Opponent";
+}
+
+/* =========================================================================
+   GAME
+   ========================================================================= */
+function startGame(){
+  resetForReplay();
+  $("meNameA").textContent=me.name; $("oppNameA").textContent=opp.name;
+  $("raMeName").textContent=me.name; $("raOppName").textContent=opp.name;
+  $("finalMeName").textContent=me.name; $("finalOppName").textContent=opp.name;
+  const track=$("progressTrack");track.innerHTML="";
+  ROUNDS.forEach(()=>{const d=document.createElement("div");d.className="dot";track.appendChild(d);});
+  $("roundNow").parentElement.innerHTML='EVENT <b id="roundNow">1</b> / '+ROUNDS.length;
+  renderRound(); show("screen-game");
+}
+function resetForReplay(){
+  me.score=0;me.streak=0;opp.score=0;opp.streak=0;
+  currentRound=0;myAnswers=[];myLocked=false;selCurve=null;selEq=null;
+  for(const k in oppPicks)delete oppPicks[k];
+  updateScoreboard();
+}
+
+const CURVE_OPTIONS=[
+  {id:"demand-increase", label:"Demand increases", sub:"curve shifts right"},
+  {id:"demand-decrease", label:"Demand decreases", sub:"curve shifts left"},
+  {id:"supply-increase", label:"Supply increases", sub:"curve shifts right"},
+  {id:"supply-decrease", label:"Supply decreases", sub:"curve shifts left"},
+];
+const EQ_OPTIONS=[
+  {id:"up-up",     label:"Price ↑ · Quantity ↑"},
+  {id:"up-down",   label:"Price ↑ · Quantity ↓"},
+  {id:"down-up",   label:"Price ↓ · Quantity ↑"},
+  {id:"down-down", label:"Price ↓ · Quantity ↓"},
+];
+
+function renderRound(){
+  myLocked=false; selCurve=null; selEq=null;
+  const r=ROUNDS[currentRound];
+  $("roundNow").textContent=currentRound+1;
+  $("sRound").textContent="Event "+(currentRound+1);
+  $("sMarket").textContent=r.market;
+  $("sEvent").textContent=r.event;
+  $("sHint").textContent=r.hint?("Hint: "+r.hint):"";
+  document.querySelectorAll("#progressTrack .dot").forEach((d,i)=>{d.className="dot"+(i<currentRound?" done":i===currentRound?" now":"");});
+
+  // reset panels
+  $("revealWrap").classList.add("hidden");
+  $("waitingBar").classList.add("hidden");
+  $("btnContinue").classList.add("hidden");
+  $("btnLock").disabled=true; $("btnLock").textContent="Lock in prediction";
+  $("q1group").style.opacity="1"; $("q2group").style.opacity="1";
+
+  // build curve picks
+  const pc=$("picksCurve");pc.innerHTML="";
+  CURVE_OPTIONS.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="pick";b.dataset.id=o.id;
+    b.innerHTML=o.label+'<span class="p-sub">'+o.sub+'</span>';
+    b.addEventListener("click",()=>selectPick("curve",o.id,b));
+    pc.appendChild(b);
+  });
+  // build eq picks
+  const pe=$("picksEq");pe.innerHTML="";
+  EQ_OPTIONS.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="pick";b.dataset.id=o.id;b.textContent=o.label;
+    b.addEventListener("click",()=>selectPick("eq",o.id,b));
+    pe.appendChild(b);
+  });
+  updateScoreboard();
+}
+
+function selectPick(group,id,btn){
+  if(myLocked)return;
+  const container = group==="curve" ? $("picksCurve") : $("picksEq");
+  container.querySelectorAll(".pick").forEach(p=>p.classList.remove("selected"));
+  btn.classList.add("selected");
+  if(group==="curve") selCurve=id; else selEq=id;
+  $("btnLock").disabled = !(selCurve && selEq);
+}
+
+$("btnLock").addEventListener("click",lockPrediction);
+function lockPrediction(){
+  if(myLocked||!selCurve||!selEq)return;
+  myLocked=true;
+  const r=ROUNDS[currentRound];
+  const correctCurve=r.curve+"-"+r.direction;
+  const eq=eqOutcome(r.curve,r.direction);
+  const correctEq=eq.p+"-"+eq.q;
+  const curveOK=selCurve===correctCurve;
+  const eqOK=selEq===correctEq;
+
+  let gained=(curveOK?PTS_CURVE:0)+(eqOK?PTS_EQ:0);
+  let bonus=0;
+  if(curveOK&&eqOK){me.streak++;bonus=5*me.streak;} else {me.streak=0;}
+  gained+=bonus;
+  me.score+=gained;
+  myAnswers[currentRound]={curvePick:selCurve,eqPick:selEq,curveOK,eqOK,gained,bonus};
+
+  // mark picks correct/wrong
+  markPicks($("picksCurve"),selCurve,correctCurve);
+  markPicks($("picksEq"),selEq,correctEq);
+  document.querySelectorAll("#picksCurve .pick, #picksEq .pick").forEach(p=>p.disabled=true);
+  $("btnLock").classList.add("hidden");
+
+  // teaching reveal (graph + explanation) — shown immediately
+  $("graphHost").innerHTML=buildGraph(r.curve,r.direction);
+  $("explainStamp").textContent=(curveOK&&eqOK)?"You nailed it ✓":"Correct answer";
+  $("explainDeterminant").textContent=r.determinant;
+  $("explainBody").innerHTML=r.explain;
+  $("explainResult").innerHTML=
+    '<span class="pq">Equilibrium price <b class="'+(eq.p==="up"?"up":"down")+'">'+(eq.p==="up"?"↑ rises":"↓ falls")+'</b></span>'+
+    '<span class="pq">Equilibrium quantity <b class="'+(eq.q==="up"?"up":"down")+'">'+(eq.q==="up"?"↑ rises":"↓ falls")+'</b></span>';
+
+  // my answer summary
+  $("raMeLine").innerHTML=answerLine(selCurve,selEq,curveOK,eqOK);
+  $("raMePts").innerHTML='+'+gained+' pts'+(bonus>0?' <span style="color:var(--coral)">(🔥 streak +'+bonus+')</span>':'');
+
+  $("revealWrap").classList.remove("hidden");
+  updateScoreboard();
+
+  // send my prediction
+  safeSend({type:"predict",round:currentRound,curvePick:selCurve,eqPick:selEq,score:me.score});
+
+  if(oppPicks[currentRound]) revealOpponent();
+  else{$("waitingText").textContent="Locked in. Waiting for "+opp.name+"…";$("waitingBar").classList.remove("hidden");}
+}
+
+function markPicks(container,chosen,correct){
+  container.querySelectorAll(".pick").forEach(p=>{
+    p.classList.remove("selected");
+    if(p.dataset.id===correct)p.classList.add("correct");
+    if(p.dataset.id===chosen&&chosen!==correct)p.classList.add("wrong");
+  });
+}
+function answerLine(curvePick,eqPick,curveOK,eqOK){
+  const c=CURVE_OPTIONS.find(o=>o.id===curvePick), e=EQ_OPTIONS.find(o=>o.id===eqPick);
+  return '<span class="'+(curveOK?"tick":"cross")+'">'+(curveOK?"✓":"✗")+'</span> '+c.label+
+         '<br><span class="'+(eqOK?"tick":"cross")+'">'+(eqOK?"✓":"✗")+'</span> '+e.label;
+}
+
+function revealOpponent(){
+  const oc=oppPicks[currentRound];if(!oc)return;
+  opp.score=oc.score;
+  const r=ROUNDS[currentRound];
+  const correctCurve=r.curve+"-"+r.direction;
+  const eq=eqOutcome(r.curve,r.direction);const correctEq=eq.p+"-"+eq.q;
+  const cOK=oc.curvePick===correctCurve, eOK=oc.eqPick===correctEq;
+  // track opp streak for display parity
+  if(cOK&&eOK)opp.streak++;else opp.streak=0;
+  $("raOppLine").innerHTML=answerLine(oc.curvePick,oc.eqPick,cOK,eOK);
+  const gained=(cOK?PTS_CURVE:0)+(eOK?PTS_EQ:0)+((cOK&&eOK)?5*opp.streak:0);
+  $("raOppPts").textContent='+'+gained+' pts';
+  $("waitingBar").classList.add("hidden");
+  $("btnContinue").textContent=(currentRound===ROUNDS.length-1)?"See final results →":"Next event →";
+  $("btnContinue").classList.remove("hidden");
+  updateScoreboard();
+}
+
+$("btnContinue").addEventListener("click",()=>{
+  if(currentRound<ROUNDS.length-1){currentRound++;renderRound();window.scrollTo({top:0,behavior:"smooth"});}
+  else showResults();
+});
+
+function updateScoreboard(){
+  $("meScore").textContent=me.score; $("oppScore").textContent=opp.score;
+  $("meStreak").textContent = me.streak>=2 ? ("🔥 "+me.streak+"-round streak") : "";
+  $("oppStreak").textContent = opp.streak>=2 ? ("🔥 "+opp.streak+"-round streak") : "";
+}
+
+/* =========================================================================
+   SUPPLY & DEMAND GRAPH (SVG)
+   Baseline: Demand P=9-0.8Q, Supply P=1+0.8Q -> E0 at (5,5).
+   A shift changes one curve's intercept by 3; new equilibrium E1 computed.
+   ========================================================================= */
+function buildGraph(curve,direction){
+  const W=360,H=300,left=46,right=22,top=24,bottom=46;
+  const plotW=W-left-right, plotH=H-top-bottom, oy=H-bottom;
+  const X=Q=>left+(Q/10)*plotW, Y=P=>oy-(P/10)*plotH;
+  const mD=-0.8, mS=0.8; let bD=9,bS=1, nbD=9,nbS=1;
+  if(curve==="demand") nbD = direction==="increase"?12:6;
+  else nbS = direction==="increase"?-2:4;
+  const solve=(bd,bs)=>{const Q=(bd-bs)/(mS-mD);return{Q,P:bd+mD*Q};};
+  const E0=solve(bD,bS), E1=solve(nbD,nbS);
+  const seg=(b,m)=>`${X(0)},${Y(b+m*0)} ${X(10)},${Y(b+m*10)}`;
+
+  const demandMoves = curve==="demand";
+  // colors
+  const cD="var(--demand)", cS="var(--supply)", cE1="var(--gold)";
+
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Supply and demand shift">';
+  s+='<defs><clipPath id="plot"><rect x="'+left+'" y="'+top+'" width="'+plotW+'" height="'+plotH+'"/></clipPath></defs>';
+  // axes
+  s+='<line x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+oy+'" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>';
+  s+='<line x1="'+left+'" y1="'+oy+'" x2="'+(W-right)+'" y2="'+oy+'" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>';
+  s+='<text x="'+left+'" y="16" fill="var(--muted)" font-size="12" font-family="Space Mono, monospace" text-anchor="middle">Price</text>';
+  s+='<text x="'+(W-right)+'" y="'+(oy+30)+'" fill="var(--muted)" font-size="12" font-family="Space Mono, monospace" text-anchor="end">Quantity</text>';
+
+  s+='<g clip-path="url(#plot)">';
+  // stable curve (the one that does NOT move) drawn solid
+  if(demandMoves){ // supply stable
+    s+='<polyline points="'+seg(bS,mS)+'" fill="none" stroke="'+cS+'" stroke-width="3"/>';
+    // demand original (dashed faint) + new (bold)
+    s+='<polyline points="'+seg(bD,mD)+'" fill="none" stroke="'+cD+'" stroke-width="2.4" stroke-dasharray="5 5" opacity="0.45"/>';
+    s+='<polyline points="'+seg(nbD,mD)+'" fill="none" stroke="'+cD+'" stroke-width="3.4"/>';
+  } else { // demand stable
+    s+='<polyline points="'+seg(bD,mD)+'" fill="none" stroke="'+cD+'" stroke-width="3"/>';
+    s+='<polyline points="'+seg(bS,mS)+'" fill="none" stroke="'+cS+'" stroke-width="2.4" stroke-dasharray="5 5" opacity="0.45"/>';
+    s+='<polyline points="'+seg(nbS,mS)+'" fill="none" stroke="'+cS+'" stroke-width="3.4"/>';
+  }
+  // guides for E0 (faint) and E1 (gold)
+  const guide=(E,color,op)=>`<line x1="${X(E.Q)}" y1="${Y(E.P)}" x2="${X(E.Q)}" y2="${oy}" stroke="${color}" stroke-width="1.2" stroke-dasharray="3 3" opacity="${op}"/><line x1="${X(E.Q)}" y1="${Y(E.P)}" x2="${left}" y2="${Y(E.P)}" stroke="${color}" stroke-width="1.2" stroke-dasharray="3 3" opacity="${op}"/>`;
+  s+=guide(E0,"rgba(255,255,255,0.5)",0.6);
+  s+=guide(E1,cE1,0.95);
+  s+='</g>';
+
+  // curve labels near right end
+  if(demandMoves){
+    s+='<text x="'+(X(10)-2)+'" y="'+(Y(bS+mS*10)-6)+'" fill="'+cS+'" font-size="13" font-weight="700" text-anchor="end" font-family="Space Grotesk">S</text>';
+    s+='<text x="'+(X(9.4))+'" y="'+(Y(nbD+mD*9.4)-6)+'" fill="'+cD+'" font-size="13" font-weight="700" text-anchor="end" font-family="Space Grotesk">D'+(direction==="increase"?"₁":"₁")+'</text>';
+    s+='<text x="'+(X(9.4))+'" y="'+(Y(bD+mD*9.4)+14)+'" fill="'+cD+'" font-size="11" opacity="0.6" text-anchor="end" font-family="Space Grotesk">D₀</text>';
+  } else {
+    s+='<text x="'+(X(9.4))+'" y="'+(Y(bD+mD*9.4)-6)+'" fill="'+cD+'" font-size="13" font-weight="700" text-anchor="end" font-family="Space Grotesk">D</text>';
+    s+='<text x="'+(X(10)-2)+'" y="'+(Y(nbS+mS*10)-6)+'" fill="'+cS+'" font-size="13" font-weight="700" text-anchor="end" font-family="Space Grotesk">S₁</text>';
+    s+='<text x="'+(X(10)-2)+'" y="'+(Y(bS+mS*10)+14)+'" fill="'+cS+'" font-size="11" opacity="0.6" text-anchor="end" font-family="Space Grotesk">S₀</text>';
+  }
+  // equilibrium dots + labels
+  s+='<circle cx="'+X(E0.Q)+'" cy="'+Y(E0.P)+'" r="4.5" fill="none" stroke="#fff" stroke-width="2"/>';
+  s+='<text x="'+(X(E0.Q)+8)+'" y="'+(Y(E0.P)-6)+'" fill="#fff" font-size="12" font-weight="700" font-family="Space Mono, monospace">E₀</text>';
+  s+='<circle cx="'+X(E1.Q)+'" cy="'+Y(E1.P)+'" r="5.5" fill="'+cE1+'"/>';
+  s+='<text x="'+(X(E1.Q)+8)+'" y="'+(Y(E1.P)-6)+'" fill="'+cE1+'" font-size="12" font-weight="700" font-family="Space Mono, monospace">E₁</text>';
+  s+='</svg>';
+  return s;
+}
+
+/* =========================================================================
+   RESULTS
+   ========================================================================= */
+function showResults(){
+  $("finalMeScore").textContent=me.score;
+  $("finalOppScore").textContent=opp.score;
+  const myRight=myAnswers.filter(a=>a.curveOK&&a.eqOK).length;
+  $("finalMeBreak").textContent=myRight+" / "+ROUNDS.length+" perfect calls";
+  const oppRight=Object.values(oppPicks).filter(oc=>{
+    const r=ROUNDS[oc.round];const eq=eqOutcome(r.curve,r.direction);
+    return oc.curvePick===r.curve+"-"+r.direction && oc.eqPick===eq.p+"-"+eq.q;
+  }).length;
+  $("finalOppBreak").textContent=oppRight+" / "+ROUNDS.length+" perfect calls";
+
+  $("finalMe").classList.remove("winner");$("finalOpp").classList.remove("winner");
+  const head=$("rHeadline"), ec=$("rExtraCredit"); head.className="";
+  if(me.score>opp.score){
+    head.textContent="You win! 🏆";head.classList.add("win");$("finalMe").classList.add("winner");
+    ec.innerHTML='<div class="extra-credit">🎓 '+me.name+' earns the extra credit</div>';
+  } else if(me.score<opp.score){
+    head.textContent=opp.name+" wins";head.classList.add("lose");$("finalOpp").classList.add("winner");
+    ec.innerHTML='<div class="extra-credit" style="background:var(--teal);color:#03251f;box-shadow:0 10px 26px -8px rgba(52,217,192,0.5);">🎓 '+opp.name+' earns the extra credit</div>';
+  } else {
+    head.textContent="It's a tie!";head.classList.add("tie");$("finalMe").classList.add("winner");$("finalOpp").classList.add("winner");
+    ec.innerHTML='<div class="extra-credit" style="background:var(--teal);color:#03251f;">🎓 A tie — you both make the case to your professor!</div>';
+  }
+
+  const recap=$("recapList");recap.innerHTML="";
+  ROUNDS.forEach((r,i)=>{
+    const eq=eqOutcome(r.curve,r.direction);
+    const a=myAnswers[i];
+    const correctCurveLabel=CURVE_OPTIONS.find(o=>o.id===r.curve+"-"+r.direction).label;
+    const row=document.createElement("div");row.className="recap-row";
+    row.innerHTML=
+      '<div class="rr-top">Event '+(i+1)+' · '+r.market+'</div>'+
+      '<div class="rr-event">'+r.event+'</div>'+
+      '<div class="rr-ans">Correct: <b>'+correctCurveLabel+'</b> → price <b>'+(eq.p==="up"?"↑":"↓")+'</b>, quantity <b>'+(eq.q==="up"?"↑":"↓")+'</b> &nbsp;·&nbsp; '+r.determinant.split("·")[1].trim()+'</div>'+
+      (a?'<div class="rr-you">You: <span class="'+(a.curveOK?"tick":"cross")+'">'+(a.curveOK?"✓ curve":"✗ curve")+'</span> &nbsp; <span class="'+(a.eqOK?"tick":"cross")+'">'+(a.eqOK?"✓ equilibrium":"✗ equilibrium")+'</span></div>':'');
+    recap.appendChild(row);
+  });
+  show("screen-results");
+}
+
+$("btnPlayAgain").addEventListener("click",()=>{safeSend({type:"restart"});resetForReplay();renderRound();show("screen-game");});
+$("btnQuit").addEventListener("click",()=>{teardown();show("screen-landing");});
+
+window.addEventListener("load",()=>{if(!peerLibReady())console.warn("PeerJS library did not load.");});
+</script>
+</body>
+</html>

@@ -1,0 +1,1166 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cedar Flats Money Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --bg:#EFF3F2; --surface:#FFFFFF; --surface-2:#F6F9F8; --surface-3:#E7EDEC;
+  --ink:#0F2429; --ink-soft:#4B6168; --ink-faint:#7B9198;
+  --rule:#D3DEDC; --rule-strong:#B4C4C2;
+  --accent:#0E7C8A; --accent-deep:#075662; --accent-wash:#E2F1F2;
+  --admit:#1C7047; --admit-wash:#E2F0E8;
+  --reject:#AE2F1C; --reject-wash:#F8E6E2;
+  --ochre:#9C6A0C; --ochre-wash:#F7EDD8;
+  --shadow:0 1px 2px rgba(15,36,41,.06), 0 8px 24px -14px rgba(15,36,41,.28);
+  --font-display:'Archivo', system-ui, 'Helvetica Neue', Arial, sans-serif;
+  --font-body:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+}
+:root:not([data-theme="light"]){ color-scheme:light; }
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0B1719; --surface:#122326; --surface-2:#162B2F; --surface-3:#1D373C;
+    --ink:#E3EDEC; --ink-soft:#9AB0B4; --ink-faint:#728B90;
+    --rule:#254045; --rule-strong:#33565C;
+    --accent:#3FB9C6; --accent-deep:#8AD9E1; --accent-wash:#0F3238;
+    --admit:#57BE87; --admit-wash:#102E22;
+    --reject:#E97C64; --reject-wash:#381913;
+    --ochre:#DCA843; --ochre-wash:#33260D;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0B1719; --surface:#122326; --surface-2:#162B2F; --surface-3:#1D373C;
+  --ink:#E3EDEC; --ink-soft:#9AB0B4; --ink-faint:#728B90;
+  --rule:#254045; --rule-strong:#33565C;
+  --accent:#3FB9C6; --accent-deep:#8AD9E1; --accent-wash:#0F3238;
+  --admit:#57BE87; --admit-wash:#102E22;
+  --reject:#E97C64; --reject-wash:#381913;
+  --ochre:#DCA843; --ochre-wash:#33260D;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display); text-wrap:balance; margin:0; line-height:1.18}
+p{margin:0}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:3px}
+.wrap{max-width:1060px; margin:0 auto; padding-inline:18px; padding-block:0 60px}
+.mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+.small{font-size:13.5px; color:var(--ink-soft)}
+.eyebrow{font-family:var(--font-mono); font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--accent); font-weight:500}
+.panel{background:var(--surface); border:1px solid var(--rule); border-radius:4px; box-shadow:var(--shadow)}
+[hidden]{display:none !important}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky; top:0; z-index:30; background:var(--surface); border-bottom:1px solid var(--rule)}
+.bar-in{max-width:1060px; margin:0 auto; padding:9px 18px; display:flex; align-items:center; gap:13px; flex-wrap:wrap}
+.stamp{font-family:var(--font-display); font-weight:700; font-size:11.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--accent-deep); border:2px solid var(--accent);
+  border-radius:2px; padding:3px 8px; transform:rotate(-1.5deg)}
+.bar-title{font-family:var(--font-display); font-weight:600; font-size:14.5px}
+.bar-sub{font-family:var(--font-mono); font-size:11px; color:var(--ink-faint)}
+.bar-spacer{flex:1 1 auto; min-width:6px}
+.discbtn{background:var(--accent-wash); border:1px solid var(--accent); border-radius:2px;
+  padding:5px 11px; font-family:var(--font-mono); font-size:11.5px; cursor:pointer;
+  color:var(--accent-deep); letter-spacing:.03em; display:flex; gap:7px; align-items:center}
+:root[data-theme="dark"] .discbtn{color:var(--accent-deep)}
+.discbtn b{font-size:13px; font-weight:600}
+.discbtn:hover{background:var(--accent); color:#fff}
+:root[data-theme="dark"] .discbtn:hover{color:#07191C}
+.theme-btn{background:none; border:1px solid var(--rule-strong); border-radius:2px; padding:5px 9px;
+  font-family:var(--font-mono); font-size:11px; cursor:pointer; color:var(--ink-soft)}
+.theme-btn:hover{border-color:var(--accent); color:var(--accent)}
+
+/* ---------- buttons ---------- */
+.btn{font-family:var(--font-display); font-weight:600; font-size:15px; background:var(--accent);
+  color:#fff; border:none; border-radius:3px; padding:12px 26px; cursor:pointer}
+:root[data-theme="dark"] .btn{color:#07191C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#07191C}}
+.btn:hover{background:var(--accent-deep)}
+.btn.ghost{background:none; color:var(--accent); border:1px solid var(--rule-strong)}
+.btn.ghost:hover{background:var(--accent-wash); border-color:var(--accent)}
+.btn.sm{font-size:13.5px; padding:8px 16px}
+.btn[disabled]{opacity:.4; cursor:not-allowed}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
+/* ---------- home ---------- */
+.hero{padding:36px 0 22px; display:grid; gap:14px}
+.hero h1{font-size:clamp(30px,5.4vw,46px); letter-spacing:-.022em}
+.lede{font-size:17px; color:var(--ink-soft); max-width:63ch}
+.sig{font-family:var(--font-mono); font-size:12px; color:var(--ink-faint);
+  border-top:1px solid var(--rule); padding-top:12px}
+.phases{display:grid; gap:0; margin:22px 0}
+.ph{display:grid; grid-template-columns:78px 1fr; gap:16px; padding:16px 20px;
+  border:1px solid var(--rule); border-bottom:none; background:var(--surface)}
+.ph:first-child{border-radius:4px 4px 0 0}
+.ph:last-child{border-bottom:1px solid var(--rule); border-radius:0 0 4px 4px}
+.ph .n{font-family:var(--font-mono); font-size:11px; color:var(--accent); letter-spacing:.1em; font-weight:600}
+.ph h3{font-size:16.5px; margin-bottom:3px}
+.ph p{font-size:13.5px; color:var(--ink-soft)}
+.rules{padding:20px 22px; display:grid; gap:9px; border-left:4px solid var(--accent); margin-bottom:20px}
+.rules h3{font-size:16px}
+.rules li{font-size:14.5px; color:var(--ink-soft); margin-bottom:4px}
+.rules ul{margin:0; padding-left:19px}
+
+/* ---------- phase head + meter ---------- */
+.phasehead{padding:22px 0 12px; display:flex; gap:14px; align-items:baseline; flex-wrap:wrap}
+.phasehead h2{font-size:clamp(21px,3.4vw,29px); letter-spacing:-.018em}
+.note{background:var(--accent-wash); border:1px solid var(--rule); border-radius:3px;
+  padding:12px 15px; font-size:14px; color:var(--ink-soft); margin-bottom:14px}
+.note b{color:var(--ink)}
+
+.meter{display:grid; grid-template-columns:minmax(180px,1fr) 2.4fr; gap:12px;
+  position:sticky; top:var(--barh,58px); z-index:20; background:var(--bg);
+  padding-block:9px; margin-bottom:4px}
+@media (max-width:760px){ .meter{position:static; padding-block:0; margin-bottom:12px} }
+.gdpbox{background:var(--surface); border:1px solid var(--accent); border-radius:4px;
+  padding:12px 16px; display:grid; gap:2px; align-content:center}
+.gdpbox em{font-family:var(--font-mono); font-style:normal; font-size:10.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-faint)}
+.gdpbox b{font-family:var(--font-mono); font-size:clamp(24px,4.6vw,34px); font-weight:600;
+  color:var(--accent); line-height:1.05; font-variant-numeric:tabular-nums}
+.gdpbox.pulse{animation:pulse .55s ease}
+.gdpbox.nudge{animation:nudge .5s ease}
+@keyframes pulse{0%{background:var(--admit-wash)}100%{background:var(--surface)}}
+@keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.comps{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+.comp{background:var(--surface); border:1px solid var(--rule); border-radius:4px;
+  padding:9px 11px; display:grid; gap:5px; align-content:start}
+.comp em{font-family:var(--font-mono); font-style:normal; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-faint)}
+.comp b{font-family:var(--font-mono); font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums}
+.comp .track{height:5px; background:var(--surface-3); border-radius:3px; overflow:hidden}
+.comp .track i{display:block; height:100%; background:var(--accent); width:0; transition:width .45s ease}
+.comp.neg b{color:var(--reject)}
+.comp.neg .track i{background:var(--reject)}
+
+/* ---------- board ---------- */
+.flowbox{background:var(--surface); border:1px solid var(--rule); border-radius:4px;
+  padding:8px; margin-bottom:12px; box-shadow:var(--shadow); overflow-x:auto}
+.flowbox svg{display:block; width:100%; height:auto; min-width:620px}
+.node{fill:var(--surface-2); stroke:var(--rule-strong); stroke-width:1.5}
+.node.mkt{fill:var(--accent-wash); stroke:var(--accent); stroke-width:1.5}
+.nlabel{font-family:var(--font-display); font-size:15px; font-weight:600; fill:var(--ink); text-anchor:middle}
+.nlabel.sm{font-size:12.5px}
+.nsub{font-family:var(--font-mono); font-size:9.5px; fill:var(--ink-faint); text-anchor:middle; letter-spacing:.06em}
+.flow{fill:none; stroke:var(--rule-strong); stroke-width:2.5; marker-end:url(#ah); transition:stroke .25s ease, stroke-width .25s ease}
+.flow.hot{stroke:var(--accent); stroke-width:4.5; marker-end:url(#ahOn)}
+.flow.cold{stroke:var(--reject); stroke-width:4; marker-end:url(#ahNo)}
+.flab{font-family:var(--font-mono); font-size:11px; font-weight:500; fill:var(--ink-faint);
+  text-anchor:middle; letter-spacing:.03em; paint-order:stroke fill; stroke:var(--surface);
+  stroke-width:5px; stroke-linejoin:round; stroke-linecap:round}
+.flab.hot{fill:var(--accent); font-weight:600}
+.flab.cold{fill:var(--reject); font-weight:600}
+#ah path{fill:var(--rule-strong)} #ahOn path{fill:var(--accent)} #ahNo path{fill:var(--reject)}
+.coin{fill:var(--accent); stroke:var(--surface); stroke-width:2}
+.coin.no{fill:var(--reject)}
+
+/* ---------- readout ---------- */
+.readout{border:1px solid var(--rule); border-left-width:4px; border-radius:3px;
+  padding:14px 16px; margin-bottom:12px; display:grid; gap:6px; background:var(--surface)}
+.readout.up{border-left-color:var(--admit); background:var(--admit-wash)}
+.readout.flat{border-left-color:var(--reject); background:var(--reject-wash)}
+.readout.idle{border-left-color:var(--rule-strong)}
+.readout h4{font-family:var(--font-mono); font-size:11px; font-weight:600; letter-spacing:.13em; text-transform:uppercase}
+.readout.up h4{color:var(--admit)} .readout.flat h4{color:var(--reject)} .readout.idle h4{color:var(--ink-faint)}
+.readout p{font-size:14.5px; line-height:1.5}
+.readout .amtline{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft)}
+
+/* ---------- tile deck ---------- */
+.decklabel{display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  margin:16px 0 8px; flex-wrap:wrap}
+.decklabel h3{font-size:16px}
+.deck{display:grid; grid-template-columns:repeat(auto-fill,minmax(228px,1fr)); gap:8px}
+.tile{text-align:left; background:var(--surface); border:1px solid var(--rule-strong); border-radius:3px;
+  padding:11px 13px; cursor:pointer; display:grid; gap:4px; align-content:start}
+.tile:hover{border-color:var(--accent); background:var(--accent-wash)}
+.tile strong{font-family:var(--font-display); font-size:13.5px; font-weight:600; line-height:1.32}
+.tile span{font-family:var(--font-mono); font-size:12px; color:var(--accent); font-weight:500}
+.tile.used{opacity:.62}
+.tile.used strong::after{content:' \2713'; color:var(--admit)}
+
+/* ---------- choices (phase 2) ---------- */
+.choices{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:8px; margin-bottom:12px}
+.opt{text-align:left; background:var(--surface); border:1px solid var(--rule-strong); border-radius:3px;
+  padding:12px 14px; cursor:pointer; display:grid; gap:4px; font-family:var(--font-display);
+  font-size:14px; font-weight:600; line-height:1.3}
+.opt small{font-family:var(--font-body); font-weight:400; font-size:12.5px; color:var(--ink-soft); line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--accent); background:var(--accent-wash)}
+.opt:disabled{cursor:default; opacity:.5}
+.opt.chosen{border-color:var(--accent); border-width:2px; background:var(--accent-wash); opacity:1}
+
+.event{background:var(--ochre-wash); border:1px solid var(--ochre); border-left-width:4px;
+  border-radius:3px; padding:12px 15px; margin-bottom:12px; display:grid; gap:5px}
+.event h4{font-family:var(--font-mono); font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--ochre)}
+.event p{font-size:14.5px}
+.event .fx{font-family:var(--font-mono); font-size:13px; color:var(--ink-soft)}
+
+.months{display:flex; gap:3px; align-items:flex-end; height:56px; margin-bottom:12px;
+  padding:8px 10px; background:var(--surface); border:1px solid var(--rule); border-radius:4px}
+.months div{flex:1; background:var(--surface-3); border-radius:2px 2px 0 0; min-height:3px; position:relative}
+.months div.on{background:var(--accent)}
+
+/* ---------- loop phase ---------- */
+.loopgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; margin-bottom:12px}
+.sidebox{background:var(--surface); border:1px solid var(--rule); border-radius:4px; padding:13px 15px; display:grid; gap:8px}
+.sidebox h4{font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint)}
+.lrow{display:flex; justify-content:space-between; gap:10px; font-family:var(--font-mono); font-size:13.5px;
+  font-variant-numeric:tabular-nums; padding:3px 0; border-bottom:1px dotted var(--rule)}
+.lrow:last-of-type{border-bottom:none}
+.lrow b{font-weight:600}
+.lrow.tot{border-top:1.5px solid var(--rule-strong); border-bottom:none; margin-top:3px; padding-top:6px}
+.lrow.leak b{color:var(--reject)} .lrow.inj b{color:var(--admit)}
+.stepper{display:flex; align-items:center; gap:8px}
+.stepper button{width:30px; height:30px; border:1px solid var(--rule-strong); background:var(--surface);
+  border-radius:3px; cursor:pointer; font-family:var(--font-mono); font-size:15px; line-height:1}
+.stepper button:hover{border-color:var(--accent); color:var(--accent)}
+.stepper .v{font-family:var(--font-mono); font-size:16px; font-weight:600; min-width:56px; text-align:right;
+  font-variant-numeric:tabular-nums}
+.stepper .lbl{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); flex:1}
+.balance{padding:11px 15px; border-radius:3px; font-family:var(--font-mono); font-size:13.5px;
+  border:1px solid var(--rule); margin-bottom:12px}
+.balance.good{border-color:var(--admit); background:var(--admit-wash); color:var(--admit)}
+.balance.low{border-color:var(--reject); background:var(--reject-wash); color:var(--reject)}
+.balance.high{border-color:var(--ochre); background:var(--ochre-wash); color:var(--ochre)}
+.ybar{display:flex; gap:3px; align-items:flex-end; height:64px; margin-bottom:12px; padding:8px 10px;
+  background:var(--surface); border:1px solid var(--rule); border-radius:4px}
+.ybar div{flex:1; border-radius:2px 2px 0 0; min-height:3px; background:var(--surface-3)}
+.ybar div.on{background:var(--accent)}
+.ybar div.out{background:var(--reject)}
+.flow.leakhl{stroke:var(--reject); stroke-width:3.5; marker-end:url(#ahNo)}
+.flow.injhl{stroke:var(--admit); stroke-width:3.5; marker-end:url(#ahOk)}
+.flab.leakhl{fill:var(--reject); font-weight:600}
+.flab.injhl{fill:var(--admit); font-weight:600}
+#ahOk path{fill:var(--admit)}
+.ybar div.out{background:var(--reject)}
+
+/* ---------- discoveries drawer ---------- */
+.drawer{position:fixed; inset:0 0 0 auto; width:min(420px,92vw); background:var(--surface);
+  border-left:1px solid var(--rule); z-index:40; padding:18px; overflow-y:auto;
+  box-shadow:-12px 0 40px -20px rgba(0,0,0,.4); display:grid; gap:12px; align-content:start}
+.drawer-head{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.drawer h3{font-size:18px}
+.dlist{display:grid; gap:7px}
+.dcard{border:1px solid var(--rule); border-radius:3px; padding:10px 12px; display:grid; gap:3px;
+  background:var(--surface-2)}
+.dcard.got{border-color:var(--admit); background:var(--admit-wash)}
+.dcard strong{font-family:var(--font-display); font-size:13.5px; font-weight:600}
+.dcard.got strong::before{content:'\2713  '; color:var(--admit)}
+.dcard p{font-size:12.5px; color:var(--ink-soft); line-height:1.42}
+.dcard.locked strong{color:var(--ink-faint)}
+.dcard.locked p{visibility:hidden}
+.dcard.locked strong::before{content:'\2014  '; color:var(--ink-faint)}
+.scrim{position:fixed; inset:0; background:rgba(8,20,22,.45); z-index:35}
+
+/* toast */
+.toast{position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:50;
+  background:var(--admit); color:#fff; border-radius:4px; padding:12px 20px; display:grid; gap:2px;
+  box-shadow:0 10px 30px -12px rgba(0,0,0,.5); max-width:92vw}
+.toast em{font-family:var(--font-mono); font-style:normal; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; opacity:.85}
+.toast strong{font-family:var(--font-display); font-size:15px}
+@media (prefers-reduced-motion:no-preference){ .toast{animation:rise .35s ease} }
+@keyframes rise{from{opacity:0; transform:translate(-50%,14px)}to{opacity:1; transform:translate(-50%,0)}}
+
+/* end screen */
+.endhead{padding:28px 22px; display:grid; gap:11px; text-align:center; margin-bottom:16px}
+.endhead .big{font-family:var(--font-mono); font-size:clamp(38px,8vw,60px); font-weight:600;
+  color:var(--accent); line-height:1; font-variant-numeric:tabular-nums}
+.reflect{padding:20px 22px; display:grid; gap:10px}
+.reflect ol{margin:0; padding-left:20px; display:grid; gap:8px}
+.reflect li{font-size:14.5px; color:var(--ink-soft)}
+
+@media (max-width:760px){
+  .meter{grid-template-columns:1fr}
+  .comps{grid-template-columns:repeat(2,1fr)}
+  .ph{grid-template-columns:56px 1fr; gap:10px}
+}
+</style>
+<header class="bar">
+  <div class="bar-in">
+    <span class="stamp">CF</span>
+    <div>
+      <div class="bar-title">Cedar Flats Money Machine</div>
+      <div class="bar-sub">ECON&#8209;2301 &middot; Dr. Sarabjeet Bedi</div>
+    </div>
+    <div class="bar-spacer"></div>
+    <button class="discbtn" id="discBtn" type="button">Discoveries <b id="discCount">0/14</b></button>
+    <button class="theme-btn" id="themeBtn" type="button">Dark</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================== HOME ===================== -->
+<section id="s-home">
+  <div class="hero">
+    <div class="eyebrow">A town that runs on your decisions</div>
+    <h1>Cedar Flats has $0 of GDP and no idea how to make any.</h1>
+    <p class="lede">You run the money. Push a dollar into the town and watch where it goes &mdash; along the arrows, into somebody&rsquo;s pocket, out to Vietnam, or nowhere at all. Nothing here is graded. Some moves make the GDP counter jump; some make it sit perfectly still, and those are the interesting ones.</p>
+    <div class="sig">Fourteen discoveries hidden in the machine &middot; Built for ECON&#8209;2301 by Dr. Sarabjeet Bedi</div>
+  </div>
+
+  <div class="phases">
+    <div class="ph"><div class="n">PHASE 1</div><div><h3>The Money Machine</h3><p>Free play. Click any transaction in town and watch the money travel. No turns, no limit, no wrong moves. Find all fourteen discoveries if you can.</p></div></div>
+    <div class="ph"><div class="n">PHASE 2</div><div><h3>A Year in Cedar Flats</h3><p>Twelve months. Each month the town faces a real decision and you choose. Then something happens that you did not choose. Your GDP at the end is whatever your year actually produced.</p></div></div>
+    <div class="ph"><div class="n">PHASE 3</div><div><h3>Keep the Loop Running</h3><p>Money leaks out of the economy through saving, taxes and imports. Put it back through investment, government and exports &mdash; or watch incomes shrink.</p></div></div>
+  </div>
+
+  <div class="panel rules">
+    <h3>Three things before you start</h3>
+    <ul>
+      <li>Nothing is scored and nothing is timed. You cannot lose.</li>
+      <li>The counter only moves when something is <em>produced</em>. Money changing hands is not the same thing, and the machine will show you the difference.</li>
+      <li>A discovery unlocks the first time you make the machine behave unexpectedly. Chasing the strange results is the fastest way through.</li>
+    </ul>
+  </div>
+
+  <div class="btnrow" style="margin-top:20px">
+    <button class="btn" id="startBtn" type="button">Start the machine</button>
+    <span class="small">Nothing is saved or sent. Refresh to reset the town.</span>
+  </div>
+</section>
+
+<!-- ===================== PLAY ===================== -->
+<div id="play" hidden>
+  <div class="phasehead">
+    <span class="eyebrow" id="phEyebrow">Phase 1 of 3</span>
+    <h2 id="phTitle">The Money Machine</h2>
+  </div>
+  <div class="note" id="phNote"></div>
+
+  <div class="meter">
+    <div class="gdpbox" id="gdpBox">
+      <em id="gdpLabel">GDP so far</em>
+      <b id="gdpVal">$0</b>
+    </div>
+    <div class="comps">
+      <div class="comp" id="compC"><em>C &middot; consumption</em><b>$0</b><div class="track"><i></i></div></div>
+      <div class="comp" id="compI"><em>I &middot; investment</em><b>$0</b><div class="track"><i></i></div></div>
+      <div class="comp" id="compG"><em>G &middot; government</em><b>$0</b><div class="track"><i></i></div></div>
+      <div class="comp" id="compNX"><em>NX &middot; net exports</em><b>$0</b><div class="track"><i></i></div></div>
+    </div>
+  </div>
+
+  <div class="ybar" id="ybar" hidden></div>
+  <div class="months" id="months" hidden></div>
+
+  <div class="flowbox">
+    <svg viewBox="0 0 900 620" id="board" role="img" aria-labelledby="bTitle bDesc">
+      <title id="bTitle">Cedar Flats circular flow</title>
+      <desc id="bDesc">Money moves between households, firms, goods markets, factor markets, government, financial markets and the rest of the world.</desc>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+        <marker id="ahOn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+        <marker id="ahNo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+        <marker id="ahOk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+      </defs>
+
+      <path class="flow" id="f-x"   d="M194,58 L322,58"></path>
+      <path class="flow" id="f-m"   d="M330,86 L194,86"></path>
+      <path class="flow" id="f-c"   d="M146,250 C146,170 240,110 366,102"></path>
+      <path class="flow" id="f-g"   d="M470,210 L470,116"></path>
+      <path class="flow" id="f-i"   d="M858,248 C892,160 780,34 600,48"></path>
+      <path class="flow" id="f-exp" d="M572,104 C680,120 790,168 794,248"></path>
+      <path class="flow" id="f-y"   d="M794,356 C794,450 720,524 610,536"></path>
+      <path class="flow" id="f-fh"  d="M330,536 C220,524 146,450 146,356"></path>
+      <path class="flow" id="f-th"  d="M236,282 C300,274 340,256 386,246"></path>
+      <path class="flow" id="f-tr"  d="M388,278 C336,292 292,304 240,312"></path>
+      <path class="flow" id="f-tf"  d="M704,288 C640,282 600,258 554,246"></path>
+      <path class="flow" id="f-s"   d="M236,338 C292,352 318,372 352,384"></path>
+      <path class="flow" id="f-fi"  d="M586,384 C630,378 668,352 704,336"></path>
+
+      <text class="flab" id="l-x"   x="258" y="46">X  exports</text>
+      <text class="flab" id="l-m"   x="262" y="104">M  imports</text>
+      <text class="flab" id="l-c"   x="232" y="168">C  consumption</text>
+      <text class="flab" id="l-g"   x="556" y="172">G  purchases</text>
+      <text class="flab" id="l-i"   x="790" y="112">I  investment</text>
+      <text class="flab" id="l-exp" x="716" y="146">firms&#8217; revenue</text>
+      <text class="flab" id="l-y"   x="746" y="466">Y  income paid out</text>
+      <text class="flab" id="l-fh"  x="182" y="466">wages, rent, profit</text>
+      <text class="flab" id="l-th"  x="306" y="244">net taxes</text>
+      <text class="flab" id="l-tr"  x="318" y="326">transfers</text>
+      <text class="flab" id="l-tf"  x="646" y="250">net taxes</text>
+      <text class="flab" id="l-s"   x="278" y="380">S  saving</text>
+      <text class="flab" id="l-fi"  x="654" y="378">loans</text>
+
+      <ellipse class="node mkt" cx="470" cy="70" rx="150" ry="42"></ellipse>
+      <text class="nlabel" x="470" y="66">GOODS MARKETS</text>
+      <text class="nsub" x="470" y="85">where output is bought</text>
+
+      <rect class="node" x="40" y="38" width="152" height="64" rx="3"></rect>
+      <text class="nlabel sm" x="116" y="64">REST OF WORLD</text>
+      <text class="nsub" x="116" y="82">trade partners</text>
+
+      <rect class="node" x="58" y="250" width="176" height="104" rx="3"></rect>
+      <text class="nlabel" x="146" y="294">HOUSEHOLDS</text>
+      <text class="nsub" x="146" y="314">spend, earn, save, pay tax</text>
+
+      <rect class="node" x="706" y="250" width="176" height="104" rx="3"></rect>
+      <text class="nlabel" x="794" y="294">FIRMS</text>
+      <text class="nsub" x="794" y="314">produce, hire, invest</text>
+
+      <rect class="node" x="390" y="212" width="160" height="76" rx="3"></rect>
+      <text class="nlabel sm" x="470" y="244">GOVERNMENT</text>
+      <text class="nsub" x="470" y="263">taxes in, purchases out</text>
+
+      <ellipse class="node mkt" cx="470" cy="392" rx="118" ry="40"></ellipse>
+      <text class="nlabel sm" x="470" y="389">FINANCIAL MARKETS</text>
+      <text class="nsub" x="470" y="407">saving funds borrowing</text>
+
+      <ellipse class="node mkt" cx="470" cy="548" rx="150" ry="42"></ellipse>
+      <text class="nlabel" x="470" y="544">FACTOR MARKETS</text>
+      <text class="nsub" x="470" y="563">labor, land, capital, enterprise</text>
+    </svg>
+  </div>
+
+  <div class="readout idle" id="readout">
+    <h4 id="roHead">Nothing moving yet</h4>
+    <p id="roBody">Pick anything from the town below. The machine will show you where the money goes.</p>
+    <p class="amtline" id="roAmt"></p>
+  </div>
+
+  <!-- Phase 1 panel -->
+  <div id="panel-machine">
+    <div class="decklabel">
+      <h3>What is happening in Cedar Flats</h3>
+      <span class="small" id="deckHint">Click any of these. Replay them as often as you like.</span>
+    </div>
+    <div class="deck" id="deck"></div>
+    <div class="btnrow" style="margin-top:16px">
+      <button class="btn" id="toYear" type="button">Move on to the year</button>
+      <button class="btn ghost sm" id="resetMeter" type="button">Reset the counter</button>
+    </div>
+  </div>
+
+  <!-- Phase 2 panel -->
+  <div id="panel-year" hidden>
+    <div class="decklabel"><h3 id="yearMonth">January</h3><span class="small" id="yearHint">Choose what Cedar Flats does.</span></div>
+    <p class="lede" id="yearSetup" style="margin-bottom:12px; font-size:16px"></p>
+    <div class="choices" id="yearChoices"></div>
+    <div class="event" id="yearEvent" hidden>
+      <h4>Meanwhile, in the wider economy</h4>
+      <p id="evText"></p>
+      <p class="fx" id="evFx"></p>
+    </div>
+    <div class="btnrow"><button class="btn" id="yearNext" type="button" disabled>Next month</button></div>
+  </div>
+
+  <!-- Phase 3 panel -->
+  <div id="panel-loop" hidden>
+    <div class="decklabel"><h3 id="loopRound">Round 1 of 8</h3><span class="small">Match the injections to the leakages and income holds steady.</span></div>
+    <div class="loopgrid">
+      <div class="sidebox">
+        <h4>Leaking out this round</h4>
+        <div class="lrow leak"><span>Saving &nbsp;S</span><b id="lkS">0</b></div>
+        <div class="lrow leak"><span>Net taxes &nbsp;T</span><b id="lkT">0</b></div>
+        <div class="lrow leak"><span>Imports &nbsp;M</span><b id="lkM">0</b></div>
+        <div class="lrow tot leak"><span>Total leakage</span><b id="lkTot">0</b></div>
+      </div>
+      <div class="sidebox">
+        <h4>You put back in</h4>
+        <div class="stepper"><span class="lbl">Investment I</span><button type="button" data-inj="I" data-d="-1">&minus;</button><span class="v" id="injI">0</span><button type="button" data-inj="I" data-d="1">+</button></div>
+        <div class="stepper"><span class="lbl">Government G</span><button type="button" data-inj="G" data-d="-1">&minus;</button><span class="v" id="injG">0</span><button type="button" data-inj="G" data-d="1">+</button></div>
+        <div class="stepper"><span class="lbl">Exports X</span><button type="button" data-inj="X" data-d="-1">&minus;</button><span class="v" id="injX">0</span><button type="button" data-inj="X" data-d="1">+</button></div>
+        <div class="lrow tot inj"><span>Total injection</span><b id="injTot">0</b></div>
+      </div>
+    </div>
+    <div class="balance" id="balance"></div>
+    <div class="btnrow"><button class="btn" id="loopRun" type="button">Run the round</button></div>
+  </div>
+</div>
+
+<!-- ===================== END ===================== -->
+<section id="s-end" hidden>
+  <div class="panel endhead">
+    <div class="eyebrow">Cedar Flats, one year on</div>
+    <div class="big" id="endGdp">$0</div>
+    <h2 id="endLine"></h2>
+    <p class="small" id="endNote" style="margin-inline:auto; max-width:54ch"></p>
+  </div>
+  <div class="panel reflect">
+    <h3>Worth arguing about</h3>
+    <ol>
+      <li>Your GDP number went up when the hurricane hit and the town rebuilt. Was Cedar Flats better off that year?</li>
+      <li>Two towns produce the same things. In one, meals and childcare are bought in the market; in the other, they are done at home. Which one reports the higher GDP, and does it deserve to?</li>
+      <li>You watched imports get added in C and taken back out in M. Why bother adding them at all instead of just ignoring them?</li>
+      <li>In Phase 3, income only held steady when injections matched leakages. What does that tell you about what a recession actually <em>is</em>?</li>
+      <li>Which single move in this whole game produced the most GDP, and which one felt the most useful to the people of Cedar Flats? Were they the same move?</li>
+    </ol>
+  </div>
+  <div class="btnrow" style="margin-top:18px">
+    <button class="btn" id="playAgain" type="button">Run the town again</button>
+    <button class="btn ghost" id="openDisc" type="button">Review the discoveries</button>
+  </div>
+  <p class="sig" style="margin-top:22px">Cedar Flats Money Machine &middot; ECON&#8209;2301 &middot; Dr. Sarabjeet Bedi</p>
+</section>
+
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Discoveries">
+  <div class="drawer-head">
+    <h3>Discoveries</h3>
+    <button class="btn ghost sm" id="closeDrawer" type="button">Close</button>
+  </div>
+  <p class="small">Each one unlocks the first time the machine surprises you. <b id="drawerCount">0 of 14</b> found.</p>
+  <div class="dlist" id="dlist"></div>
+</aside>
+<script>
+"use strict";
+
+const DISC = [
+  {id:"d1",  t:"Consumption is the engine",        p:"Household spending on final goods and services is the single biggest slice of GDP — close to two-thirds of it in the United States."},
+  {id:"d2",  t:"Inputs don’t count twice",         p:"An intermediate good’s value is already inside the price of the finished good. Count both and you count the flour twice."},
+  {id:"d3",  t:"Used goods were counted years ago", p:"A resold item was production in the year it was made. Only this year’s service — the dealer’s margin — is new."},
+  {id:"d4",  t:"Transfers move money, not output",  p:"A benefit cheque buys nothing, so nothing is produced. The spending it later pays for does count."},
+  {id:"d5",  t:"Buying an asset isn’t producing",  p:"Shares and bonds change ownership of something that already exists. The broker’s fee is a produced service; the $700 is not."},
+  {id:"d6",  t:"Investment means new capital",      p:"Firms buying newly produced equipment and structures. Not “business spending” in general, and not buying shares."},
+  {id:"d7",  t:"A new house is investment",         p:"The structure is capital, so it lands in I. Households consume its housing services year by year after that."},
+  {id:"d8",  t:"Unsold output still counts",        p:"Inventory changes are investment. Production is counted when it happens, not when it sells — so nothing is missed or double-counted."},
+  {id:"d9",  t:"Imports leak straight out",         p:"Added into C when you buy, subtracted in M because it was produced abroad. Net effect on domestic GDP: zero."},
+  {id:"d10", t:"Exports add in",                    p:"Produced here, bought by a foreigner. No domestic C, I or G caught it, so it is added separately."},
+  {id:"d11", t:"Government buys output too",        p:"G is purchases of goods and services, and it includes the government’s own capital projects. Public services with no market price are valued at what they cost."},
+  {id:"d12", t:"GDP misses unpaid work",            p:"Repainting your own kitchen, raising your own children, running a festival on volunteers — real production, no market price, no entry."},
+  {id:"d13", t:"Saving funds investment",           p:"Money handed to the financial markets is not money leaving the economy. It comes back out as somebody’s borrowing."},
+  {id:"d14", t:"Leakages must equal injections",    p:"S + T + M is what drains out; I + G + X is what comes back. When they match, income holds steady. When they don’t, it moves."}
+];
+
+/* ---------------- PHASE 1 : the deck ---------------- */
+const TILES = [
+  {t:"Nia buys a week of groceries", amt:95, fx:{C:95}, flows:["f-c","f-exp"], d:"d1",
+   why:"Straight through the goods markets and on to the firm as revenue. A final good bought by a household — this is what C means, and it is the biggest single piece of any advanced economy."},
+
+  {t:"Hill Country Bakery buys flour from the mill", amt:900, fx:{}, flows:["f-exp"], bad:true, d:"d2",
+   why:"Money moved between two firms and the counter did not budge. The flour is an input, not a final good — its $900 is already inside the price of the bread. Now sell the bread and watch."},
+
+  {t:"The bakery sells that bread to customers", amt:2400, fx:{C:2400}, flows:["f-c","f-exp"], d:null,
+   why:"$2,400 of final output, and the flour’s $900 is sitting inside it. That is why the flour was skipped a moment ago — not because it was worthless, but because it is already counted here."},
+
+  {t:"Marcus buys a 2019 pickup from Guadalupe Motors", amt:14500, fx:{}, flows:["f-c"], bad:true, d:"d3",
+   why:"The money moved. The counter did not. That truck was produced in 2019 and counted then. Only the dealer’s margin for arranging today’s sale is new production this year."},
+
+  {t:"Grandma Webb’s Social Security cheque arrives", amt:1800, fx:{}, flows:["f-tr"], bad:true, d:"d4",
+   why:"Government to household, and nothing produced in return. This is a transfer payment. Keep watching — the next tile shows where it does start to count."},
+
+  {t:"Grandma spends it at the pharmacy", amt:1800, fx:{C:1800}, flows:["f-c","f-exp"], d:null,
+   why:"Now it counts. The cheque itself bought nothing; the pharmacy visit buys a produced service. This is why transfers are stripped out of G — they would be counted twice otherwise."},
+
+  {t:"Nia buys ten shares of stock", amt:700, fx:{}, flows:["f-s"], bad:true, d:"d5",
+   why:"$700 into the financial markets, nothing produced. She bought a claim on a company that already exists. Her broker’s $9 fee is a produced service and would count; the $700 does not."},
+
+  {t:"Marcus deposits $20K; the credit union lends it to the bakery for a new mixer", amt:20000, fx:{I:20000}, flows:["f-s","f-fi","f-i","f-exp"], d:"d13",
+   why:"Follow the whole path: saving into the financial markets, out again as a loan, spent on newly produced capital. Saving is not money leaving the economy. It is money waiting to be invested."},
+
+  {t:"Lone Star Athletics installs new shelving and tills", amt:32000, fx:{I:32000}, flows:["f-i","f-exp"], d:"d6",
+   why:"A firm buying newly produced capital that will make output for years. Note what makes this investment — not that a business paid for it, but that the equipment is new production."},
+
+  {t:"The Ramirez family buys a newly built house", amt:310000, fx:{I:310000}, flows:["f-i","f-exp"], d:"d7",
+   why:"Surprised? Most people put this in C. New residential construction is investment: the house is a capital asset that will deliver housing services for fifty years. Households consume those services annually; the structure itself is I."},
+
+  {t:"200 loaves are still unsold on December 31", amt:4000, fx:{I:4000}, flows:["f-i"], d:"d8",
+   why:"Nobody bought them and the counter still moved. Output produced this year counts this year; the accounts treat the bakery as having bought its own unsold bread. When it sells in January it shifts from I into C — never counted twice."},
+
+  {t:"Nia buys a laptop assembled in Shenzhen", amt:1100, fx:{C:1100, M:1100}, flows:["f-c","f-m"], d:"d9",
+   why:"Watch it go in and straight back out. It entered C at $1,100 and left in M at $1,100 — net zero, which is exactly right, because Shenzhen produced it, not Cedar Flats. Only the retailer’s margin is local output."},
+
+  {t:"A Munich running club orders Cedar Flats trail shoes", amt:52000, fx:{X:52000}, flows:["f-x","f-exp"], d:"d10",
+   why:"Produced here, bought abroad. No household, firm or government in Cedar Flats spent a cent on it, so C, I and G all missed it. Exports are added in to catch exactly this."},
+
+  {t:"The city buys three police cruisers", amt:135000, fx:{G:135000}, flows:["f-g","f-exp"], d:"d11",
+   why:"Government purchases of goods and services. It counts even though no household would ever buy a cruiser — what matters is that output was produced and bought."},
+
+  {t:"Cedar Flats ISD pays a year of teacher salaries", amt:580000, fx:{G:580000}, flows:["f-g"], d:null,
+   why:"Public schooling has no ticket price, so the accounts value it at what it cost to produce — the salaries. This is the one standard exception to “market value,” and it is why G includes services nobody buys directly."},
+
+  {t:"Nia’s mother spends Saturday repainting the kitchen", amt:0, fx:{}, flows:[], bad:true, d:"d12",
+   why:"No money moved at all, so there is nothing for the machine to follow. Real work was done and a room got painted. Hire a painter for $600 and GDP rises by $600 — same work, now measured. This is one of GDP’s biggest blind spots."}
+];
+
+/* ---------------- PHASE 2 : the year ---------------- */
+const MONTHS = [
+  {m:"January", setup:"Marcus gets a raise — an extra $400 a month in his pocket. What do the Webbs do with it?",
+   opts:[
+    {t:"Buy a laptop from an overseas seller", s:"$400 on imported electronics", fx:{C:400,M:400}, flows:["f-c","f-m"], d:"d9",
+     why:"It counted in C and left again in M. Cedar Flats produced nothing, and the counter is right where it started."},
+    {t:"Put it in the credit union", s:"$400 into savings", fx:{}, flows:["f-s"], bad:true, d:null,
+     why:"Nothing produced yet, and the counter sits still. But the money is not gone — it is sitting in the financial markets waiting for a borrower. Watch what March does with it."},
+    {t:"Hire a local contractor for the porch", s:"$400 of repair work", fx:{C:400}, flows:["f-c","f-exp"], d:"d1",
+     why:"A locally produced service. Every cent of it is Cedar Flats output, and it becomes somebody’s wages on the way round."}
+   ]},
+
+  {m:"February", setup:"Hill Country Bakery wants to grow. Dana has three ways to spend on it.",
+   opts:[
+    {t:"A new oven from a Texas manufacturer", s:"$18,000 of new equipment", fx:{I:18000}, flows:["f-i","f-exp"], d:"d6",
+     why:"Newly produced capital bought by a firm. That is investment, and the manufacturer’s workers get paid out of it."},
+    {t:"A used oven from a bakery that closed", s:"$9,000, second-hand", fx:{}, flows:["f-i"], bad:true, d:"d3",
+     why:"The oven was counted the year it was built. Reselling it moves a machine between firms; no new production happened."},
+    {t:"Six months of extra flour", s:"$6,000 of inputs", fx:{}, flows:["f-exp"], bad:true, d:"d2",
+     why:"An intermediate good. It will show up in GDP soon enough — inside the price of the bread it becomes."}
+   ]},
+
+  {m:"March", setup:"Lone Star Athletics needs money to expand. The credit union is holding January’s deposits.",
+   opts:[
+    {t:"Borrow and build a second store", s:"$140,000 of construction", fx:{I:140000}, flows:["f-s","f-fi","f-i","f-exp"], d:"d13",
+     why:"Household saving came back out as a business loan and turned into a building. This is the whole point of the financial markets in the diagram — saving is not a leak if somebody borrows it."},
+    {t:"Sell shares to investors instead", s:"$80,000 raised", fx:{}, flows:["f-s"], bad:true, d:"d5",
+     why:"Raising money is not producing anything. The counter waits to see what the firm actually buys with it."},
+    {t:"Wait and self-fund next year", s:"nothing spent", fx:{}, flows:[], bad:true, d:null,
+     why:"A perfectly reasonable business decision that produces nothing this year. GDP measures what got made, not what got planned."}
+   ]},
+
+  {m:"April", setup:"The city closes its books with a surplus. Council has to decide what to do with it.",
+   opts:[
+    {t:"Resurface Congress Street", s:"$2.4M paving contract", fx:{G:2400000}, flows:["f-g","f-exp"], d:"d11",
+     why:"Public capital projects sit inside G — officially, G is “government consumption expenditures and gross investment.” The letter I is reserved for private investment."},
+    {t:"Send every household a $300 rebate", s:"$1.9M in cheques", fx:{}, flows:["f-tr"], bad:true, d:"d4",
+     why:"A transfer. The council bought nothing, so nothing was produced. It will count later, and only partly — households save some of a rebate."},
+    {t:"Hire six new teachers", s:"$348,000 in salaries", fx:{G:348000}, flows:["f-g"], d:null,
+     why:"Government services carry no market price, so they are valued at what they cost. The salaries are the measurement."}
+   ]},
+
+  {m:"May", setup:"The bluebonnet festival brings visitors to town for a weekend.",
+   opts:[
+    {t:"Visitors from Monterrey fill the shops", s:"$180,000 spent by foreigners", fx:{X:180000}, flows:["f-x","f-exp"], d:"d10",
+     why:"An export — and not a physical one. Meals, hotel rooms and haircuts sold to foreign visitors are services sold abroad, counted exactly like shipped goods."},
+    {t:"The town rents staging from an Austin firm", s:"$40,000 of equipment hire", fx:{G:40000}, flows:["f-g","f-exp"], d:null,
+     why:"A government purchase of a service from a private firm. Straightforward G."},
+    {t:"Volunteers run the entire festival", s:"400 unpaid hours", fx:{}, flows:[], bad:true, d:"d12",
+     why:"A festival happened. Thousands of people enjoyed it. The national accounts recorded nothing, because nobody was paid. This is the gap between GDP and how well a town is actually doing."}
+   ]},
+
+  {m:"June", setup:"Nia graduates and needs a car.",
+   opts:[
+    {t:"A new Toyota built in San Antonio", s:"$32,000", fx:{C:32000}, flows:["f-c","f-exp"], d:null,
+     why:"Assembled in Texas, so all $32,000 is U.S. production — foreign ownership of the plant changes who receives the profit, not where the output was made."},
+    {t:"A new Ford built in Hermosillo", s:"$32,000", fx:{C:32000,M:32000}, flows:["f-c","f-m"], d:"d9",
+     why:"Same car, same price, and this time the counter ends up where it started. Mexico produced it; the U.S. accounts add it to C and take it back out in M."},
+    {t:"A three-year-old Honda from the dealer", s:"$18,000, of which $1,800 is the dealer’s margin", fx:{C:1800}, flows:["f-c","f-exp"], d:"d3",
+     why:"Only $1,800 counted. The car itself was 2023 production, but arranging the sale is a service produced this year — so the dealer’s margin, and only that, is new."}
+   ]},
+
+  {m:"July", setup:"A heat wave hits and half the air-conditioners in town give up.",
+   opts:[
+    {t:"Local HVAC firms work overtime on repairs", s:"$95,000 of service calls", fx:{C:95000}, flows:["f-c","f-exp"], d:null,
+     why:"Repair services are final services bought by households. Note what this means: a heat wave that breaks things can raise measured GDP."},
+    {t:"Households buy window units made in Vietnam", s:"$45,000 of imported units", fx:{C:45000,M:45000}, flows:["f-c","f-m"], d:"d9",
+     why:"In through C, out through M. The units are Vietnam’s output."},
+    {t:"Everyone just sweats it out", s:"nothing spent", fx:{}, flows:[], bad:true, d:null,
+     why:"Nothing produced, nothing measured — and the town is worse off than in either other choice. GDP happens to get this one right."}
+   ]},
+
+  {m:"August", setup:"Cedar Flats High needs a gym. The bond market is friendly.",
+   opts:[
+    {t:"Build it with a local contractor", s:"$4.1M of construction", fx:{G:4100000}, flows:["f-g","f-exp"], d:"d11",
+     why:"The largest single move available all year. Public construction is government gross investment, and it sits inside G."},
+    {t:"Lease an existing warehouse instead", s:"$120,000 for the year", fx:{G:120000}, flows:["f-g","f-exp"], d:null,
+     why:"A service purchased for a year rather than a structure produced this year. Far smaller, and the warehouse itself was counted whenever it was built."},
+    {t:"Issue the bonds and decide next year", s:"$4.1M raised", fx:{}, flows:["f-s"], bad:true, d:"d5",
+     why:"Borrowing is not spending. The district now holds money; the counter waits for a gym."}
+   ]},
+
+  {m:"September", setup:"A national recession begins. Households across Cedar Flats pull back hard.",
+   opts:[
+    {t:"The city steps up its own purchases", s:"$900,000 of extra spending", fx:{G:900000}, flows:["f-g","f-exp"], d:null,
+     why:"The fiscal policy argument, in one arrow: when the C arrow thins, G can be widened to keep the loop turning. Whether that is wise is a whole other lecture."},
+    {t:"Cut taxes by $300,000", s:"households spend about $200,000 of it", fx:{C:200000}, flows:["f-c","f-exp"], d:"d4",
+     why:"The tax cut itself is a transfer and adds nothing. Only the spending it triggers counts — and households saved a third of it, so $300,000 of tax cut bought $200,000 of GDP."},
+    {t:"Ride it out and change nothing", s:"consumption falls", fx:{C:-600000}, flows:["f-c"], bad:true, d:null,
+     why:"The counter goes backwards. Recessions are not an absence of activity in the diagram — they are the arrows getting thinner."}
+   ]},
+
+  {m:"October", setup:"A German retailer wants 4,000 pairs of Cedar Flats trail shoes before Christmas.",
+   opts:[
+    {t:"Accept and run the plant on overtime", s:"$310,000 order, made here", fx:{X:310000}, flows:["f-x","f-exp"], d:"d10",
+     why:"All of it produced in Cedar Flats and sold abroad. The whole $310,000 is an export."},
+    {t:"Accept, subcontract half to Monterrey", s:"$310,000 order, $155,000 made abroad", fx:{X:310000,M:155000}, flows:["f-x","f-m"], d:null,
+     why:"Net exports of $155,000. The accounts add the full export and subtract the Mexican half, leaving only what Cedar Flats actually produced."},
+    {t:"Decline — the plant is already at capacity", s:"nothing", fx:{}, flows:[], bad:true, d:null,
+     why:"An honest constraint, and no output. Capacity limits are why an economy cannot simply choose a higher GDP."}
+   ]},
+
+  {m:"November", setup:"The bakery over-bakes for the holidays and ends up with far more bread than orders.",
+   opts:[
+    {t:"Leave it unsold on the shelves", s:"$22,000 of stock at year end", fx:{I:22000}, flows:["f-i"], d:"d8",
+     why:"It counted anyway. The bread was produced this year, so the accounts record it as inventory investment — the bakery is treated as having bought its own output."},
+    {t:"Discount it and clear the lot", s:"$18,000 in sales", fx:{C:18000}, flows:["f-c","f-exp"], d:null,
+     why:"Less money, and it lands in C rather than I. Notice the production counted either way — only which component changed."},
+    {t:"Cut production and bake less", s:"nothing extra", fx:{}, flows:[], bad:true, d:null,
+     why:"Nothing made, nothing counted. The counter tracks output, not effort or intention."}
+   ]},
+
+  {m:"December", setup:"Holiday shopping. Where the town spends decides how the year finishes.",
+   opts:[
+    {t:"Shop on Main Street", s:"$740,000 spent locally", fx:{C:740000}, flows:["f-c","f-exp"], d:"d1",
+     why:"The biggest consumption month of the year, and all of it lands on local firms and then on local wages."},
+    {t:"Shop from overseas sellers", s:"$740,000 of imported goods", fx:{C:740000,M:740000}, flows:["f-c","f-m"], d:"d9",
+     why:"The households are just as well supplied. The counter is unmoved, because none of it was produced here."},
+    {t:"Pay down debt instead", s:"$740,000 to lenders", fx:{}, flows:["f-s"], bad:true, d:null,
+     why:"Money moved to lenders and nothing was produced. Households end the year with less debt — a good outcome that GDP is simply not built to see."}
+   ]}
+];
+
+const EVENTS = [
+  {t:"A February freeze closes the interstate for three days. Shops sit empty.", fx:{C:-85000}, note:"Consumption falls. Nothing was produced during the closure."},
+  {t:"Diesel prices drop sharply. Three firms bring forward equipment orders.", fx:{I:60000}, note:"Cheaper inputs, more investment."},
+  {t:"A storm damages forty homes along Pecan Ridge. Rebuilding begins immediately.", fx:{I:520000}, note:"GDP rises by $520,000. Cedar Flats is not better off than it was before the storm. Sit with that one."},
+  {t:"A logistics firm relocates to town and hires thirty people.", fx:{C:210000}, note:"New wages become new household spending."},
+  {t:"The state cuts its road maintenance budget mid-year.", fx:{G:-180000}, note:"Government purchases fall."},
+  {t:"The dollar strengthens. Cedar Flats shoes get pricier abroad.", fx:{X:-95000}, note:"Exports fall when the currency rises."},
+  {t:"A competing outlet mall opens one county over.", fx:{C:-140000}, note:"Local consumption leaks to the next county."},
+  {t:"Interest rates fall and four families break ground on new homes.", fx:{I:930000}, note:"Cheaper borrowing, more residential investment — which is investment, not consumption."},
+  {t:"A safety recall shuts the tire plant for two weeks.", fx:{C:-240000}, note:"Lost output is lost GDP. Nothing replaces it."},
+  {t:"Grandparents across town provide free childcare for twenty families.", fx:{}, note:"Roughly $180,000 of childcare, if anyone had been paid for it. The accounts record nothing at all."},
+  {t:"A late-summer drought cuts the county hay harvest by a third.", fx:{C:-70000}, note:"Less produced means less counted, however hard anyone worked."},
+  {t:"A federal grant funds a new water treatment plant.", fx:{G:1150000}, note:"Public capital — and it sits inside G, not I."}
+];
+
+/* ---------------- PHASE 3 : the loop ---------------- */
+const LOOP = {Y0:1000, sRate:0.10, tRate:0.20, mRate:0.15, rounds:8, lo:900, hi:1150, step:10, max:400};
+
+/* ===================== helpers ===================== */
+const $ = (id) => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+const REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = (s) => String(s).replace(/&(?![a-z#]+;)/g, "&amp;").replace(/</g, "&lt;");
+
+function fmt(n){
+  const a = Math.abs(n), sign = n < 0 ? "−" : "";
+  if (a >= 1e6) return sign + "$" + (a / 1e6).toFixed(a >= 1e7 ? 1 : 2).replace(/\.?0+$/, "") + "M";
+  if (a >= 1e3) return sign + "$" + Math.round(a / 1e3) + "K";
+  return sign + "$" + a;
+}
+function money(n){ return (n < 0 ? "−$" : "$") + Math.abs(n).toLocaleString("en-US"); }
+
+/* ===================== state ===================== */
+const T = {C:0, I:0, G:0, X:0, M:0};
+const found = new Set();
+let phase = 0, monthIdx = 0, eventQueue = [], monthGdp = [], yearTotal = 0, eventTimer = null;
+const loop = {Y:LOOP.Y0, round:0, inj:{I:0, G:0, X:0}, hist:[], inBand:0};
+
+function gdp(){ return T.C + T.I + T.G + T.X - T.M; }
+function resetTotals(){ T.C = T.I = T.G = T.X = T.M = 0; renderMeter(false); }
+
+/* ===================== board animation ===================== */
+let timers = [];
+function killTimers(){ timers.forEach(clearTimeout); timers = []; }
+function clearHighlights(){
+  document.querySelectorAll(".flow, .flab").forEach(n => n.classList.remove("hot", "cold"));
+}
+function clearBoard(){
+  killTimers(); clearHighlights();
+  document.querySelectorAll("#board .coin").forEach(n => n.remove());
+}
+function spawnCoin(id, bad){
+  const svg = $("board");
+  const c = document.createElementNS(NS, "circle");
+  c.setAttribute("r", "7"); c.setAttribute("cx", "0"); c.setAttribute("cy", "0");
+  c.setAttribute("class", "coin" + (bad ? " no" : ""));
+  const am = document.createElementNS(NS, "animateMotion");
+  am.setAttribute("dur", "0.62s"); am.setAttribute("fill", "freeze"); am.setAttribute("rotate", "0");
+  const mp = document.createElementNS(NS, "mpath");
+  mp.setAttribute("href", "#" + id);
+  mp.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#" + id);
+  am.appendChild(mp); c.appendChild(am); svg.appendChild(c);
+  try { if (am.beginElement) am.beginElement(); } catch (e) { /* SMIL unsupported */ }
+  timers.push(setTimeout(() => c.remove(), 780));
+}
+function sendMoney(ids, bad){
+  clearBoard();
+  if (!ids || !ids.length) return;
+  const cls = bad ? "cold" : "hot";
+  ids.forEach((id, i) => {
+    timers.push(setTimeout(() => {
+      const p = $(id), l = $("l-" + id.slice(2));
+      if (p) p.classList.add(cls);
+      if (l) l.classList.add(cls);
+      if (!REDUCED && p) spawnCoin(id, bad);
+    }, i * 470));
+  });
+  timers.push(setTimeout(clearHighlights, ids.length * 470 + 1700));
+}
+
+/* ===================== meter ===================== */
+function renderMeter(changed){
+  const box = $("gdpBox");
+  $("gdpVal").textContent = fmt(gdp());
+  const nx = T.X - T.M;
+  const vals = {compC:T.C, compI:T.I, compG:T.G, compNX:nx};
+  const scale = Math.max(1, Math.abs(T.C), Math.abs(T.I), Math.abs(T.G), Math.abs(nx));
+  Object.keys(vals).forEach(k => {
+    const el = $(k), v = vals[k];
+    el.querySelector("b").textContent = fmt(v);
+    el.querySelector(".track i").style.width = Math.min(100, Math.abs(v) / scale * 100) + "%";
+    el.classList.toggle("neg", v < 0);
+  });
+  if (changed === true || changed === false){
+    box.classList.remove("pulse", "nudge");
+    void box.offsetWidth;
+    box.classList.add(changed ? "pulse" : "nudge");
+  }
+}
+function applyFx(fx){
+  let moved = false;
+  Object.keys(fx || {}).forEach(k => { T[k] += fx[k]; if (fx[k] !== 0) moved = true; });
+  return moved;
+}
+function gdpDelta(fx){
+  if (!fx) return 0;
+  return (fx.C || 0) + (fx.I || 0) + (fx.G || 0) + (fx.X || 0) - (fx.M || 0);
+}
+function fxLine(fx){
+  const bits = [];
+  ["C","I","G","X","M"].forEach(k => {
+    if (fx && fx[k]) bits.push(k + " " + (fx[k] > 0 ? "+" : "−") + money(Math.abs(fx[k])).replace(/^−?\$/, "$"));
+  });
+  return bits.length ? bits.join("   ·   ") : "No component moved.";
+}
+
+/* ===================== readout ===================== */
+function readout(kind, head, body, amt){
+  const r = $("readout");
+  r.className = "readout " + kind;
+  $("roHead").textContent = head;
+  $("roBody").innerHTML = body;
+  $("roAmt").textContent = amt || "";
+}
+
+/* ===================== discoveries ===================== */
+function renderDisc(){
+  $("discCount").textContent = found.size + "/" + DISC.length;
+  $("drawerCount").textContent = found.size + " of " + DISC.length;
+  const list = $("dlist"); list.innerHTML = "";
+  DISC.forEach(d => {
+    const got = found.has(d.id);
+    const el = document.createElement("div");
+    el.className = "dcard " + (got ? "got" : "locked");
+    el.innerHTML = "<strong>" + (got ? esc(d.t) : "Not found yet") + "</strong><p>" + esc(d.p) + "</p>";
+    list.appendChild(el);
+  });
+}
+let toastTimer = null;
+function unlock(id){
+  if (!id || found.has(id)) return;
+  found.add(id);
+  renderDisc();
+  const d = DISC.find(x => x.id === id);
+  const old = document.querySelector(".toast"); if (old) old.remove();
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerHTML = "<em>Discovery " + found.size + " of " + DISC.length + "</em><strong>" + esc(d.t) + "</strong>";
+  document.body.appendChild(t);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.remove(), 3400);
+}
+function openDrawer(){ $("drawer").hidden = false; $("scrim").hidden = false; }
+function closeDrawer(){ $("drawer").hidden = true; $("scrim").hidden = true; }
+$("discBtn").addEventListener("click", openDrawer);
+$("closeDrawer").addEventListener("click", closeDrawer);
+$("scrim").addEventListener("click", closeDrawer);
+$("openDisc").addEventListener("click", openDrawer);
+
+/* ===================== phase plumbing ===================== */
+const PHASE_NOTE = {
+  1:"Free play. Click anything below and watch the money travel the arrows. <b>Nothing here is wrong</b> — the moves that leave the counter sitting still are the ones worth chasing.",
+  2:"Twelve months. Each month Cedar Flats faces a decision and you make it, then something happens that you did not choose. <b>Every option is a real thing a town might do</b> — they just don’t all produce output.",
+  3:"Income arrives, then leaks out through saving, taxes and imports — the <b style=\"color:var(--reject)\">red arrows</b>. It comes back through investment, government and exports — the <b style=\"color:var(--admit)\">green arrows</b>. Find the amount that holds income steady."
+};
+function setPhase(n){
+  phase = n;
+  $("s-home").hidden = true; $("s-end").hidden = true; $("play").hidden = false;
+  $("phEyebrow").textContent = "Phase " + n + " of 3";
+  $("phTitle").textContent = n === 1 ? "The Money Machine" : n === 2 ? "A Year in Cedar Flats" : "Keep the Loop Running";
+  $("phNote").innerHTML = PHASE_NOTE[n];
+  $("panel-machine").hidden = n !== 1;
+  $("panel-year").hidden = n !== 2;
+  $("panel-loop").hidden = n !== 3;
+  $("months").hidden = n !== 2;
+  $("ybar").hidden = n !== 3;
+  document.querySelector(".meter").hidden = n === 3;
+  $("gdpLabel").textContent = n === 1 ? "GDP so far" : "GDP this year";
+  clearBoard();
+  paintLoopLegend(n === 3);
+  window.scrollTo({top:0});
+}
+function ensureBoardVisible(){
+  const r = $("board").getBoundingClientRect();
+  if (r.bottom < 180 || r.top > window.innerHeight - 140){
+    document.querySelector(".flowbox").scrollIntoView({behavior: REDUCED ? "auto" : "smooth", block:"center"});
+  }
+}
+function setBarH(){
+  const b = document.querySelector(".bar");
+  if (b) document.documentElement.style.setProperty("--barh", b.offsetHeight + "px");
+}
+window.addEventListener("resize", setBarH);
+
+/* ===================== PHASE 1 ===================== */
+function buildDeck(){
+  const deck = $("deck"); deck.innerHTML = "";
+  TILES.forEach((tile, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "tile"; b.dataset.i = String(i);
+    b.innerHTML = "<strong>" + esc(tile.t) + "</strong><span>" +
+      (tile.amt === 0 ? "no money changes hands" : money(tile.amt)) + "</span>";
+    b.addEventListener("click", () => playTile(i, b));
+    deck.appendChild(b);
+  });
+}
+function playTile(i, btn){
+  const tile = TILES[i];
+  const delta = gdpDelta(tile.fx);
+  applyFx(tile.fx);
+  renderMeter(delta !== 0);
+  sendMoney(tile.flows, delta === 0);
+  btn.classList.add("used");
+  readout(
+    delta === 0 ? "flat" : "up",
+    delta === 0 ? "GDP did not move" : "GDP " + (delta > 0 ? "+" : "−") + money(Math.abs(delta)).replace(/^−?\$/, "$"),
+    tile.why,
+    fxLine(tile.fx)
+  );
+  unlock(tile.d);
+  ensureBoardVisible();
+}
+$("resetMeter").addEventListener("click", () => {
+  resetTotals();
+  document.querySelectorAll("#deck .tile").forEach(t => t.classList.remove("used"));
+  readout("idle", "Counter back to zero", "Your discoveries are kept. Only the running total was cleared.", "");
+});
+$("toYear").addEventListener("click", startYear);
+
+/* ===================== PHASE 2 ===================== */
+function shuffle(a){
+  const b = a.slice();
+  for (let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+  return b;
+}
+function startYear(){
+  resetTotals(); monthIdx = 0; monthGdp = []; eventQueue = shuffle(EVENTS);
+  setPhase(2); renderMonths(); renderMonth();
+}
+function renderMonths(){
+  const m = $("months"); m.innerHTML = "";
+  const peak = Math.max(1, ...monthGdp.map(v => Math.abs(v)));
+  for (let i = 0; i < MONTHS.length; i++){
+    const d = document.createElement("div");
+    const v = monthGdp[i];
+    if (v === undefined) d.style.height = "3px";
+    else { d.className = "on"; d.style.height = Math.max(4, Math.abs(v) / peak * 40) + "px"; }
+    d.title = MONTHS[i].m + (v === undefined ? "" : ": " + fmt(v));
+    m.appendChild(d);
+  }
+}
+function renderMonth(){
+  const M = MONTHS[monthIdx];
+  $("yearMonth").textContent = M.m + " — month " + (monthIdx + 1) + " of 12";
+  $("yearHint").textContent = "Choose what Cedar Flats does.";
+  $("yearSetup").textContent = M.setup;
+  $("yearEvent").hidden = true;
+  $("yearNext").disabled = true;
+  $("yearNext").textContent = monthIdx === MONTHS.length - 1 ? "Close the year" : "Next month";
+  readout("idle", "Waiting on you", "Pick one. All three are things a real town does — they just don’t all show up in GDP.", "");
+  const box = $("yearChoices"); box.innerHTML = "";
+  M.opts.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.dataset.i = String(i);
+    b.innerHTML = esc(o.t) + "<small>" + esc(o.s) + "</small>";
+    b.addEventListener("click", () => chooseMonth(i));
+    box.appendChild(b);
+  });
+}
+function chooseMonth(i){
+  const M = MONTHS[monthIdx], o = M.opts[i];
+  document.querySelectorAll("#yearChoices .opt").forEach(b => {
+    b.disabled = true;
+    if (Number(b.dataset.i) === i) b.classList.add("chosen");
+  });
+  const delta = gdpDelta(o.fx);
+  applyFx(o.fx);
+  renderMeter(delta !== 0);
+  sendMoney(o.flows, delta === 0);
+  readout(
+    delta === 0 ? "flat" : "up",
+    delta === 0 ? "GDP did not move" : "GDP " + (delta > 0 ? "+" : "−") + money(Math.abs(delta)).replace(/^−?\$/, "$"),
+    o.why, fxLine(o.fx)
+  );
+  unlock(o.d);
+  ensureBoardVisible();
+
+  let monthDelta = delta;
+  const ev = eventQueue[monthIdx % eventQueue.length];
+  clearTimeout(eventTimer);
+  eventTimer = setTimeout(() => {
+    const evDelta = gdpDelta(ev.fx);
+    applyFx(ev.fx);
+    monthDelta += evDelta;
+    monthGdp[monthIdx] = monthDelta;
+    renderMeter(evDelta !== 0);
+    renderMonths();
+    $("evText").textContent = ev.t;
+    $("evFx").textContent = (evDelta === 0 ? "No effect on GDP. " : "GDP " + (evDelta > 0 ? "+" : "−") +
+      money(Math.abs(evDelta)).replace(/^−?\$/, "$") + ". ") + ev.note;
+    $("yearEvent").hidden = false;
+    $("yearNext").disabled = false;
+    if (ev.fx && !Object.keys(ev.fx).length) unlock("d12");
+  }, 1500);
+  monthGdp[monthIdx] = monthDelta;
+  renderMonths();
+}
+$("yearNext").addEventListener("click", () => {
+  if (monthIdx + 1 < MONTHS.length){ monthIdx++; renderMonth(); clearBoard(); window.scrollTo({top:0}); }
+  else { yearTotal = gdp(); startLoop(); }
+});
+
+/* ===================== PHASE 3 ===================== */
+function leaks(){
+  return {S:Math.round(loop.Y * LOOP.sRate), Tx:Math.round(loop.Y * LOOP.tRate), M:Math.round(loop.Y * LOOP.mRate)};
+}
+function injTotal(){ return loop.inj.I + loop.inj.G + loop.inj.X; }
+function startLoop(){
+  loop.Y = LOOP.Y0; loop.round = 0; loop.inj = {I:0, G:0, X:0}; loop.hist = [LOOP.Y0]; loop.inBand = 0;
+  setPhase(3); renderLoop(true);
+}
+function renderLoop(animate){
+  const L = leaks(), tot = L.S + L.Tx + L.M, inj = injTotal();
+  $("loopRound").textContent = "Round " + (loop.round + 1) + " of " + LOOP.rounds +
+    "  ·  household income " + money(loop.Y) + "M";
+  $("lkS").textContent = money(L.S) + "M";
+  $("lkT").textContent = money(L.Tx) + "M";
+  $("lkM").textContent = money(L.M) + "M";
+  $("lkTot").textContent = money(tot) + "M";
+  $("injI").textContent = loop.inj.I;
+  $("injG").textContent = loop.inj.G;
+  $("injX").textContent = loop.inj.X;
+  $("injTot").textContent = money(inj) + "M";
+
+  const gap = inj - tot, b = $("balance");
+  if (Math.abs(gap) <= 10){
+    b.className = "balance good";
+    b.textContent = "Balanced. Injections match leakages, so income will hold roughly where it is.";
+  } else if (gap < 0){
+    b.className = "balance low";
+    b.textContent = money(Math.abs(gap)) + "M more is draining out than coming back. Income will fall next round.";
+  } else {
+    b.className = "balance high";
+    b.textContent = money(gap) + "M more is coming in than draining out. Income will rise next round.";
+  }
+  renderYbar();
+  const consume = loop.Y - tot;
+  $("roHead").textContent = "Where the money is";
+  $("roBody").innerHTML = "Households received " + money(loop.Y) + "M in income. They will spend " +
+    money(consume) + "M of it on domestic output; the other " + money(tot) +
+    "M leaks out through saving, taxes and imports. Whatever you inject is what replaces it.";
+  $("roAmt").textContent = "C " + money(consume) + "M   ·   leakage " + money(tot) + "M   ·   injection " + money(inj) + "M";
+  $("readout").className = "readout " + (Math.abs(gap) <= 10 ? "up" : "idle");
+}
+function renderYbar(){
+  const bar = $("ybar"); bar.innerHTML = "";
+  const peak = Math.max(LOOP.hi, ...loop.hist);
+  for (let i = 0; i <= LOOP.rounds; i++){
+    const d = document.createElement("div");
+    const v = loop.hist[i];
+    if (v === undefined){ d.style.height = "4px"; d.title = "round " + i + " — not run yet"; }
+    else {
+      d.style.height = Math.max(5, v / peak * 48) + "px";
+      d.className = (v < LOOP.lo || v > LOOP.hi) ? "out" : "on";
+      d.title = (i === 0 ? "start" : "after round " + i) + ": " + money(v) + "M";
+    }
+    bar.appendChild(d);
+  }
+}
+const LEAK_FLOWS = ["f-s", "f-th", "f-tf", "f-m"];
+const INJ_FLOWS = ["f-fi", "f-i", "f-g", "f-x"];
+function paintLoopLegend(on){
+  LEAK_FLOWS.concat(INJ_FLOWS).forEach(id => {
+    const p = $(id), l = $("l-" + id.slice(2));
+    if (p) p.classList.remove("leakhl", "injhl");
+    if (l) l.classList.remove("leakhl", "injhl");
+  });
+  if (!on) return;
+  LEAK_FLOWS.forEach(id => {
+    const p = $(id), l = $("l-" + id.slice(2));
+    if (p) p.classList.add("leakhl");
+    if (l) l.classList.add("leakhl");
+  });
+  INJ_FLOWS.forEach(id => {
+    const p = $(id), l = $("l-" + id.slice(2));
+    if (p) p.classList.add("injhl");
+    if (l) l.classList.add("injhl");
+  });
+}
+document.querySelectorAll("#panel-loop .stepper button").forEach(b => {
+  b.addEventListener("click", () => {
+    const k = b.dataset.inj, d = Number(b.dataset.d) * LOOP.step;
+    loop.inj[k] = Math.max(0, Math.min(LOOP.max, loop.inj[k] + d));
+    renderLoop(false);
+  });
+});
+$("loopRun").addEventListener("click", () => {
+  const L = leaks(), tot = L.S + L.Tx + L.M, inj = injTotal();
+  if (Math.abs(inj - tot) <= 10) unlock("d14");
+  if (loop.inj.I > 0 && L.S > 0) unlock("d13");
+  const consume = loop.Y - tot;
+  loop.Y = Math.max(0, Math.round(consume + inj));
+  loop.hist.push(loop.Y);
+  if (loop.Y >= LOOP.lo && loop.Y <= LOOP.hi) loop.inBand++;
+  loop.round++;
+  if (loop.round >= LOOP.rounds) return endGame();
+  renderLoop(true);
+  $("readout").className = "readout up";
+  $("roHead").textContent = "Round closed — income is now " + money(loop.Y) + "M";
+});
+
+/* ===================== END ===================== */
+function endGame(){
+  clearBoard();
+  $("play").hidden = true; $("s-end").hidden = false;
+  $("endGdp").textContent = fmt(yearTotal);
+  const steady = loop.inBand, dsc = found.size;
+  let line, note;
+  if (steady >= 6) line = "You kept the loop turning.";
+  else if (steady >= 3) line = "The loop wobbled, then settled.";
+  else line = "The loop drained.";
+  note = "Cedar Flats produced " + money(yearTotal) + " over the year, and household income held inside its band for " +
+    steady + " of " + LOOP.rounds + " rounds. You found " + dsc + " of " + DISC.length + " discoveries" +
+    (dsc < DISC.length ? " — the rest are still hiding in Phase 1." : ", which is all of them.") ;
+  $("endLine").textContent = line;
+  $("endNote").textContent = note;
+  window.scrollTo({top:0});
+}
+$("playAgain").addEventListener("click", () => {
+  resetTotals(); monthIdx = 0; monthGdp = []; yearTotal = 0;
+  loop.Y = LOOP.Y0; loop.round = 0; loop.inj = {I:0,G:0,X:0}; loop.hist = [LOOP.Y0]; loop.inBand = 0;
+  $("s-end").hidden = true; $("play").hidden = true; $("s-home").hidden = false;
+  document.querySelectorAll("#deck .tile").forEach(t => t.classList.remove("used"));
+  window.scrollTo({top:0});
+});
+
+/* ===================== wiring ===================== */
+$("startBtn").addEventListener("click", () => { setPhase(1); resetTotals(); });
+const themeBtn = $("themeBtn");
+function currentDark(){
+  const set = document.documentElement.getAttribute("data-theme");
+  if (set) return set === "dark";
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function syncThemeBtn(){ themeBtn.textContent = currentDark() ? "Light" : "Dark"; }
+themeBtn.addEventListener("click", () => {
+  document.documentElement.setAttribute("data-theme", currentDark() ? "light" : "dark");
+  syncThemeBtn();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+
+buildDeck();
+renderDisc();
+renderMeter();
+syncThemeBtn();
+setBarH();
+</script>
+
+</body></html>

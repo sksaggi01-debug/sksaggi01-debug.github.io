@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft Monopoly — Case Study & Interactive Activity | Dr. Sarabjeet Bedi</title>
+<style>
+:root {
+  --bg: #F6F1E9;
+  --ink: #1A1208;
+  --rust: #B8390E;
+  --rust-light: #D4522A;
+  --gold: #96720A;
+  --gold-light: #C49A14;
+  --cream: #EDE6D6;
+  --warm-gray: #7A7060;
+  --border: #CEC4A8;
+  --white: #FDFAF2;
+  --green: #1E5C3A;
+  --red: #9B1C1C;
+  --serif: Georgia, 'Times New Roman', Times, serif;
+  --mono: 'Courier New', Courier, monospace;
+  --sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  font-size: 15px;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(26,18,8,0.04) 27px, rgba(26,18,8,0.04) 28px);
+  pointer-events: none;
+  z-index: 0;
+}
+.page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* MASTHEAD */
+.masthead { text-align: center; padding: 36px 0 24px; border-top: 5px double var(--ink); border-bottom: 5px double var(--ink); margin-bottom: 4px; }
+.pub-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 14px; }
+.masthead h1 { font-family: var(--serif); font-size: clamp(2.2rem, 5.5vw, 3.8rem); font-weight: bold; line-height: 1.05; color: var(--ink); letter-spacing: -1px; }
+.masthead h1 em { font-style: italic; color: var(--rust); }
+.masthead-sub { font-family: var(--serif); font-style: italic; font-size: 1.05rem; color: var(--warm-gray); margin-top: 10px; }
+.byline { margin-top: 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--warm-gray); display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.byline strong { color: var(--rust); }
+
+/* DIVIDERS */
+.rule { height: 1px; background: var(--border); margin: 24px 0; }
+.ornament { text-align: center; color: var(--rust); font-size: 18px; margin: 20px 0; letter-spacing: 12px; }
+
+/* PULL QUOTE */
+.hero-pull { background: var(--ink); color: var(--bg); padding: 34px 44px; margin: 32px 0; position: relative; }
+.hero-pull::before { content: '\201C'; font-family: var(--serif); font-size: 140px; color: rgba(184,57,14,0.25); position: absolute; top: -20px; left: 16px; line-height: 1; }
+.hero-pull blockquote { font-family: var(--serif); font-size: clamp(1.05rem, 2.2vw, 1.45rem); font-style: italic; line-height: 1.55; position: relative; z-index: 1; }
+.hero-pull cite { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #C08060; margin-top: 14px; font-style: normal; }
+
+/* SECTION HEADER */
+.section-tag { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; background: var(--rust); color: #fff; padding: 3px 10px; margin-bottom: 10px; }
+h2 { font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 2rem); font-weight: bold; color: var(--ink); margin-bottom: 16px; line-height: 1.25; }
+h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: bold; color: var(--ink); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px; }
+p { margin-bottom: 13px; color: #2C2010; }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 28px 0; }
+.stat-card { background: var(--white); padding: 22px 18px; text-align: center; border-top: 4px solid var(--rust); }
+.stat-card .num { font-family: var(--serif); font-size: 2.6rem; font-weight: bold; color: var(--rust); line-height: 1; }
+.stat-card .lbl { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--warm-gray); margin-top: 6px; }
+.stat-card .desc { font-size: 12px; color: var(--warm-gray); margin-top: 6px; line-height: 1.4; }
+
+/* GRID */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin: 20px 0; }
+@media (max-width: 640px) { .two-col, .stats-row { grid-template-columns: 1fr; } }
+
+/* CALLOUT */
+.callout { background: var(--cream); border-left: 4px solid var(--gold); padding: 16px 18px; margin: 16px 0; font-size: 14px; }
+.callout strong { color: var(--rust); }
+
+/* ECON BOX */
+.econ-box { background: var(--ink); color: var(--bg); padding: 24px 28px; margin: 28px 0; }
+.econ-box .elabel { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 10px; }
+.econ-box p { color: #D0C8B0; font-size: 14px; }
+.econ-box strong { color: var(--gold-light); }
+
+/* TIMELINE */
+.timeline { padding-left: 28px; position: relative; margin: 20px 0; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--rust), var(--gold)); }
+.tl-item { position: relative; margin-bottom: 22px; }
+.tl-item::before { content: ''; position: absolute; left: -26px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--rust); border: 2px solid var(--bg); box-shadow: 0 0 0 2px var(--rust); }
+.tl-year { font-family: var(--mono); font-size: 11px; font-weight: bold; color: var(--rust); letter-spacing: 1px; }
+.tl-title { font-family: var(--serif); font-size: 1rem; font-weight: bold; margin: 2px 0 4px; }
+.tl-body { font-size: 13.5px; color: #4A3C28; }
+
+/* MINI CARDS */
+.mini-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.mini-card { background: var(--white); border: 1px solid var(--border); border-left: 3px solid var(--rust); padding: 13px 15px; }
+.mini-card .term { font-family: var(--serif); font-weight: bold; color: var(--rust); font-size: 0.95rem; margin-bottom: 4px; }
+.mini-card .def { font-size: 12.5px; color: #4A3C28; }
+
+/* TABLE */
+.evidence-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+.evidence-table th { background: var(--ink); color: var(--bg); padding: 10px 12px; text-align: left; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; }
+.evidence-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+.evidence-table tr:nth-child(even) td { background: var(--cream); }
+.tag-bad { display: inline-block; background: #FDEAEA; color: var(--red); border: 1px solid #F5C0C0; padding: 1px 7px; font-size: 10px; font-weight: bold; font-family: var(--mono); letter-spacing: 1px; white-space: nowrap; }
+.tag-ok { display: inline-block; background: #EAF5EE; color: var(--green); border: 1px solid #B0D9C0; padding: 1px 7px; font-size: 10px; font-weight: bold; font-family: var(--mono); letter-spacing: 1px; white-space: nowrap; }
+
+/* VERDICT */
+.verdict { background: var(--rust); color: #fff; padding: 18px 28px; margin: 28px 0; text-align: center; font-family: var(--serif); font-size: 1.15rem; font-style: italic; }
+.verdict strong { font-style: normal; }
+
+/* FOOTER */
+.footer { margin-top: 50px; border-top: 3px double var(--border); padding-top: 18px; text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--warm-gray); }
+
+/* ═══════════════════════════
+   INTERACTIVE ACTIVITY
+═══════════════════════════ */
+.activity-wrap { background: #111008; color: #F0EAD6; margin: 50px -24px 0; padding: 0 24px 60px; }
+.act-header-bar { background: var(--rust); text-align: center; padding: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: #fff; margin-bottom: 48px; }
+.act-inner { max-width: 900px; margin: 0 auto; }
+.act-title { font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.6rem); font-weight: bold; text-align: center; color: #F0EAD6; margin-bottom: 6px; }
+.act-sub { text-align: center; font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: #7A7060; margin-bottom: 36px; text-transform: uppercase; }
+
+.progress-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 28px; }
+.pdot { width: 30px; height: 4px; background: #2A2018; border-radius: 2px; transition: background 0.35s; }
+.pdot.done { background: var(--gold-light); }
+.pdot.active { background: var(--rust-light); }
+
+.score-bar { text-align: center; font-family: var(--mono); font-size: 11px; letter-spacing: 2px; color: #7A7060; margin-bottom: 24px; text-transform: uppercase; }
+.score-bar .sc { color: var(--gold-light); font-size: 20px; font-weight: bold; }
+
+.q-card { background: #1C1408; border: 1px solid #2E2418; border-top: 3px solid var(--rust); padding: 30px 32px; margin-bottom: 16px; }
+@media (max-width: 560px) { .q-card { padding: 20px 16px; } }
+.q-num { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--rust-light); margin-bottom: 12px; }
+.q-text { font-family: var(--serif); font-size: clamp(1rem, 2.2vw, 1.3rem); font-style: italic; line-height: 1.5; color: #F0EAD6; margin-bottom: 18px; }
+.q-ctx { background: #251C0C; border-left: 3px solid var(--gold); padding: 11px 15px; font-size: 13px; color: #B8A880; margin-bottom: 20px; line-height: 1.6; }
+
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 520px) { .opts { grid-template-columns: 1fr; } }
+
+.opt { background: #251C0C; border: 1px solid #2E2418; color: #C0B090; padding: 13px 16px; text-align: left; cursor: pointer; font-family: var(--sans); font-size: 13.5px; line-height: 1.5; transition: border-color 0.2s, background 0.2s, color 0.2s; }
+.opt:hover:not(:disabled) { border-color: var(--gold); background: #30240E; color: #F0EAD6; }
+.opt:disabled { cursor: default; }
+.opt .ol { display: block; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--gold-light); margin-bottom: 4px; text-transform: uppercase; }
+.opt.correct { border-color: #2D6A4F; background: rgba(45,106,79,0.2); color: #7DD4A8; }
+.opt.wrong { border-color: var(--rust); background: rgba(184,57,14,0.18); color: #E89070; }
+
+.feedback { background: #251C0C; border: 1px solid #2E2418; padding: 16px 20px; margin-top: 14px; font-size: 13.5px; line-height: 1.65; color: #B8A880; display: none; }
+.feedback.show { display: block; animation: fadeup 0.35s ease; }
+.feedback.fb-correct { border-left: 3px solid #2D6A4F; }
+.feedback.fb-wrong { border-left: 3px solid var(--rust); }
+.fb-verdict { font-family: var(--serif); font-size: 1.1rem; font-weight: bold; margin-bottom: 6px; }
+.v-c { color: #6DC994; }
+.v-w { color: #E87060; }
+.econlink { margin-top: 10px; padding-top: 10px; border-top: 1px solid #2E2418; font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--gold-light); line-height: 1.5; }
+
+.nav-strip { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; }
+.nav-btn { background: transparent; border: 1px solid #2E2418; color: #7A7060; padding: 10px 22px; cursor: pointer; font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: all 0.2s; }
+.nav-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-light); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+.next-btn { background: var(--rust); border-color: var(--rust); color: #fff; }
+.next-btn:hover:not(:disabled) { background: var(--rust-light); border-color: var(--rust-light); }
+
+.results { display: none; text-align: center; padding: 24px 0; }
+.results.show { display: block; animation: fadeup 0.4s ease; }
+.res-score { font-family: var(--serif); font-size: 5.5rem; font-weight: bold; color: var(--gold-light); line-height: 1; }
+.res-label { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #7A7060; margin-bottom: 20px; }
+.res-msg { font-family: var(--serif); font-style: italic; font-size: 1.3rem; color: #F0EAD6; max-width: 500px; margin: 0 auto 28px; line-height: 1.5; }
+.breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 480px; margin: 0 auto 28px; }
+@media (max-width: 480px) { .breakdown { grid-template-columns: repeat(2, 1fr); } }
+.bd-item { background: #1C1408; border: 1px solid #2E2418; padding: 14px 8px; }
+.bd-item .bnum { font-family: var(--serif); font-size: 1.9rem; font-weight: bold; color: var(--gold-light); }
+.bd-item .blbl { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: #7A7060; text-transform: uppercase; margin-top: 4px; line-height: 1.4; }
+.restart-btn { background: var(--rust); border: none; color: #fff; padding: 14px 40px; cursor: pointer; font-family: var(--mono); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; transition: background 0.2s; }
+.restart-btn:hover { background: var(--rust-light); }
+
+@keyframes fadeup { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<div class="masthead">
+  <div class="pub-tag">Economics &nbsp;&#9632;&nbsp; Market Structures &nbsp;&#9632;&nbsp; Real-World Case Study</div>
+  <h1>The <em>Microsoft</em> Monopoly</h1>
+  <div class="masthead-sub">How a software giant wielded market power &mdash; and faced the law</div>
+  <div class="byline">
+    <span>Course Instructor: <strong>Dr. Sarabjeet Bedi</strong></span>
+    <span>&nbsp;&#9632;&nbsp;</span>
+    <span>Subject: <strong>Economics of Market Structures</strong></span>
+  </div>
+</div>
+
+<div class="ornament">&#9670; &#9670; &#9670;</div>
+
+<div class="hero-pull">
+  <blockquote>
+    &ldquo;Microsoft&rsquo;s market power in the PC operating system market is so durable that it faces no commercially significant competition &mdash; and shows no sign of losing that position.&rdquo;
+  </blockquote>
+  <cite>&mdash; U.S. District Court Judge Thomas Penfield Jackson &nbsp;&#9632;&nbsp; United States v. Microsoft Corp., 2000</cite>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="num">95%</div>
+    <div class="lbl">Market Share</div>
+    <div class="desc">Windows share of PC OS market at peak dominance, late 1990s</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">85%+</div>
+    <div class="lbl">Operating Margin</div>
+    <div class="desc">Windows division profit margin &mdash; impossible in competitive markets</div>
+  </div>
+  <div class="stat-card">
+    <div class="num">3 yrs</div>
+    <div class="lbl">Legal Battle</div>
+    <div class="desc">Duration of U.S. v. Microsoft antitrust trial, 1998&ndash;2001</div>
+  </div>
+</div>
+
+<div class="rule"></div>
+
+<div class="section-tag">Background</div>
+<h2>How Microsoft Built Its Empire</h2>
+
+<div class="two-col">
+  <div>
+    <p>In 1981, IBM selected Microsoft&rsquo;s MS-DOS as the operating system for its personal computer. Unlike typical licensing deals, Microsoft retained the right to sell MS-DOS to other manufacturers &mdash; a decision that would transform the software landscape forever.</p>
+    <p>As IBM-compatible &ldquo;clone&rdquo; PCs flooded the market through the 1980s, every machine needed an operating system. Microsoft &mdash; and only Microsoft &mdash; had the dominant product. By the time Windows 95 launched, Microsoft had achieved something rare: a near-total monopoly over the foundational software layer of a global technology platform.</p>
+    <p>The company&rsquo;s strategy was to control a <strong>bottleneck</strong>. Every application needed to run on an operating system, and that operating system was Windows. Controlling Windows meant controlling the entire PC software ecosystem.</p>
+  </div>
+  <div>
+    <div class="callout">
+      <strong>The Network Effect Trap:</strong> The more users adopted Windows, the more developers wrote applications for Windows. The more applications existed, the more users chose Windows. This self-reinforcing cycle made it nearly impossible for competitors to break in &mdash; even with superior products.
+    </div>
+    <p>This created what economists call <strong>barriers to entry</strong> &mdash; structural advantages preventing rivals from challenging the incumbent. For Microsoft, these were enormous: switching costs for users, application compatibility lock-in, and the cost of convincing developers to abandon Windows.</p>
+    <div class="callout">
+      <strong>Key Insight:</strong> Microsoft&rsquo;s monopoly was not just about market share. It was about <em>structural power</em> &mdash; the ability to define the rules of an entire industry and extract profit from every participant within it.
+    </div>
+  </div>
+</div>
+
+<div class="rule"></div>
+
+<div class="section-tag">Timeline</div>
+<h2>A Monopoly in Motion &mdash; Key Events</h2>
+
+<div class="timeline">
+  <div class="tl-item">
+    <div class="tl-year">1981</div>
+    <div class="tl-title">The IBM Deal &mdash; Foundation of an Empire</div>
+    <div class="tl-body">Microsoft licenses MS-DOS to IBM but retains rights to sell to other manufacturers. This single contractual clause would make Bill Gates the world&rsquo;s richest person and give Microsoft permanent leverage over the entire PC industry.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-year">1990</div>
+    <div class="tl-title">Windows 3.0 &mdash; Mass Market Conquest</div>
+    <div class="tl-body">Windows 3.0 sells over 3 million copies in its first year. Microsoft begins its ascent to PC operating system dominance with a genuinely usable graphical interface that transforms personal computing.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-year">1995</div>
+    <div class="tl-title">Windows 95 &amp; The Browser Wars Begin</div>
+    <div class="tl-body">Windows 95 launches to massive fanfare. Microsoft notices that Netscape Navigator &mdash; a browser &mdash; is threatening to become an alternative software platform. The Browser Wars begin as Microsoft perceives an existential threat to its OS monopoly.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-year">1996&ndash;98</div>
+    <div class="tl-title">Internet Explorer Bundling &mdash; The Anticompetitive Act</div>
+    <div class="tl-body">Microsoft bundles Internet Explorer with Windows for free and pressures PC manufacturers not to pre-install Netscape. Netscape&rsquo;s market share collapses from approximately 80% to under 20% within three years.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-year">1998</div>
+    <div class="tl-title">U.S. Department of Justice Files Antitrust Suit</div>
+    <div class="tl-body">20 state attorneys general and the DOJ sue Microsoft under the Sherman Antitrust Act, alleging monopolistic business practices that harmed competition and consumers across multiple technology markets.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-year">2000</div>
+    <div class="tl-title">Judge Orders Microsoft to Break Up</div>
+    <div class="tl-body">Judge Jackson rules Microsoft must be split into two separate companies &mdash; one for Windows, one for software products. Microsoft appeals immediately, halting enforcement of the breakup order.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-year">2001</div>
+    <div class="tl-title">Settlement &mdash; The Monopoly Survives, Constrained</div>
+    <div class="tl-body">The Bush administration settles with Microsoft. The breakup is cancelled. Microsoft must share its APIs with third parties and accept oversight for five years. Critics widely call it a victory for Microsoft.</div>
+  </div>
+</div>
+
+<div class="rule"></div>
+
+<div class="section-tag">Economic Analysis</div>
+<h2>Monopoly Theory Applied to Microsoft</h2>
+
+<div class="econ-box">
+  <div class="elabel">&#9632; Economic Theory &mdash; Monopoly Fundamentals</div>
+  <p>A <strong>pure monopoly</strong> exists when a single firm is the sole seller of a product with no close substitutes. The firm faces the entire downward-sloping market demand curve, making it a <strong>price maker</strong> rather than a price taker.</p>
+  <p>Profit maximisation occurs where <strong>MR = MC</strong>. Because Marginal Revenue lies below the demand curve, the monopolist produces <em>less</em> than the competitive output and charges a <em>higher</em> price, generating <strong>economic (supernormal) profit</strong> that persists in the long run due to barriers to entry.</p>
+  <p>The gap between the competitive equilibrium and the monopoly equilibrium represents <strong>deadweight loss</strong> &mdash; a welfare cost borne by society from transactions that would have been mutually beneficial but do not occur under monopoly pricing.</p>
+</div>
+
+<div class="two-col">
+  <div>
+    <h3>How Microsoft Priced Like a Monopolist</h3>
+    <p>Windows OEM licensing fees were set well above marginal cost &mdash; which for software approaches zero after development. In the 1990s, Microsoft charged PC makers $40&ndash;$80 per Windows license for software that cost virtually nothing to replicate on additional discs.</p>
+    <p>This is textbook monopoly pricing: <strong>P &gt;&gt; MC</strong>, generating enormous supernormal profit. Microsoft&rsquo;s operating margins on Windows exceeded <strong>85%</strong> in peak years &mdash; a figure impossible in competitive markets where long-run profit is driven to zero by new entry.</p>
+    <p>Microsoft also used <strong>&ldquo;per-processor&rdquo; licensing</strong> &mdash; charging manufacturers a fee for every PC sold, regardless of whether it ran Windows. This effectively taxed any manufacturer who dared install a competing OS.</p>
+  </div>
+  <div>
+    <h3>Barriers to Entry &mdash; Why Rivals Could Not Win</h3>
+    <div class="mini-cards">
+      <div class="mini-card">
+        <div class="term">Network Effects</div>
+        <div class="def">Windows&rsquo; value grew with every new user and application &mdash; a self-reinforcing demand-side moat impossible to replicate quickly.</div>
+      </div>
+      <div class="mini-card">
+        <div class="term">Switching Costs</div>
+        <div class="def">Businesses invested billions in Windows-compatible software, making switching to a rival OS prohibitively expensive.</div>
+      </div>
+      <div class="mini-card">
+        <div class="term">Predatory Pricing</div>
+        <div class="def">IE was offered free &mdash; deliberately below cost &mdash; to destroy Netscape&rsquo;s revenue model and eliminate browser-based competition.</div>
+      </div>
+      <div class="mini-card">
+        <div class="term">Exclusive Dealing</div>
+        <div class="def">PC makers were pressured not to feature rival browsers or OS platforms, foreclosing distribution channels for all competitors.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rule"></div>
+
+<div class="section-tag">Court Evidence</div>
+<h2>The Court&rsquo;s Findings &mdash; Monopoly Behaviour Identified</h2>
+
+<table class="evidence-table">
+  <thead>
+    <tr>
+      <th>Microsoft Action</th>
+      <th>Target</th>
+      <th>Economic Effect</th>
+      <th>Court Finding</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Bundled IE free with Windows</td>
+      <td>Netscape Navigator</td>
+      <td>Destroyed Netscape&rsquo;s revenue; raised browser barrier to entry</td>
+      <td><span class="tag-bad">ANTICOMPETITIVE</span></td>
+    </tr>
+    <tr>
+      <td>Per-processor OEM licensing</td>
+      <td>All rival OS makers</td>
+      <td>Taxed rivals even when Windows was not installed on the PC</td>
+      <td><span class="tag-bad">ANTICOMPETITIVE</span></td>
+    </tr>
+    <tr>
+      <td>Threatened Intel over Java</td>
+      <td>Sun Microsystems / Java</td>
+      <td>Suppressed cross-platform technology threatening Windows dependency</td>
+      <td><span class="tag-bad">ANTICOMPETITIVE</span></td>
+    </tr>
+    <tr>
+      <td>Pressured Apple to drop QuickTime</td>
+      <td>Apple Computer</td>
+      <td>Restricted multimedia software that could reduce Windows lock-in</td>
+      <td><span class="tag-bad">ANTICOMPETITIVE</span></td>
+    </tr>
+    <tr>
+      <td>Developed Windows NT for servers</td>
+      <td>Server market</td>
+      <td>Entered new markets through legitimate competitive expansion</td>
+      <td><span class="tag-ok">LEGITIMATE</span></td>
+    </tr>
+    <tr>
+      <td>Continued R&amp;D investment in Windows</td>
+      <td>Own product</td>
+      <td>Improved product quality &mdash; pro-consumer innovation</td>
+      <td><span class="tag-ok">LEGITIMATE</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="rule"></div>
+
+<div class="section-tag">Welfare Impact</div>
+<h2>Who Won, Who Lost?</h2>
+
+<div class="two-col">
+  <div>
+    <h3>Costs to Society</h3>
+    <p><strong>Deadweight Loss:</strong> Fewer consumers accessed certain software products because competition was suppressed. The market produced less variety than it would have under competition, destroying consumer and producer surplus.</p>
+    <p><strong>Innovation Suppressed:</strong> The browser stagnation of 2001&ndash;2004 &mdash; when IE faced zero competition and received no updates &mdash; is cited by economists as a direct cost. Web development stalled for nearly four years until Firefox arrived.</p>
+    <p><strong>Higher Prices:</strong> Windows licensing costs were passed on to consumers in the price of every PC &mdash; with no competitive pressure to reduce them. Every computer buyer paid a hidden monopoly premium.</p>
+  </div>
+  <div>
+    <h3>Benefits Acknowledged</h3>
+    <p><strong>Standardisation:</strong> A single dominant OS platform created a consistent environment for software development, reducing fragmentation costs that had plagued earlier computing ecosystems with incompatible standards.</p>
+    <p><strong>Scale Economies:</strong> Microsoft&rsquo;s supernormal profits funded enormous R&amp;D investment. Office, SQL Server, and Exchange &mdash; widely adopted enterprise tools &mdash; emerged from this investment pipeline.</p>
+    <p><strong>Consumer Access:</strong> The commoditisation of the PC &mdash; aided by standardised, widely licensed Windows &mdash; contributed to rapid diffusion of computers into homes and businesses globally through the 1990s.</p>
+  </div>
+</div>
+
+<div class="verdict">
+  <strong>Court Verdict:</strong> The costs &mdash; suppressed competition, harmed rivals, slower innovation &mdash; outweighed the benefits.
+  Microsoft was ruled <em>a monopolist that had abused its dominant market position.</em>
+</div>
+
+<div class="section-tag">Legacy &amp; Lessons</div>
+<h2>What Microsoft&rsquo;s Case Teaches Economics Students</h2>
+
+<div class="two-col">
+  <div>
+    <p>The Microsoft case remains the most important antitrust action in technology history. It established three landmark principles:</p>
+    <p><strong>1. Market power + exclusionary conduct = antitrust liability</strong>, even for companies that achieved dominance through genuine innovation rather than collusion.</p>
+    <p><strong>2. Bundling can be predatory</strong> when its purpose is specifically to leverage one monopoly into adjacent markets rather than to provide genuine consumer value.</p>
+    <p><strong>3. Network effects create natural monopoly tendencies</strong> in technology platforms &mdash; requiring proactive regulatory attention before dominance becomes entrenched and irreversible.</p>
+  </div>
+  <div>
+    <p>Ironically, Microsoft&rsquo;s constraints opened space for Google, Mozilla Firefox, and Apple Safari to reshape the browser market &mdash; and for smartphones (iOS and Android) to break Windows&rsquo; grip on computing entirely.</p>
+    <div class="callout">
+      <strong>Today&rsquo;s Echo:</strong> Regulators are applying the Microsoft precedent directly to Google (Search), Apple (App Store), and Meta (acquisitions) &mdash; making this case a living template for 21st-century antitrust law across the world.
+    </div>
+    <p>The debate between <strong>structural remedies</strong> (breaking up monopolists) and <strong>behavioural remedies</strong> (constraining conduct) that emerged from this case continues to define regulatory economics and competition policy today.</p>
+  </div>
+</div>
+
+<div class="footer">Case Study Content Complete &nbsp;&#9632;&nbsp; Interactive Activity Follows Below</div>
+
+</div><!-- /page -->
+
+<!-- INTERACTIVE ACTIVITY -->
+<div class="activity-wrap">
+  <div class="act-header-bar">&#9632; Interactive Learning Activity &nbsp;&#9632;&nbsp; Apply What You Have Learned &nbsp;&#9632;</div>
+  <div class="act-inner">
+    <div class="act-title">Test Your Understanding</div>
+    <div class="act-sub">Microsoft Monopoly Case Study &nbsp;&#9632;&nbsp; 8 Questions &nbsp;&#9632;&nbsp; Dr. Sarabjeet Bedi</div>
+    <div class="progress-row" id="progressRow"></div>
+    <div class="score-bar">Score: <span class="sc" id="scoreNum">0</span> / <span id="totalNum">8</span></div>
+
+    <div id="qArea">
+      <div class="q-card">
+        <div class="q-num" id="qNum">Question 1 of 8</div>
+        <div class="q-text" id="qText"></div>
+        <div class="q-ctx" id="qCtx"></div>
+        <div class="opts" id="optsGrid"></div>
+        <div class="feedback" id="feedbackBox">
+          <div class="fb-verdict" id="fbVerdict"></div>
+          <div id="fbBody"></div>
+          <div class="econlink" id="fbEcon"></div>
+        </div>
+      </div>
+      <div class="nav-strip">
+        <button class="nav-btn" id="prevBtn" onclick="prevQ()" disabled>&#8592; Prev</button>
+        <button class="nav-btn next-btn" id="nextBtn" onclick="nextQ()" disabled>Next &#8594;</button>
+      </div>
+    </div>
+
+    <div class="results" id="resultsBox">
+      <div class="res-score" id="resFinal">0</div>
+      <div class="res-label">out of 8 questions correct</div>
+      <div class="res-msg" id="resMsg"></div>
+      <div class="breakdown" id="resBD"></div>
+      <button class="restart-btn" onclick="restart()">&#8635; Retake Quiz</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="footer">
+    &copy; Dr. Sarabjeet Bedi &nbsp;&#9632;&nbsp; Monopoly Market Structure &nbsp;&#9632;&nbsp; Microsoft Case Study &nbsp;&#9632;&nbsp; Economics
+  </div>
+</div>
+
+<script>
+var QS = [
+  {
+    text: "Microsoft held approximately 95% of the PC operating system market in the late 1990s. According to economic theory, which characteristic of a monopoly does this most directly illustrate?",
+    ctx: "Context: In the late 1990s, virtually every PC sold worldwide came pre-installed with Microsoft Windows. Linux existed but had negligible consumer market penetration. Apple's Mac OS ran only on Apple hardware, giving most consumers no real alternative.",
+    opts: ["The monopolist faces a perfectly elastic demand curve and cannot influence market price","The monopolist is the sole seller with no close substitutes — a price maker facing the entire downward-sloping market demand curve","The monopolist produces at the socially optimal quantity where Price equals Marginal Cost","The monopolist earns only normal profit in the long run due to potential new entry by rivals"],
+    ans: 1,
+    fb: "Microsoft was the definitive price maker — it faced the downward-sloping market demand for PC operating systems and could set price well above marginal cost. With no close substitutes available to most consumers, it exemplifies the core monopoly characteristic: a sole seller of a product with no commercially viable alternatives.",
+    econ: "MONOPOLY THEORY: A monopolist is a price maker facing P > MR, extracting consumer surplus that competitive firms cannot access."
+  },
+  {
+    text: "Microsoft's marginal cost of producing an additional copy of Windows was close to zero. Yet it charged PC manufacturers $40–$80 per license. What does this large gap between price and marginal cost represent?",
+    ctx: "Context: Economists define supernormal (economic) profit as total revenue minus total opportunity cost, including normal profit. In perfectly competitive markets, long-run economic profit is driven to zero by new entrants attracted by above-normal returns.",
+    opts: ["Normal profit — the minimum return required to keep Microsoft operating in the market","Deadweight loss — the welfare destroyed by under-production relative to the competitive equilibrium","Supernormal (economic) profit generated by pricing above MC — only sustainable because barriers to entry blocked all rivals","Average fixed cost recovery — Microsoft was merely recouping its software development investment over time"],
+    ans: 2,
+    fb: "The enormous gap between near-zero marginal cost and the $40–$80 license price represents supernormal profit — profit above normal return. This is only sustainable in the long run because Microsoft's barriers to entry (network effects, switching costs, exclusive deals) prevented rivals from competing it away. In a competitive market, new entry would erode this profit to zero.",
+    econ: "SUPERNORMAL PROFIT: TR > TC including normal profit. Sustainable only when barriers to entry prevent rivals from entering and competing profits away."
+  },
+  {
+    text: "When Microsoft bundled Internet Explorer free with Windows specifically to destroy Netscape's browser revenue, economists classify this strategy as:",
+    ctx: "Context: Netscape charged $49 per browser license and generated $500 million in annual revenue. After Microsoft bundled IE for free and pressured PC makers to feature IE exclusively, Netscape's market share collapsed from ~80% to under 20% within three years.",
+    opts: ["Allocative efficiency — Microsoft was matching price to marginal cost, benefiting consumers through lower prices","Predatory pricing — deliberately pricing below sustainable cost to eliminate a rival, planning to exploit restored monopoly power afterward","Price discrimination — charging different consumers different prices for the same browser product","Natural monopoly behaviour — simply exploiting legitimate economies of scale available in software production"],
+    ans: 1,
+    fb: "This is a textbook case of predatory pricing — pricing below sustainable levels with the intent to eliminate competition. IE was offered free not because it was efficient to do so, but specifically to remove Netscape's ability to generate revenue from browsers. Once Netscape was eliminated, Microsoft faced no meaningful browser competition until Firefox launched in 2004.",
+    econ: "PREDATORY PRICING: Setting P below ATC to eliminate rivals, accepting short-term losses to secure long-run monopoly power — then exploiting restored dominance once competition is removed."
+  },
+  {
+    text: "From a welfare economics perspective, which combination of effects does a monopoly typically impose on society compared to a perfectly competitive market?",
+    ctx: "Context: Judge Jackson's ruling stated that Microsoft's behaviour harmed consumers, innovation, and the competitive process itself — not merely individual competitor firms such as Netscape.",
+    opts: ["Higher consumer prices AND deadweight loss from output restricted below the competitive equilibrium level","Lower prices AND greater product variety due to economies of scale enjoyed by the single large producer","Productive efficiency AND allocative efficiency — monopolies optimise resource allocation across both dimensions","Increased competition AND consumer surplus transferred from the monopolist to rival firms in adjacent markets"],
+    ans: 0,
+    fb: "Monopoly causes two key welfare harms: (1) Higher prices — consumers pay P > MC, transferring surplus to the monopolist. (2) Deadweight loss — output is restricted below the competitive level, destroying transactions that would have been mutually beneficial. Microsoft's Windows pricing exemplified both: inflated license fees and suppressed software market development.",
+    econ: "WELFARE ANALYSIS: Monopoly creates deadweight loss (DWL). Society loses more total welfare than the monopolist gains in profit — representing a net social loss."
+  },
+  {
+    text: "Network effects played a crucial role in maintaining Microsoft's monopoly. In economic terms, network effects are best described as:",
+    ctx: "Context: By 2000, over 100,000 software applications ran on Windows. Switching to an alternative OS meant losing access to all of them — a switching cost that made rational consumers stay with Windows despite potentially preferring alternatives in isolation.",
+    opts: ["A production-side phenomenon where average cost falls as output increases — economies of scale in manufacturing","A positive externality where a product's value to each user increases as more users adopt it — creating a self-reinforcing, demand-side barrier to entry","A government-imposed barrier such as a patent, licence requirement, or regulatory restriction limiting new entrants","A cost-reduction technique that drives marginal cost toward zero as cumulative production experience accumulates"],
+    ans: 1,
+    fb: "Network effects are a demand-side phenomenon: each additional Windows user made Windows more valuable to all other users (more compatible software, IT support knowledge, compatible file formats). This self-reinforcing barrier was generated by the market itself — making it particularly difficult for antitrust law to address without structural intervention that broke up the company.",
+    econ: "NETWORK EFFECTS: Value of product = function of (number of users). Creates tipping points where dominant platforms become near-impossible to displace even with superior rival products."
+  },
+  {
+    text: "The U.S. government's initial remedy was to break Microsoft into two separate companies. From an economic standpoint, what was the primary rationale for this structural remedy?",
+    ctx: "Context: One company would own Windows (the OS); the other would own Office, IE, and applications. The logic was that the Applications company would then have an incentive to support rival operating systems to expand its own addressable market.",
+    opts: ["To create a natural monopoly by allowing one firm to enjoy full economies of scale in operating system production","To restore competitive conditions by eliminating the leverage that Windows monopoly power gave Microsoft in adjacent markets such as browsers and applications","To force Microsoft to produce at the MR = MC profit-maximising output without changing the underlying industry structure","To nationalise the company and ensure public provision of the operating system as a public good"],
+    ans: 1,
+    fb: "The structural remedy targeted the core economic problem: Microsoft used Windows monopoly power as leverage to dominate adjacent markets. By separating Windows from Applications, the Applications company would compete for customers across multiple OS platforms — restoring competitive incentives across the technology ecosystem and removing the incentive to suppress rivals.",
+    econ: "ANTITRUST ECONOMICS: Structural remedies change market architecture permanently; behavioural remedies only constrain how existing monopoly power is used without addressing its underlying source."
+  },
+  {
+    text: "Microsoft's per-processor licensing required PC manufacturers to pay a Windows fee for every CPU shipped — even if that PC ran a different operating system. Economically, this practice functions most like:",
+    ctx: "Context: A manufacturer selling 1 million PCs with Linux installed would still owe Microsoft $40 million under per-processor contracts. This made pre-installing any other OS effectively free from the manufacturer's cost perspective.",
+    opts: ["A per-unit subsidy from Microsoft to PC manufacturers that lowered their overall production costs","An implicit tax on installing rival operating systems — raising the effective cost of any alternative and foreclosing the market to competitors","Price discrimination between business PC and consumer PC market segments based on their differing willingness to pay","A volume discount that rewarded high-output manufacturers with proportionally lower per-unit licensing costs"],
+    ans: 1,
+    fb: "Per-processor licensing functioned as an implicit tax on competition. If you already paid for Windows on every machine, installing Linux instead meant paying twice (Windows license + Linux support costs). This raised rivals' effective costs without requiring Microsoft to lower its own prices — a sophisticated strategy that erected barriers to entry without direct exclusionary confrontation.",
+    econ: "RAISING RIVALS' COSTS: Increases competitors' costs without improving one's own efficiency — reducing competitive pressure while maintaining the appearance of non-exclusionary conduct."
+  },
+  {
+    text: "After the settlement, Microsoft was required to share its APIs with developers but was NOT broken up. A critic argues this behavioural remedy was economically insufficient. Which argument best supports that criticism?",
+    ctx: "Context: Between 2001 and 2004, Internet Explorer held over 95% browser market share with zero serious competition. Microsoft made no meaningful improvements to IE during this entire period. Firefox launched in 2004 and rapidly gained share — suggesting market competition, not the settlement, drove subsequent browser innovation.",
+    opts: ["Sharing APIs automatically increases Microsoft's marginal cost, mechanically reducing supernormal profit toward zero over time","Behavioural remedies cannot remove structural barriers (network effects, switching costs) that sustain monopoly power — only structural separation or new entry can restore genuinely competitive conditions","The remedy was fully sufficient because it effectively forced Price to equal Marginal Cost for Windows licenses","Microsoft's dominance was a natural monopoly, making any government intervention economically harmful to consumer welfare"],
+    ans: 1,
+    fb: "Behavioural remedies tell a monopolist HOW to behave — but do not change the structural conditions that created monopoly power. Network effects, switching costs, and application compatibility all remained intact after the settlement. The browser stagnation of 2001–04 (no IE updates, no meaningful competition) is direct evidence the remedy failed to restore competitive market dynamics.",
+    econ: "REGULATORY ECONOMICS: Structural remedies change market architecture; behavioural remedies rely on compliance monitoring without removing the root source of monopoly power."
+  }
+];
+
+var cur = 0, score = 0;
+var answered = new Array(QS.length).fill(false);
+var userAns = new Array(QS.length).fill(-1);
+
+function init() {
+  document.getElementById('totalNum').textContent = QS.length;
+  buildProgress();
+  renderQ(0);
+}
+
+function buildProgress() {
+  var row = document.getElementById('progressRow');
+  row.innerHTML = '';
+  for (var i = 0; i < QS.length; i++) {
+    var d = document.createElement('div');
+    d.className = 'pdot' + (i === cur ? ' active' : (answered[i] ? ' done' : ''));
+    row.appendChild(d);
+  }
+}
+
+function renderQ(idx) {
+  var q = QS[idx];
+  document.getElementById('qNum').textContent = 'Question ' + (idx + 1) + ' of ' + QS.length;
+  document.getElementById('qText').textContent = q.text;
+  var ctxEl = document.getElementById('qCtx');
+  ctxEl.textContent = q.ctx;
+  ctxEl.style.display = 'block';
+
+  var grid = document.getElementById('optsGrid');
+  grid.innerHTML = '';
+  var letters = ['A', 'B', 'C', 'D'];
+  q.opts.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="ol">Option ' + letters[i] + '</span>' + opt;
+    btn.onclick = (function(ci) { return function() { selectAns(ci); }; })(i);
+    if (answered[idx]) {
+      btn.disabled = true;
+      if (i === q.ans) btn.classList.add('correct');
+      if (userAns[idx] === i && i !== q.ans) btn.classList.add('wrong');
+    }
+    grid.appendChild(btn);
+  });
+
+  var fb = document.getElementById('feedbackBox');
+  if (answered[idx]) { showFeedback(idx, userAns[idx]); }
+  else { fb.className = 'feedback'; }
+
+  document.getElementById('prevBtn').disabled = (idx === 0);
+  var nb = document.getElementById('nextBtn');
+  nb.disabled = !answered[idx];
+  nb.textContent = (idx === QS.length - 1 && answered[idx]) ? 'See Results \u2192' : 'Next \u2192';
+  document.getElementById('scoreNum').textContent = score;
+  buildProgress();
+}
+
+function selectAns(choice) {
+  if (answered[cur]) return;
+  var q = QS[cur];
+  answered[cur] = true;
+  userAns[cur] = choice;
+  if (choice === q.ans) score++;
+
+  var btns = document.querySelectorAll('.opt');
+  btns.forEach(function(btn, i) {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    if (choice === i && i !== q.ans) btn.classList.add('wrong');
+  });
+
+  showFeedback(cur, choice);
+  var nb = document.getElementById('nextBtn');
+  nb.disabled = false;
+  if (cur === QS.length - 1) nb.textContent = 'See Results \u2192';
+  document.getElementById('scoreNum').textContent = score;
+  buildProgress();
+}
+
+function showFeedback(idx, choice) {
+  var q = QS[idx];
+  var correct = (choice === q.ans);
+  var fb = document.getElementById('feedbackBox');
+  fb.className = 'feedback show ' + (correct ? 'fb-correct' : 'fb-wrong');
+  var verdict = document.getElementById('fbVerdict');
+  verdict.className = 'fb-verdict ' + (correct ? 'v-c' : 'v-w');
+  verdict.textContent = correct ? '\u2713 Correct!' : '\u2717 Not quite.';
+  document.getElementById('fbBody').textContent = q.fb;
+  document.getElementById('fbEcon').textContent = '\u25A0 ' + q.econ;
+}
+
+function nextQ() {
+  if (cur < QS.length - 1) {
+    cur++;
+    renderQ(cur);
+    document.querySelector('.activity-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (cur > 0) { cur--; renderQ(cur); }
+}
+
+function showResults() {
+  document.getElementById('qArea').style.display = 'none';
+  var rs = document.getElementById('resultsBox');
+  rs.className = 'results show';
+  document.getElementById('resFinal').textContent = score;
+
+  var pct = score / QS.length;
+  var msg;
+  if (pct === 1) msg = "Flawless! You have mastered monopoly theory and applied it precisely to a real-world case. Outstanding analytical command.";
+  else if (pct >= 0.75) msg = "Excellent work. Strong command of monopoly economics and antitrust reasoning. Review the questions you missed to complete your understanding.";
+  else if (pct >= 0.5) msg = "Good foundation. Core concepts understood, but welfare analysis, predatory pricing, and remedies need further review. Re-read the case study.";
+  else msg = "Keep going! Re-read the Microsoft case study carefully, focusing on the economic concepts highlighted in each section before retaking the quiz.";
+  document.getElementById('resMsg').textContent = msg;
+
+  var areas = [
+    { label: "Monopoly Structure", qs: [0, 1] },
+    { label: "Anticompetitive Acts", qs: [2, 6] },
+    { label: "Welfare Effects", qs: [3, 4] },
+    { label: "Policy & Remedies", qs: [5, 7] }
+  ];
+
+  var bd = document.getElementById('resBD');
+  bd.innerHTML = '';
+  areas.forEach(function(area) {
+    var correct = area.qs.filter(function(i) { return userAns[i] === QS[i].ans; }).length;
+    var div = document.createElement('div');
+    div.className = 'bd-item';
+    div.innerHTML = '<div class="bnum">' + correct + '/' + area.qs.length + '</div><div class="blbl">' + area.label + '</div>';
+    bd.appendChild(div);
+  });
+  document.querySelector('.activity-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function restart() {
+  cur = 0; score = 0;
+  answered = new Array(QS.length).fill(false);
+  userAns = new Array(QS.length).fill(-1);
+  document.getElementById('resultsBox').className = 'results';
+  document.getElementById('qArea').style.display = 'block';
+  renderQ(0);
+}
+
+init();
+</script>
+</body>
+</html>

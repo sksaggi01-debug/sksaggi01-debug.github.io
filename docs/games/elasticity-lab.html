@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elasticity Lab — Interactive Classroom Game</title>
+  <style>
+    :root{
+      --bg:#0f172a;        /* slate-900 */
+      --panel:#111827;     /* gray-900 */
+      --muted:#1f2937;     /* gray-800 */
+      --text:#e5e7eb;      /* gray-200 */
+      --accent:#22d3ee;    /* cyan-400 */
+      --accent-2:#a78bfa;  /* violet-400 */
+      --good:#34d399;      /* green-400 */
+      --bad:#f87171;       /* red-400 */
+      --warn:#fbbf24;      /* amber-400 */
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0; background: linear-gradient(120deg, #0b1229, #0d1a3a);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+    }
+    .container { max-width: 1100px; margin: 32px auto; padding: 0 16px; }
+    .card {
+      background: rgba(17,24,39,0.75);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: .3px; }
+    h2 { font-size: 18px; margin: 0 0 10px; letter-spacing: .2px; opacity: .9;}
+    p, li, label, button { font-size: 15px; }
+    .grid { display: grid; gap: 16px; }
+    .grid.cols-2 { grid-template-columns: 1fr 1fr; }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 900px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    select, input[type="number"], input[type="text"] {
+      background: var(--muted); border: 1px solid rgba(255,255,255,0.08); color: var(--text);
+      padding: 8px 10px; border-radius: 10px; outline: none; min-width: 120px;
+    }
+    input[type="range"] { width: 100%; }
+    .btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #081019; border: none; padding: 10px 14px; border-radius: 12px;
+      font-weight: 700; cursor: pointer; transition: transform .06s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .kbd {
+      border: 1px solid rgba(255,255,255,.15); padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,.05);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; font-size: 14px; }
+    th { opacity: .8; font-weight: 600; }
+    .stat {
+      background: linear-gradient(90deg, rgba(34,211,238,0.12), rgba(167,139,250,0.12));
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 10px 12px; min-height: 56px;
+      display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    }
+    .pill { padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); font-weight: 700; font-size: 12px; }
+    .ok { color: var(--good); border-color: rgba(52,211,153,.35); }
+    .bad { color: var(--bad); border-color: rgba(248,113,113,.35); }
+    .revbar-wrap{ background: rgba(255,255,255,.06); border-radius: 10px; height: 14px; overflow: hidden; }
+    .revbar { height: 100%; background: linear-gradient(90deg, var(--good), var(--accent)); width: 0%; transition: width .25s ease; }
+    .note { opacity: .85; font-size: 13px; }
+    .footer { opacity: .75; font-size: 12px; text-align: center; margin-top: 22px;}
+    .tag { font-size: 12px; opacity:.85; padding: 4px 8px; border-radius: 8px; border: 1px dashed rgba(255,255,255,.2); }
+    .box { border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; }
+    .titlebar { display:flex; align-items:center; justify-content:space-between; gap: 12px; margin-bottom: 8px;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" style="margin-bottom:16px;">
+      <div class="titlebar">
+        <h1>Elasticity Lab <span class="tag">Price Elasticity of Demand — Interactive</span></h1>
+        <div class="pill">Classroom Mode</div>
+      </div>
+      <p>Experiment with prices for different products, observe how quantity demanded responds, and learn how elasticity affects <b>total revenue</b>. Includes a built-in <b>challenge mode</b> and an <b>arc elasticity</b> calculator.</p>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>1) Choose a Product Scenario</h2>
+        <div class="row">
+          <label for="scenario">Scenario:</label>
+          <select id="scenario">
+            <option value="lemonade">Lemonade — Elastic (many substitutes)</option>
+            <option value="sunscreen">Sunscreen — Inelastic (needs-based)</option>
+          </select>
+          <button class="btn" id="reset">Reset</button>
+        </div>
+        <div class="box" style="margin-top:12px;">
+          <h2 style="margin-bottom:6px;">Demand Schedule</h2>
+          <div id="schedule"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2) Set Price & Observe Outcomes</h2>
+        <div class="row">
+          <label class="kbd">Price</label>
+          <input id="priceSlider" type="range" min="0" max="3" step="1" />
+          <input id="priceInput" type="number" style="width:110px;" />
+          <span id="currency" class="pill">USD</span>
+        </div>
+
+        <div class="grid cols-3" style="margin-top:12px;">
+          <div class="stat">
+            <div>
+              <div class="note">Quantity Demanded</div>
+              <div id="qty" style="font-size:22px; font-weight:800;">—</div>
+            </div>
+            <div class="pill">Qd</div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="note">Total Revenue</div>
+              <div id="revenue" style="font-size:22px; font-weight:800;">—</div>
+            </div>
+            <div class="pill">P × Q</div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="note">Region</div>
+              <div id="region" style="font-size:22px; font-weight:800;">—</div>
+            </div>
+            <div id="regionBadge" class="pill">—</div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <div class="revbar-wrap"><div id="revbar" class="revbar"></div></div>
+          <div id="hint" class="note" style="margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:16px;">
+      <div class="card">
+        <h2>3) Challenge Mode</h2>
+        <p>Hit the target revenue in at most <b>3</b> moves. Choose a price that gets you as close as possible!</p>
+        <div class="row">
+          <button id="newChallenge" class="btn">New Challenge</button>
+          <div class="pill">Target Revenue: <span id="target">—</span></div>
+          <div class="pill">Attempts: <span id="attempts">0</span>/3</div>
+          <div class="pill">Best Error: <span id="bestErr">—</span></div>
+        </div>
+        <div id="challengeMsg" class="note" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>4) Arc Elasticity (Midpoint) Calculator</h2>
+        <div class="row">
+          <label>From price:</label>
+          <select id="p1"></select>
+          <label>to</label>
+          <select id="p2"></select>
+          <button id="calcE" class="btn">Compute Elasticity</button>
+        </div>
+        <div class="grid cols-3" style="margin-top:12px;">
+          <div class="stat">
+            <div>
+              <div class="note">Elasticity |E|</div>
+              <div id="E" style="font-size:22px; font-weight:800;">—</div>
+            </div>
+            <div class="pill">Midpoint</div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="note">Classification</div>
+              <div id="EClass" style="font-size:22px; font-weight:800;">—</div>
+            </div>
+            <div class="pill">Elastic?</div>
+          </div>
+          <div class="stat">
+            <div>
+              <div class="note">Revenue Effect</div>
+              <div id="REffect" style="font-size:22px; font-weight:800;">—</div>
+            </div>
+            <div class="pill">ΔP vs TR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">© Elasticity Lab — for classroom use. Tip: press <span class="kbd">R</span> to reset and <span class="kbd">N</span> for a new challenge.</div>
+  </div>
+
+  <script>
+    const scenarios = {
+      lemonade: {
+        name: "Lemonade",
+        currency: "$",
+        prices: [1,2,3,4],
+        quantities: [100,70,40,10], // elastic
+        blurb: "Many substitutes → demand is elastic over most of this range."
+      },
+      sunscreen: {
+        name: "Sunscreen",
+        currency: "$",
+        prices: [5,6,7,8],
+        quantities: [50,48,46,44], // inelastic
+        blurb: "Needs-based good → demand is relatively inelastic over this range."
+      }
+    };
+
+    const els = {
+      scenario: document.getElementById('scenario'),
+      schedule: document.getElementById('schedule'),
+      priceSlider: document.getElementById('priceSlider'),
+      priceInput: document.getElementById('priceInput'),
+      currency: document.getElementById('currency'),
+      qty: document.getElementById('qty'),
+      revenue: document.getElementById('revenue'),
+      region: document.getElementById('region'),
+      regionBadge: document.getElementById('regionBadge'),
+      revbar: document.getElementById('revbar'),
+      hint: document.getElementById('hint'),
+      p1: document.getElementById('p1'),
+      p2: document.getElementById('p2'),
+      calcE: document.getElementById('calcE'),
+      newChallenge: document.getElementById('newChallenge'),
+      target: document.getElementById('target'),
+      attempts: document.getElementById('attempts'),
+      bestErr: document.getElementById('bestErr'),
+      challengeMsg: document.getElementById('challengeMsg'),
+      reset: document.getElementById('reset'),
+      E: document.getElementById('E'),
+      EClass: document.getElementById('EClass'),
+      REffect: document.getElementById('REffect'),
+    };
+
+    let state = {
+      key: 'lemonade',
+      idx: 0,
+      challengeTarget: null,
+      attempts: 0,
+      bestErr: null,
+    };
+
+    function fmtMoney(sym, x) {
+      return sym + (Math.round(x*100)/100).toFixed(2);
+    }
+
+    function renderSchedule() {
+      const sc = scenarios[state.key];
+      const rows = sc.prices.map((p, i) => `<tr><td>${fmtMoney(sc.currency, p)}</td><td>${sc.quantities[i]}</td><td>${fmtMoney(sc.currency, p*sc.quantities[i])}</td></tr>`).join('');
+      els.schedule.innerHTML = `
+        <p class="note">${sc.blurb}</p>
+        <table>
+          <thead><tr><th>Price (P)</th><th>Quantity Demanded (Q)</th><th>Total Revenue (P×Q)</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+      els.currency.textContent = sc.currency === '$' ? 'USD' : sc.currency;
+      // update dropdowns for elasticity calc
+      els.p1.innerHTML = sc.prices.map((p,i)=>`<option value="${i}">${fmtMoney(sc.currency,p)} (Q=${sc.quantities[i]})</option>`).join('');
+      els.p2.innerHTML = els.p1.innerHTML;
+    }
+
+    function setIndex(i) {
+      const sc = scenarios[state.key];
+      const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+      state.idx = clamp(i, 0, sc.prices.length-1);
+      els.priceSlider.value = state.idx;
+      els.priceInput.value = sc.prices[state.idx];
+      updateOutputs();
+    }
+
+    function updateOutputs() {
+      const sc = scenarios[state.key];
+      const p = sc.prices[state.idx];
+      const q = sc.quantities[state.idx];
+      const tr = p*q;
+      els.qty.textContent = q;
+      els.revenue.textContent = fmtMoney(sc.currency, tr);
+
+      // normalize revenue bar to this scenario's max TR
+      const maxTR = Math.max(...sc.prices.map((pp, i)=>pp*sc.quantities[i]));
+      const pct = Math.round((tr/maxTR)*100);
+      els.revbar.style.width = pct + '%';
+
+      // region classification based on local slope between neighbors (discrete approx)
+      let region = '—', badge = 'pill';
+      const left = state.idx>0 ? (sc.quantities[state.idx]-sc.quantities[state.idx-1])/(sc.prices[state.idx]-sc.prices[state.idx-1]) : null;
+      const right = state.idx<sc.prices.length-1 ? (sc.quantities[state.idx+1]-sc.quantities[state.idx])/(sc.prices[state.idx+1]-sc.prices[state.idx]) : null;
+      // Use midpoint elasticity against a neighbor to classify
+      function midpointElasticity(i1,i2){
+        const p1=sc.prices[i1], q1=sc.quantities[i1];
+        const p2=sc.prices[i2], q2=sc.quantities[i2];
+        const dQ=(q2-q1), avgQ=(q2+q1)/2;
+        const dP=(p2-p1), avgP=(p2+p1)/2;
+        if (avgQ===0||avgP===0||dP===0) return 0;
+        return (dQ/avgQ)/(dP/avgP);
+      }
+      let e = null;
+      if (state.idx < sc.prices.length-1) e = Math.abs(midpointElasticity(state.idx, state.idx+1));
+      else if (state.idx > 0) e = Math.abs(midpointElasticity(state.idx-1, state.idx));
+      if (e!==null){
+        if (e>1){ region='Elastic'; badge='pill ok'; els.hint.innerHTML = 'When demand is <b>elastic</b>, a <b>price cut</b> tends to <b>increase total revenue</b>.'; }
+        else if (e<1){ region='Inelastic'; badge='pill bad'; els.hint.innerHTML = 'When demand is <b>inelastic</b>, a <b>price increase</b> tends to <b>increase total revenue</b>.'; }
+        else { region='Unit Elastic'; badge='pill'; els.hint.textContent = 'At unit elasticity, small price changes leave total revenue roughly unchanged.'; }
+      } else {
+        els.hint.textContent = '';
+      }
+      els.region.textContent = region;
+      els.regionBadge.className = badge;
+      els.regionBadge.textContent = region;
+
+      // if in challenge mode, score attempt only when user changes price
+      if (state.challengeTarget != null) {
+        // no auto-scoring here; scoring happens on input change handlers
+      }
+    }
+
+    function changeScenario(key) {
+      state.key = key;
+      // reset slider range
+      const sc = scenarios[state.key];
+      els.priceSlider.min = 0;
+      els.priceSlider.max = sc.prices.length-1;
+      renderSchedule();
+      setIndex(0);
+      resetChallenge();
+    }
+
+    function computeElasticity(i1, i2) {
+      const sc = scenarios[state.key];
+      const p1=sc.prices[i1], q1=sc.quantities[i1];
+      const p2=sc.prices[i2], q2=sc.quantities[i2];
+      const dQ=(q2-q1), avgQ=(q2+q1)/2;
+      const dP=(p2-p1), avgP=(p2+p1)/2;
+      if (avgQ===0||avgP===0||dP===0) return null;
+      return (dQ/avgQ)/(dP/avgP);
+    }
+
+    function classifyE(e){
+      const a = Math.abs(e);
+      if (a>1) return "Elastic";
+      if (a<1) return "Inelastic";
+      return "Unit Elastic";
+    }
+
+    function revenueEffectSign(e){
+      const a = Math.abs(e);
+      if (a>1) return "↓P ⇒ TR ↑  |  ↑P ⇒ TR ↓";
+      if (a<1) return "↑P ⇒ TR ↑  |  ↓P ⇒ TR ↓";
+      return "ΔP ⇒ TR ~ no change";
+    }
+
+    // Challenge mode
+    function newChallenge() {
+      const sc = scenarios[state.key];
+      const trs = sc.prices.map((p,i)=>p*sc.quantities[i]);
+      const min = Math.min(...trs), max = Math.max(...trs);
+      const target = Math.round((min + Math.random()*(max-min))/1)*1;
+      state.challengeTarget = target;
+      state.attempts = 0;
+      state.bestErr = null;
+      els.target.textContent = fmtMoney(sc.currency, target);
+      els.attempts.textContent = '0';
+      els.bestErr.textContent = '—';
+      els.challengeMsg.textContent = 'Pick prices using the slider or number box. Your best error will be tracked.';
+    }
+
+    function resetChallenge(){
+      state.challengeTarget = null;
+      state.attempts = 0;
+      state.bestErr = null;
+      els.target.textContent = '—';
+      els.attempts.textContent = '0';
+      els.bestErr.textContent = '—';
+      els.challengeMsg.textContent = 'Press "New Challenge" to start a round.';
+    }
+
+    function scoreAttempt(){
+      if (state.challengeTarget==null) return;
+      const sc = scenarios[state.key];
+      const p = sc.prices[state.idx];
+      const q = sc.quantities[state.idx];
+      const tr = p*q;
+      const err = Math.abs(tr - state.challengeTarget);
+      state.attempts += 1;
+      els.attempts.textContent = String(state.attempts);
+      if (state.bestErr===null || err < state.bestErr){
+        state.bestErr = err;
+        els.bestErr.textContent = fmtMoney(sc.currency, err);
+      }
+      if (state.attempts>=3){
+        const msg = err===0 ? "🎉 Perfect! You hit the target revenue exactly." :
+          `Round over. Your final error was ${fmtMoney(sc.currency, err)}. Best error this round: ${fmtMoney(sc.currency, state.bestErr||err)}.`;
+        els.challengeMsg.textContent = msg + " Start another round or switch scenarios.";
+        state.challengeTarget = null; // end round
+      } else {
+        els.challengeMsg.textContent = `Attempt ${state.attempts}/3 recorded. Current TR ${fmtMoney(sc.currency, tr)} | Error ${fmtMoney(sc.currency, err)}.`;
+      }
+    }
+
+    // Event listeners
+    els.scenario.addEventListener('change', e => changeScenario(e.target.value));
+    els.priceSlider.addEventListener('input', e => { setIndex(parseInt(e.target.value)); });
+    els.priceSlider.addEventListener('change', scoreAttempt);
+    els.priceInput.addEventListener('input', e => {
+      const v = Number(e.target.value);
+      const sc = scenarios[state.key];
+      const idx = sc.prices.indexOf(v);
+      if (idx !== -1) setIndex(idx);
+    });
+    els.priceInput.addEventListener('change', scoreAttempt);
+    els.calcE.addEventListener('click', ()=>{
+      const i1 = parseInt(els.p1.value), i2 = parseInt(els.p2.value);
+      if (i1===i2){ els.E.textContent='—'; els.EClass.textContent='—'; els.REffect.textContent='Pick two different points'; return; }
+      const e = computeElasticity(i1, i2);
+      if (e===null){ els.E.textContent='—'; els.EClass.textContent='—'; els.REffect.textContent='Not defined'; return; }
+      const a = Math.abs(e);
+      els.E.textContent = a.toFixed(2);
+      els.EClass.textContent = classifyE(e);
+      els.REffect.textContent = revenueEffectSign(e);
+    });
+    els.newChallenge.addEventListener('click', newChallenge);
+    els.reset.addEventListener('click', ()=> changeScenario(state.key));
+
+    // Hotkeys
+    window.addEventListener('keydown', (e)=>{
+      if (e.key==='r' || e.key==='R') changeScenario(state.key);
+      if (e.key==='n' || e.key==='N') newChallenge();
+      if (e.key==='ArrowLeft') { setIndex(state.idx-1); }
+      if (e.key==='ArrowRight') { setIndex(state.idx+1); }
+    });
+
+    // Init
+    changeScenario('lemonade');
+  </script>
+</body>
+</html>

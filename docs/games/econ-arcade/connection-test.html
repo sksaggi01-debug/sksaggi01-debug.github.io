@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Connection Test</title>
+<style>*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d1117; --panel:#161b26; --panel2:#1c2231; --line:#2a3345;
+  --ink:#e8edf7; --dim:#93a1bd; --acc:#5aa9ff; --acc2:#ffc65a;
+  --good:#3ddc97; --bad:#ff6b6b; --pur:#b78cff;
+  --r:14px; --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--f);
+  font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+body{padding:14px 14px 40px;max-width:820px;margin:0 auto}
+h1{font-size:1.5rem;margin:.1em 0 .1em;letter-spacing:-.02em}
+h2{font-size:1.1rem;margin:0 0 .4em}
+.sub{color:var(--dim);font-size:.86rem;margin:0 0 14px}
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--acc);
+  border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0}
+.card.tight{padding:10px 12px}
+button{font-family:var(--f);font-size:1rem;cursor:pointer}
+.btn{display:block;width:100%;background:var(--acc);color:#06213d;border:0;border-radius:12px;
+  padding:14px 16px;font-weight:800;margin:8px 0;transition:transform .06s,filter .15s}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sec{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:var(--acc2);color:#3a2a00}
+.choice{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;margin:8px 0;font-weight:600;
+  transition:border-color .12s,background .12s}
+.choice:hover{border-color:var(--acc)}
+.choice.right{border-color:var(--good);background:rgba(61,220,151,.14)}
+.choice.wrong{border-color:var(--bad);background:rgba(255,107,107,.14)}
+.choice .k{display:inline-block;width:24px;color:var(--dim);font-weight:800}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1}
+input,select{font-family:var(--f);font-size:1rem;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:10px;padding:12px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:1px}
+label{display:block;font-size:.8rem;color:var(--dim);margin:10px 0 4px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.4rem;font-weight:800;
+  letter-spacing:.28em;color:var(--acc2);text-align:center;margin:6px 0 2px}
+.bar{height:9px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .25s}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:.92rem}
+.hud .t{color:var(--acc2)}
+canvas{width:100%;height:auto;display:block;background:#0a0e15;border:1px solid var(--line);border-radius:10px;margin:6px 0}
+.lb{margin:6px 0}
+.lb .r{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--panel2);margin:5px 0}
+.lb .r.me{outline:1.5px solid var(--acc)}
+.lb .r .p{width:22px;color:var(--dim);font-weight:800}
+.lb .r .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .r .s{font-weight:800;color:var(--acc2)}
+.lb .r .dn{font-size:.7rem;color:var(--good);font-weight:800}
+.fb{border-radius:12px;padding:11px 13px;margin:10px 0;font-size:.93rem;border:1px solid}
+.fb.g{background:rgba(61,220,151,.1);border-color:rgba(61,220,151,.5)}
+.fb.b{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.5)}
+.fb b{display:block;margin-bottom:3px}
+.note{font-size:.82rem;color:var(--dim)}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:800;
+  background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+.pill.on{color:var(--good);border-color:rgba(61,220,151,.5)}
+.pill.off{color:var(--acc2);border-color:rgba(255,198,90,.5)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{background:var(--panel2);color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}
+.big{font-size:2.6rem;font-weight:800;text-align:center;color:var(--acc2);margin:4px 0}
+.ctr{text-align:center}
+.sl{width:100%;margin:10px 0}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;padding:0;border:0;height:34px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;background:var(--panel2);border-radius:99px;border:1px solid var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:30px;width:30px;border-radius:50%;
+  background:var(--acc);margin-top:-12px;border:3px solid #0d1117}
+input[type=range]::-moz-range-track{height:8px;background:var(--panel2);border-radius:99px}
+input[type=range]::-moz-range-thumb{height:26px;width:26px;border-radius:50%;background:var(--acc);border:3px solid #0d1117}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line);font-size:.92rem}
+.kv:last-child{border:0}
+.kv b{color:var(--acc2)}
+.hide{display:none!important}
+.fade{animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+footer{color:var(--dim);font-size:.75rem;text-align:center;margin-top:22px}
+</style>
+</head><body>
+<div id="app">
+<span class="tag">Before class</span>
+<h1>Connection Test</h1>
+<p class="sub">Open this on the campus wifi you will actually use. It checks whether the live room-code multiplayer will work here.</p>
+<div class="card"><h2>Relay check</h2><div id="res"></div></div>
+<div class="card"><h2>Two-device check</h2>
+<p class="note">Open this page on two devices, type the <b>same</b> code on both, and press Ping on one. If the other device shows the ping, live multiplayer works on this network.</p>
+<label>Room code</label><input id="code" maxlength="6" value="TEST" style="text-transform:uppercase">
+<button class="btn" id="ping">Send a ping</button>
+<div id="log" class="note" style="font-family:ui-monospace,monospace;white-space:pre-wrap"></div></div>
+<div class="card"><h2>If nothing connects</h2><p class="note">Every game still runs in <b>Pass-and-play</b> mode: two or more students share one device and play the identical set of rounds in turn, with scores compared at the end. Nothing to install, no network needed.</p></div>
+<footer>Econ Arcade &middot; ACC Principles of Macroeconomics</footer></div>
+<script>/* ========================================================================
+   ECON ARCADE — shared engine
+   No accounts, no downloads, no build step. One HTML file per game.
+   Multiplayer relay: public PubNub demo keys over HTTPS/443 (firewall
+   friendly), with a public MQTT-over-WSS broker as a backup transport.
+   If neither connects, the game falls back to Pass-and-Play / Solo.
+   ======================================================================== */
+(function (W) {
+  'use strict';
+
+  /* ---------- tiny DOM helpers ---------- */
+  function h(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'html') e.innerHTML = attrs[k];
+      else if (k === 'text') e.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c) e.appendChild(c); });
+    return e;
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+  function byId(id) { return document.getElementById(id); }
+
+  /* ---------- deterministic RNG (so every device gets the same round order) ---------- */
+  function hash32(str) {
+    var hv = 2166136261 >>> 0;
+    for (var i = 0; i < str.length; i++) { hv ^= str.charCodeAt(i); hv = Math.imul(hv, 16777619) >>> 0; }
+    return hv >>> 0;
+  }
+  function mulberry(seed) {
+    var a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function makeRng(seedStr) {
+    var r = mulberry(hash32(seedStr));
+    r.int = function (n) { return Math.floor(r() * n); };
+    r.pick = function (arr) { return arr[Math.floor(r() * arr.length)]; };
+    r.shuffle = function (arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    };
+    return r;
+  }
+
+  /* =======================================================================
+     TRANSPORT 1 — PubNub demo keys over plain HTTPS (port 443)
+     Public demo keys, no signup. Long-poll subscribe + REST publish.
+     ======================================================================= */
+  function PubNubLite(channel, onMsg) {
+    var self = this, alive = true, tt = '0', myTag = Math.random().toString(36).slice(2, 10);
+    var base = 'https://ps.pndsn.com';
+    var uuid = 'ea-' + myTag;
+    self.ok = false;
+    self.tag = myTag;
+
+    function loop() {
+      if (!alive) return;
+      var url = base + '/subscribe/demo/' + encodeURIComponent(channel) + '/0/' + tt + '?uuid=' + uuid;
+      fetch(url, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+        if (!alive) return;
+        if (j && j.t && j.t.t) tt = j.t.t;
+        else if (j && j[1]) tt = j[1];
+        self.ok = true;
+        var msgs = (j && j.m) ? j.m.map(function (x) { return x.d; }) : (j && j[0]) || [];
+        msgs.forEach(function (m) { try { onMsg(m); } catch (e) { } });
+        loop();
+      }).catch(function () { if (alive) setTimeout(loop, 1500); });
+    }
+
+    self.start = function () {
+      // first call establishes a timetoken, then we long-poll
+      fetch(base + '/time/0').then(function (r) { return r.json(); }).then(function (j) {
+        tt = String(j[0]); self.ok = true; loop();
+      }).catch(function () { loop(); });
+    };
+    self.send = function (obj) {
+      var p = encodeURIComponent(JSON.stringify(obj));
+      fetch(base + '/publish/demo/demo/0/' + encodeURIComponent(channel) + '/0/' + p + '?uuid=' + uuid,
+        { cache: 'no-store' }).catch(function () { });
+    };
+    self.stop = function () { alive = false; };
+  }
+
+  /* =======================================================================
+     TRANSPORT 2 — minimal MQTT 3.1.1 over secure WebSocket (backup)
+     ======================================================================= */
+  function MqttLite(url, topic, onMsg) {
+    var self = this, ws = null, ping = null, buf = new Uint8Array(0), dead = false;
+    self.ok = false;
+    function enc(str) { var o = []; for (var i = 0; i < str.length; i++) { var c = str.charCodeAt(i); if (c < 128) o.push(c); else if (c < 2048) { o.push(192 | c >> 6, 128 | c & 63); } else { o.push(224 | c >> 12, 128 | (c >> 6) & 63, 128 | c & 63); } } return o; }
+    function dec(arr) { var s = ''; for (var i = 0; i < arr.length;) { var c = arr[i++]; if (c < 128) s += String.fromCharCode(c); else if (c < 224) { s += String.fromCharCode(((c & 31) << 6) | (arr[i++] & 63)); } else { s += String.fromCharCode(((c & 15) << 12) | ((arr[i++] & 63) << 6) | (arr[i++] & 63)); } } return s; }
+    function vlen(n) { var o = []; do { var d = n % 128; n = Math.floor(n / 128); if (n > 0) d |= 128; o.push(d); } while (n > 0); return o; }
+    function str(s) { var b = enc(s); return [b.length >> 8, b.length & 255].concat(b); }
+    function pkt(type, body) { return new Uint8Array([type].concat(vlen(body.length), body)); }
+    function send(a) { try { ws.send(a); } catch (e) { } }
+
+    self.start = function () {
+      try { ws = new WebSocket(url, ['mqtt']); } catch (e) { return; }
+      ws.binaryType = 'arraybuffer';
+      ws.onopen = function () {
+        var cid = 'ea' + Math.random().toString(16).slice(2, 12);
+        var body = str('MQTT').concat([4, 2, 0, 60], str(cid));
+        send(pkt(0x10, body));
+        ping = setInterval(function () { send(new Uint8Array([0xC0, 0x00])); }, 30000);
+      };
+      ws.onmessage = function (ev) {
+        var inc = new Uint8Array(ev.data), n = new Uint8Array(buf.length + inc.length);
+        n.set(buf); n.set(inc, buf.length); buf = n;
+        for (; ;) {
+          if (buf.length < 2) return;
+          var mult = 1, val = 0, i = 1, d;
+          do { if (i >= buf.length) return; d = buf[i++]; val += (d & 127) * mult; mult *= 128; } while (d & 128);
+          var total = i + val;
+          if (buf.length < total) return;
+          var type = buf[0] >> 4, body = buf.subarray(i, total);
+          buf = buf.subarray(total);
+          if (type === 2) { // CONNACK
+            self.ok = true;
+            var sb = [0, 1].concat(str(topic), [0]);
+            send(pkt(0x82, sb));
+          } else if (type === 3) { // PUBLISH (qos 0)
+            var tl = (body[0] << 8) | body[1];
+            try { onMsg(JSON.parse(dec(body.subarray(2 + tl)))); } catch (e) { }
+          }
+        }
+      };
+      ws.onclose = function () { self.ok = false; clearInterval(ping); if (!dead) setTimeout(self.start, 3000); };
+      ws.onerror = function () { };
+    };
+    self.send = function (obj) {
+      if (!self.ok) return;
+      send(pkt(0x30, str(topic).concat(enc(JSON.stringify(obj)))));
+    };
+    self.stop = function () { dead = true; self.ok = false; try { ws.close(); } catch (e) { } clearInterval(ping); };
+  }
+
+  /* =======================================================================
+     NET — room membership + score sync over whichever transport works
+     ======================================================================= */
+  function Net(gameId, code, me) {
+    var self = this;
+    var chan = 'accecon2026-' + gameId + '-' + code;
+    var links = [];
+    self.peers = {};          // id -> {n,s,d,seen}
+    self.connected = false;
+    self.onChange = function () { };
+    self.onStart = function () { };
+
+    function handle(m) {
+      if (!m || !m.id || m.id === me.id) return;
+      if (m.k === 'start') { self.onStart(); return; }
+      if (m.k === 'bye') { delete self.peers[m.id]; self.onChange(); return; }
+      self.peers[m.id] = { n: String(m.n || '?').slice(0, 14), s: +m.s || 0, d: !!m.d, seen: Date.now() };
+      self.onChange();
+    }
+    self.start = function () {
+      var a = new PubNubLite(chan, handle); a.start(); links.push(a);
+      var b = new MqttLite('wss://broker.emqx.io:8084/mqtt', chan, handle); b.start(); links.push(b);
+      setInterval(function () {          // heartbeat + drop stale peers
+        self.beat();
+        var now = Date.now(), ch = false;
+        for (var k in self.peers) if (now - self.peers[k].seen > 25000) { delete self.peers[k]; ch = true; }
+        if (ch) self.onChange();
+        var up = links.some(function (l) { return l.ok; });
+        if (up !== self.connected) { self.connected = up; self.onChange(); }
+      }, 2500);
+      setTimeout(function () {
+        self.connected = links.some(function (l) { return l.ok; });
+        self.onChange();
+      }, 3000);
+    };
+    self.push = function (obj) { links.forEach(function (l) { l.send(obj); }); };
+    self.beat = function () { self.push({ k: 'p', id: me.id, n: me.name, s: me.score, d: me.done ? 1 : 0 }); };
+    self.go = function () { self.push({ k: 'start', id: me.id }); };
+    self.bye = function () { self.push({ k: 'bye', id: me.id }); };
+  }
+
+  /* =======================================================================
+     ARCADE — screens, lobby, quiz runner, sim harness
+     ======================================================================= */
+  var A = {};
+  A.h = h; A.esc = esc; A.makeRng = makeRng; A.Net = Net;
+
+  var G = null, me = null, net = null, root = null, mode = 'live', players = [];
+
+  function screen(nodes) {
+    root.innerHTML = '';
+    nodes.forEach(function (n) { if (n) root.appendChild(n); });
+    root.classList.remove('fade'); void root.offsetWidth; root.classList.add('fade');
+    window.scrollTo(0, 0);
+  }
+  A.screen = screen;
+
+  function header() {
+    return h('div', {}, [
+      h('span', { class: 'tag', text: G.chapter }),
+      h('h1', { text: G.title }),
+      h('p', { class: 'sub', text: G.tagline })
+    ]);
+  }
+
+  function roomCode() {
+    var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', s = '';
+    for (var i = 0; i < 4; i++) s += L[Math.floor(Math.random() * L.length)];
+    return s;
+  }
+
+  /* ---------- HOME ---------- */
+  function home() {
+    var saved = '';
+    try { saved = localStorage.getItem('ea_name') || ''; } catch (e) { }
+    var nameIn = h('input', { id: 'nm', maxlength: '14', placeholder: 'e.g. Maria B.', value: saved });
+    var codeIn = h('input', { id: 'cd', maxlength: '4', placeholder: 'ABCD', style: 'text-transform:uppercase;letter-spacing:.2em;font-weight:800' });
+
+    function nm() {
+      var v = (nameIn.value || '').trim().slice(0, 14);
+      if (!v) { nameIn.focus(); nameIn.style.borderColor = 'var(--bad)'; return null; }
+      try { localStorage.setItem('ea_name', v); } catch (e) { }
+      return v;
+    }
+    screen([
+      header(),
+      h('div', { class: 'card' }, [
+        h('h2', { text: 'How to play' }),
+        h('div', { class: 'note', html: G.rules })
+      ]),
+      h('div', { class: 'card' }, [
+        h('label', { text: 'Your name' }), nameIn,
+        h('button', {
+          class: 'btn', text: 'Create a room', onclick: function () {
+            var v = nm(); if (v) lobby(roomCode(), v, true);
+          }
+        }),
+        h('div', { class: 'row', style: 'margin-top:14px' }, [
+          h('div', { class: 'grow' }, [h('label', { text: 'Join with code' }), codeIn]),
+          h('button', {
+            class: 'btn', style: 'width:auto;margin:18px 0 0', text: 'Join', onclick: function () {
+              var v = nm(); var c = (codeIn.value || '').trim().toUpperCase();
+              if (v && c.length === 4) lobby(c, v, false);
+              else if (v) { codeIn.style.borderColor = 'var(--bad)'; }
+            }
+          })
+        ])
+      ]),
+      h('div', { class: 'card tight' }, [
+        h('button', {
+          class: 'btn sec', text: 'Pass-and-play on this device', onclick: function () {
+            var v = nm(); if (v) passAndPlay(v);
+          }
+        }),
+        h('p', { class: 'note', text: 'No wifi for the relay? Two students share one screen and play the identical set of rounds in turn. Always works, nothing to connect.' })
+      ]),
+      h('footer', { text: 'Econ Arcade · ACC Principles of Macroeconomics' })
+    ]);
+  }
+
+  /* ---------- LOBBY ---------- */
+  function lobby(code, name, host) {
+    me = { id: Math.random().toString(36).slice(2, 10), name: name, score: 0, done: false, code: code };
+    mode = 'live';
+    net = new Net(G.id, code, me);
+    var list = h('div', { class: 'lb' });
+    var status = h('span', { class: 'pill off', text: 'connecting…' });
+    var startBtn = h('button', { class: 'btn', text: 'Start the round', onclick: function () { net.go(); begin(); } });
+
+    function render() {
+      players = Object.keys(net.peers).map(function (k) { return net.peers[k]; });
+      list.innerHTML = '';
+      list.appendChild(h('div', { class: 'r me' }, [h('div', { class: 'p', text: '•' }), h('div', { class: 'n', text: name + ' (you)' })]));
+      players.forEach(function (p) {
+        list.appendChild(h('div', { class: 'r' }, [h('div', { class: 'p', text: '•' }), h('div', { class: 'n', text: p.n })]));
+      });
+      status.className = 'pill ' + (net.connected ? 'on' : 'off');
+      status.textContent = net.connected ? 'connected' : 'no relay on this network';
+      var warn = byId('offwarn');
+      if (warn) warn.className = net.connected ? 'note hide' : 'note';
+    }
+    net.onChange = render;
+    net.onStart = function () { begin(); };
+    net.start(); net.beat();
+
+    screen([
+      header(),
+      h('div', { class: 'card ctr' }, [
+        h('div', { class: 'note', text: 'Room code — everyone types this on their own device' }),
+        h('div', { class: 'code', text: code }),
+        status
+      ]),
+      h('div', { class: 'card' }, [h('h2', { text: 'In the room' }), list,
+      h('p', { class: 'note', text: 'Anyone can press start. Everyone gets the exact same rounds in the same order, so it is a fair race.' })]),
+      startBtn,
+      h('p', { id: 'offwarn', class: 'note hide', html: '⚠️ This network is blocking the live relay, so other devices will not appear here. Go back and use <b>Pass-and-play</b> on one shared device instead — the rounds are identical.' }),
+      h('button', { class: 'btn sec', text: '← Back', onclick: function () { net.bye(); net = null; home(); } }),
+      h('footer', { text: 'Econ Arcade · ACC Principles of Macroeconomics' })
+    ]);
+    render();
+  }
+
+  /* ---------- PASS AND PLAY ---------- */
+  var ppState = null;
+  function passAndPlay(name) {
+    ppState = ppState || { code: roomCode(), scores: [] };
+    mode = 'pass';
+    me = { id: 'local', name: name, score: 0, done: false, code: ppState.code };
+    net = null;
+    begin();
+  }
+
+  /* ---------- countdown then run ---------- */
+  function begin() {
+    if (me.started) return; me.started = true;
+    var n = 3;
+    var big = h('div', { class: 'big', text: '3' });
+    screen([header(), h('div', { class: 'card ctr' }, [h('h2', { text: 'Get ready' }), big,
+    h('p', { class: 'note', text: G.readyNote || 'Read fast. Think faster.' })])]);
+    var iv = setInterval(function () {
+      n--; big.textContent = n > 0 ? String(n) : 'GO!';
+      if (n < 0) { clearInterval(iv); (G.mode === 'sim' ? runSim : runQuiz)(); }
+    }, 800);
+  }
+
+  /* ---------- live side leaderboard ---------- */
+  function boardEl() { return h('div', { class: 'lb', id: 'board' }); }
+  function drawBoard() {
+    var b = byId('board'); if (!b) return;
+    var all = [{ n: me.name, s: me.score, d: me.done, me: 1 }];
+    if (net) for (var k in net.peers) all.push(net.peers[k]);
+    all.sort(function (x, y) { return y.s - x.s; });
+    b.innerHTML = '';
+    all.slice(0, 8).forEach(function (p, i) {
+      b.appendChild(h('div', { class: 'r' + (p.me ? ' me' : '') }, [
+        h('div', { class: 'p', text: '#' + (i + 1) }),
+        h('div', { class: 'n', text: p.n }),
+        p.d ? h('div', { class: 'dn', text: 'DONE' }) : null,
+        h('div', { class: 's', text: String(Math.round(p.s)) })
+      ]));
+    });
+  }
+  A.drawBoard = drawBoard;
+
+  /* ---------- QUIZ RUNNER ---------- */
+  function runQuiz() {
+    var rng = makeRng(G.id + '|' + me.code);
+    var rounds = G.buildRounds(rng);
+    var i = 0, tLeft = G.seconds || 180, qStart = 0, timer = null, log = [];
+    me.score = 0; me.done = false;
+
+    var hud = h('div', { class: 'hud' }, [
+      h('span', { id: 'qn', text: '' }),
+      h('span', { class: 't', id: 'clk', text: '' })
+    ]);
+    var bar = h('div', { class: 'bar' }, [h('i', { id: 'barI', style: 'width:100%' })]);
+    var stage = h('div', {});
+
+    screen([hud, bar, stage, h('div', { class: 'card tight' }, [h('h2', { text: 'Live scores' }), boardEl()])]);
+    drawBoard();
+
+    timer = setInterval(function () {
+      tLeft -= 1;
+      byId('clk').textContent = tLeft + 's';
+      byId('barI').style.width = (100 * tLeft / (G.seconds || 180)) + '%';
+      if (net) net.beat();
+      drawBoard();
+      if (tLeft <= 0) { clearInterval(timer); finishQuiz(log); }
+    }, 1000);
+
+    function show() {
+      if (i >= rounds.length) { clearInterval(timer); finishQuiz(log); return; }
+      var q = rounds[i];
+      byId('qn').textContent = 'Round ' + (i + 1) + ' of ' + rounds.length;
+      qStart = Date.now();
+      stage.innerHTML = '';
+      var card = h('div', { class: 'card' });
+      if (q.setup) card.appendChild(h('div', { class: 'note', html: q.setup }));
+      card.appendChild(h('h2', { html: q.q }));
+      if (q.draw) {
+        var cv = h('canvas', { width: '600', height: '372' });
+        card.appendChild(cv);
+        q.draw(cv.getContext('2d'), cv.width, cv.height);
+      }
+      if (q.table) card.appendChild(h('div', { html: q.table }));
+      stage.appendChild(card);
+      var wrap = h('div', {});
+      q.choices.forEach(function (c, idx) {
+        wrap.appendChild(h('button', {
+          class: 'choice', html: '<span class="k">' + 'ABCDE'[idx] + '</span>' + c,
+          onclick: function () { answer(idx, this, wrap); }
+        }));
+      });
+      stage.appendChild(wrap);
+    }
+
+    function answer(idx, btn, wrap) {
+      var q = rounds[i];
+      Array.prototype.forEach.call(wrap.children, function (b) { b.onclick = null; b.style.pointerEvents = 'none'; });
+      var right = idx === q.a;
+      var secs = (Date.now() - qStart) / 1000;
+      var pts = right ? Math.round(100 + Math.max(0, 60 - secs * 6)) : 0;
+      me.score += pts;
+      log.push({ q: q.q, right: right });
+      btn.className = 'choice ' + (right ? 'right' : 'wrong');
+      if (!right) wrap.children[q.a].className = 'choice right';
+      var fb = h('div', {
+        class: 'fb ' + (right ? 'g' : 'b'),
+        html: '<b>' + (right ? '✓ Correct  +' + pts : '✗ Not quite') + '</b>' + q.why
+      });
+      stage.appendChild(fb);
+      stage.appendChild(h('button', {
+        class: 'btn', text: i === rounds.length - 1 ? 'See results →' : 'Next round →',
+        onclick: function () { i++; show(); }
+      }));
+      if (net) net.beat();
+      drawBoard();
+      fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    show();
+  }
+
+  function finishQuiz(log) {
+    me.done = true;
+    if (net) { net.beat(); }
+    var right = log.filter(function (x) { return x.right; }).length;
+    results([
+      h('div', { class: 'card ctr' }, [
+        h('h2', { text: 'Final score' }),
+        h('div', { class: 'big', text: String(Math.round(me.score)) }),
+        h('p', { class: 'note', text: right + ' of ' + log.length + ' correct' })
+      ])
+    ]);
+  }
+
+  /* ---------- SIM HARNESS ---------- */
+  function runSim() {
+    me.score = 0; me.done = false;
+    var stage = h('div', {});
+    screen([
+      h('div', { class: 'hud' }, [h('span', { text: G.title }), h('span', { class: 't', id: 'clk', text: '' })]),
+      stage,
+      h('div', { class: 'card tight' }, [h('h2', { text: 'Live scores' }), boardEl()])
+    ]);
+    drawBoard();
+    setInterval(function () { if (net) net.beat(); drawBoard(); }, 2500);
+    G.mountSim(stage, {
+      rng: makeRng(G.id + '|' + me.code),
+      setScore: function (s) { me.score = s; if (net) net.beat(); drawBoard(); },
+      finish: function (score, nodes) {
+        me.score = score; me.done = true; if (net) net.beat();
+        results(nodes);
+      },
+      h: h
+    });
+  }
+
+  /* ---------- RESULTS ---------- */
+  function results(nodes) {
+    var kids = [header()].concat(nodes);
+    kids.push(h('div', { class: 'card' }, [h('h2', { text: 'Room leaderboard' }), boardEl(),
+    h('p', { class: 'note', text: mode === 'live' ? 'Scores keep updating until everyone finishes.' : 'Pass the device to the next player — they get the identical rounds.' })]));
+    if (G.debrief) kids.push(h('div', { class: 'card' }, [h('h2', { text: 'Talk about it' }), h('div', { class: 'note', html: G.debrief })]));
+    if (mode === 'pass') {
+      kids.push(h('button', {
+        class: 'btn warn', text: 'Next player on this device →', onclick: function () {
+          ppState.scores.push({ n: me.name, s: me.score });
+          var nm = prompt('Next player, type your name:');
+          if (nm) { me = { id: 'l' + ppState.scores.length, name: nm.slice(0, 14), score: 0, done: false, code: ppState.code }; begin(); }
+        }
+      }));
+      if (ppState && ppState.scores.length) {
+        var t = '<table><tr><th>Player</th><th>Score</th></tr>';
+        ppState.scores.concat([{ n: me.name, s: me.score }]).sort(function (a, b) { return b.s - a.s; })
+          .forEach(function (p) { t += '<tr><td>' + esc(p.n) + '</td><td>' + Math.round(p.s) + '</td></tr>'; });
+        kids.push(h('div', { class: 'card' }, [h('h2', { text: 'This device' }), h('div', { html: t + '</table>' })]));
+      }
+    }
+    kids.push(h('button', { class: 'btn sec', text: 'Play again / new room', onclick: function () { if (net) net.bye(); location.reload(); } }));
+    kids.push(h('footer', { text: 'Econ Arcade · ACC Principles of Macroeconomics' }));
+    screen(kids);
+    drawBoard();
+  }
+
+  /* ---------- boot ---------- */
+  A.launch = function (game) {
+    G = game;
+    document.title = game.title + ' · Econ Arcade';
+    root = byId('app') || document.body.appendChild(h('div', { id: 'app' }));
+    home();
+  };
+  W.Arcade = A;
+})(window);
+</script>
+<script>
+var res=document.getElementById('res'), log=document.getElementById('log');
+function line(t,ok){var d=document.createElement('div');d.className='kv';
+  d.innerHTML='<span>'+t+'</span><b style="color:'+(ok?'var(--good)':'var(--bad)')+'">'+(ok?'reachable':'blocked')+'</b>';res.appendChild(d);}
+fetch('https://ps.pndsn.com/time/0',{cache:'no-store'}).then(function(r){return r.json()})
+  .then(function(){line('HTTPS relay (port 443)',true)}).catch(function(){line('HTTPS relay (port 443)',false)});
+try{var w=new WebSocket('wss://broker.emqx.io:8084/mqtt',['mqtt']);
+  var t=setTimeout(function(){line('WebSocket relay (port 8084)',false);try{w.close()}catch(e){}},7000);
+  w.onopen=function(){clearTimeout(t);line('WebSocket relay (port 8084)',true);w.close()};
+  w.onerror=function(){clearTimeout(t);line('WebSocket relay (port 8084)',false)};
+}catch(e){line('WebSocket relay (port 8084)',false)}
+var net=null;
+function connect(){
+  var code=(document.getElementById('code').value||'TEST').toUpperCase();
+  net=new (Arcade.Net)('contest',code,{id:Math.random().toString(36).slice(2,8),name:'tester',score:0});
+  net.onChange=function(){
+    var names=Object.keys(net.peers).map(function(k){return net.peers[k].n});
+    log.textContent+=(net.connected?'[relay up] ':'[relay down] ')+(names.length?'received: '+names.join(', '):'nothing received yet')+'\n';
+  };
+  net.start();
+  log.textContent+='joined room '+code+'\n';
+}
+document.getElementById('ping').onclick=function(){
+  if(!net) connect();
+  setTimeout(function(){net.push({k:'p',id:'ping'+Math.random().toString(36).slice(2,5),n:'PING '+new Date().toLocaleTimeString(),s:1});
+  log.textContent+='ping sent\n';},400);
+};
+</script>
+</body></html>

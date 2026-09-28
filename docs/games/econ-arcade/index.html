@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Econ Arcade</title>
+<style>*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d1117; --panel:#161b26; --panel2:#1c2231; --line:#2a3345;
+  --ink:#e8edf7; --dim:#93a1bd; --acc:#5aa9ff; --acc2:#ffc65a;
+  --good:#3ddc97; --bad:#ff6b6b; --pur:#b78cff;
+  --r:14px; --f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--f);
+  font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+body{padding:14px 14px 40px;max-width:820px;margin:0 auto}
+h1{font-size:1.5rem;margin:.1em 0 .1em;letter-spacing:-.02em}
+h2{font-size:1.1rem;margin:0 0 .4em}
+.sub{color:var(--dim);font-size:.86rem;margin:0 0 14px}
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);color:var(--acc);
+  border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0}
+.card.tight{padding:10px 12px}
+button{font-family:var(--f);font-size:1rem;cursor:pointer}
+.btn{display:block;width:100%;background:var(--acc);color:#06213d;border:0;border-radius:12px;
+  padding:14px 16px;font-weight:800;margin:8px 0;transition:transform .06s,filter .15s}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sec{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:var(--acc2);color:#3a2a00}
+.choice{display:block;width:100%;text-align:left;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;margin:8px 0;font-weight:600;
+  transition:border-color .12s,background .12s}
+.choice:hover{border-color:var(--acc)}
+.choice.right{border-color:var(--good);background:rgba(61,220,151,.14)}
+.choice.wrong{border-color:var(--bad);background:rgba(255,107,107,.14)}
+.choice .k{display:inline-block;width:24px;color:var(--dim);font-weight:800}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1}
+input,select{font-family:var(--f);font-size:1rem;background:var(--panel2);color:var(--ink);
+  border:1.5px solid var(--line);border-radius:10px;padding:12px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:1px}
+label{display:block;font-size:.8rem;color:var(--dim);margin:10px 0 4px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:2.4rem;font-weight:800;
+  letter-spacing:.28em;color:var(--acc2);text-align:center;margin:6px 0 2px}
+.bar{height:9px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .25s}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:.92rem}
+.hud .t{color:var(--acc2)}
+canvas{width:100%;height:auto;display:block;background:#0a0e15;border:1px solid var(--line);border-radius:10px;margin:6px 0}
+.lb{margin:6px 0}
+.lb .r{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:var(--panel2);margin:5px 0}
+.lb .r.me{outline:1.5px solid var(--acc)}
+.lb .r .p{width:22px;color:var(--dim);font-weight:800}
+.lb .r .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .r .s{font-weight:800;color:var(--acc2)}
+.lb .r .dn{font-size:.7rem;color:var(--good);font-weight:800}
+.fb{border-radius:12px;padding:11px 13px;margin:10px 0;font-size:.93rem;border:1px solid}
+.fb.g{background:rgba(61,220,151,.1);border-color:rgba(61,220,151,.5)}
+.fb.b{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.5)}
+.fb b{display:block;margin-bottom:3px}
+.note{font-size:.82rem;color:var(--dim)}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:.72rem;font-weight:800;
+  background:var(--panel2);border:1px solid var(--line);color:var(--dim)}
+.pill.on{color:var(--good);border-color:rgba(61,220,151,.5)}
+.pill.off{color:var(--acc2);border-color:rgba(255,198,90,.5)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{background:var(--panel2);color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}
+.big{font-size:2.6rem;font-weight:800;text-align:center;color:var(--acc2);margin:4px 0}
+.ctr{text-align:center}
+.sl{width:100%;margin:10px 0}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;padding:0;border:0;height:34px}
+input[type=range]::-webkit-slider-runnable-track{height:8px;background:var(--panel2);border-radius:99px;border:1px solid var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:30px;width:30px;border-radius:50%;
+  background:var(--acc);margin-top:-12px;border:3px solid #0d1117}
+input[type=range]::-moz-range-track{height:8px;background:var(--panel2);border-radius:99px}
+input[type=range]::-moz-range-thumb{height:26px;width:26px;border-radius:50%;background:var(--acc);border:3px solid #0d1117}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line);font-size:.92rem}
+.kv:last-child{border:0}
+.kv b{color:var(--acc2)}
+.hide{display:none!important}
+.fade{animation:f .25s ease}
+@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+footer{color:var(--dim);font-size:.75rem;text-align:center;margin-top:22px}
+</style>
+</head><body>
+<div id="app">
+<span class="tag">10 games</span><h1>Econ Arcade</h1>
+<p class="sub">Browser games for ACC Principles of Macroeconomics. No downloads, no accounts, phone or laptop. Each game runs about 10 minutes including the debrief.</p>
+<div class="card"><h2>How students play</h2><p class="note">One student presses <b>Create a room</b> and reads out the 4-letter code. Everyone else types it in. Everyone gets the identical rounds in the same order, and scores update live. If the network blocks the relay, <b>Pass-and-play</b> works on a single shared device.</p>
+<p class="note"><a href="INSTRUCTOR-GUIDE.html" style="color:var(--acc)">Read the instructor guide</a> <p class="note"><a href="connection-test.html"middot; <a href="connection-test.html" style="color:var(--acc)">Run the connection test</a> on campus wifi before you use these in class.</p></div>
+<div class="card"><h2><a href="g01-marginal.html" style="color:var(--acc);text-decoration:none">1. Marginal Call</a></h2>
+   <span class="pill">Ch. 1 — What Is Economics?</span><p class="note" style="margin-top:8px">Marginal benefit vs marginal cost, opportunity cost, sunk cost, micro vs macro, positive vs normative, incentives.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g01-marginal.html</code></p></div>
+<div class="card"><h2><a href="g02-ppf.html" style="color:var(--acc);text-decoration:none">2. PPF Showdown</a></h2>
+   <span class="pill">Ch. 2 — The Economic Problem</span><p class="note" style="margin-top:8px">Reading the production possibilities frontier, increasing opportunity cost, growth, comparative advantage and gains from trade.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g02-ppf.html</code></p></div>
+<div class="card"><h2><a href="g03-shift.html" style="color:var(--acc);text-decoration:none">3. Shift or Slide</a></h2>
+   <span class="pill">Ch. 3 — Demand and Supply</span><p class="note" style="margin-top:8px">Which curve shifts and which way; shift vs movement along; simultaneous shifts; price ceilings and floors.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g03-shift.html</code></p></div>
+<div class="card"><h2><a href="g04-gdp.html" style="color:var(--acc);text-decoration:none">4. GDP Sprint</a></h2>
+   <span class="pill">Ch. 4 — Measuring GDP</span><p class="note" style="margin-top:8px">Sorting transactions into C, I, G, NX or "not counted"; value added; nominal vs real GDP; the deflator; what GDP misses.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g04-gdp.html</code></p></div>
+<div class="card"><h2><a href="g05-jobs.html" style="color:var(--acc);text-decoration:none">5. Jobs & Prices Lab</a></h2>
+   <span class="pill">Ch. 5 — Jobs and Inflation</span><p class="note" style="margin-top:8px">Unemployment rate and participation rate arithmetic, types of unemployment, the natural rate, CPI construction, real vs nominal wages.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g05-jobs.html</code></p></div>
+<div class="card"><h2><a href="g06-growth.html" style="color:var(--acc);text-decoration:none">6. Growth Engine</a></h2>
+   <span class="pill">Ch. 6 — Economic Growth</span><p class="note" style="margin-top:8px">Four-decade simulation: allocate points among capital, education, technology and consumption. Diminishing returns and the rule of 70.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g06-growth.html</code></p></div>
+<div class="card"><h2><a href="g07-money.html" style="color:var(--acc);text-decoration:none">7. Money Machine</a></h2>
+   <span class="pill">Ch. 8 — Money, the Price Level, Inflation</span><p class="note" style="margin-top:8px">Functions of money, M1 vs M2, the money multiplier, MV = PY, real vs nominal interest rates, long-run neutrality.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g07-money.html</code></p></div>
+<div class="card"><h2><a href="g08-asad.html" style="color:var(--acc);text-decoration:none">8. AS–AD Architect</a></h2>
+   <span class="pill">Ch. 10 & 12 — AS-AD, Business Cycle</span><p class="note" style="margin-top:8px">Shocks to AD, SAS and LAS; recessionary and inflationary gaps; demand-pull vs cost-push; long-run adjustment; deflation.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g08-asad.html</code></p></div>
+<div class="card"><h2><a href="g09-fiscal.html" style="color:var(--acc);text-decoration:none">9. Fiscal Fix</a></h2>
+   <span class="pill">Ch. 13 — Fiscal Policy</span><p class="note" style="margin-top:8px">Three-year simulation: close a $600B recessionary gap with spending and taxes. Multipliers, lags, automatic stabilizers, debt.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g09-fiscal.html</code></p></div>
+<div class="card"><h2><a href="g10-fed.html" style="color:var(--acc);text-decoration:none">10. Fed Chair Faceoff</a></h2>
+   <span class="pill">Ch. 14 — Monetary Policy</span><p class="note" style="margin-top:8px">Six-quarter simulation: set the federal funds rate to bring 5.5% inflation to target. Real vs nominal rates, lags, supply shocks.</p>
+   <p class="note" style="color:var(--dim)">file: <code>g10-fed.html</code></p></div>
+<footer>Econ Arcade &middot; built for ACC &middot; each file is self-contained</footer></div>
+
+</body></html>

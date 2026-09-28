@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Structures: Perfect Competition vs Monopoly</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --comp: #0a7ea4;
+    --comp-light: #e0f4fb;
+    --mono: #c0392b;
+    --mono-light: #fdecea;
+    --bg: #f7f4ef;
+    --ink: #1a1a2e;
+    --paper: #fffdf9;
+    --gold: #d4a017;
+    --border: #d9d0c0;
+    --success: #27ae60;
+    --warn: #e67e22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: white;
+    padding: 2.5rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,160,23,0.25), transparent 70%);
+  }
+  .header-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2px;
+    margin-bottom: 1rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+  header p {
+    font-size: 0.95rem;
+    color: #b0b8c8;
+    font-weight: 300;
+    max-width: 560px;
+  }
+
+  /* ── NAV TABS ── */
+  nav {
+    background: var(--paper);
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  nav button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    padding: 1rem 1.4rem;
+    cursor: pointer;
+    color: #888;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  nav button:hover { color: var(--ink); }
+  nav button.active { color: var(--ink); border-bottom-color: var(--gold); }
+
+  /* ── SECTIONS ── */
+  .section { display: none; padding: 2.5rem 1.5rem; max-width: 960px; margin: 0 auto; }
+  .section.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 0.9rem;
+  }
+  .card p { font-size: 0.95rem; line-height: 1.75; color: #3a3a4e; margin-bottom: 0.7rem; }
+  .card p:last-child { margin-bottom: 0; }
+
+  /* colour-coded sides */
+  .comp-card { border-left: 5px solid var(--comp); }
+  .mono-card { border-left: 5px solid var(--mono); }
+  .comp-card .card-title { color: var(--comp); }
+  .mono-card .card-title { color: var(--mono); }
+
+  /* ── COMPARISON TABLE ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .compare-table th, .compare-table td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .compare-table th:nth-child(2) { background: var(--comp-light); color: var(--comp); }
+  .compare-table th:nth-child(3) { background: var(--mono-light); color: var(--mono); }
+  .compare-table td:nth-child(1) { font-weight: 500; background: #f5f3ee; }
+  .compare-table td:nth-child(2) { color: #0a5f7a; }
+  .compare-table td:nth-child(3) { color: #8b1a12; }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  /* ── SECTION HEADINGS ── */
+  .sec-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .sec-sub {
+    font-size: 0.88rem;
+    color: #777;
+    margin-bottom: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media(max-width:640px){ .two-col { grid-template-columns: 1fr; } }
+
+  /* ── ACTIVITY / QUIZ ── */
+  .q-block {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.6rem;
+    margin-bottom: 1.4rem;
+  }
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  .q-text { font-size: 1rem; font-weight: 500; margin-bottom: 1.1rem; line-height: 1.55; }
+  .options { display: grid; gap: 0.55rem; }
+  .opt-btn {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.18s;
+    color: var(--ink);
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--gold); background: #fff8e6; }
+  .opt-btn.correct { background: #eafaf1; border-color: var(--success); color: #1a6b3a; }
+  .opt-btn.wrong   { background: #fdecea; border-color: var(--mono); color: var(--mono); }
+  .opt-btn.reveal  { background: #eafaf1; border-color: var(--success); color: #1a6b3a; opacity: 0.7; }
+  .feedback { font-size: 0.88rem; margin-top: 0.8rem; padding: 0.7rem 1rem; border-radius: 5px; display: none; line-height: 1.5; }
+  .feedback.show { display: block; }
+  .feedback.ok  { background: #eafaf1; color: #1a5e34; border-left: 3px solid var(--success); }
+  .feedback.bad { background: #fdecea; color: #7b1a12; border-left: 3px solid var(--mono); }
+
+  /* ── SCENARIO DRAG ── */
+  .drag-instruction { font-size: 0.88rem; color: #666; margin-bottom: 1.2rem; font-style: italic; }
+  .drag-area {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .drag-pool {
+    flex: 1; min-width: 200px;
+  }
+  .drop-zone {
+    flex: 1; min-width: 200px;
+    background: var(--paper);
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 220px;
+  }
+  .drop-zone.comp-zone { border-color: var(--comp); }
+  .drop-zone.mono-zone { border-color: var(--mono); }
+  .drop-zone h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+  }
+  .drop-zone.comp-zone h4 { color: var(--comp); }
+  .drop-zone.mono-zone h4 { color: var(--mono); }
+  .drag-chip {
+    display: inline-block;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.83rem;
+    cursor: grab;
+    margin: 0.3rem;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .drag-chip:hover { border-color: var(--gold); background: #fff8e6; }
+  .drag-chip.placed-comp { background: var(--comp-light); border-color: var(--comp); color: #0a5f7a; }
+  .drag-chip.placed-mono { background: var(--mono-light); border-color: var(--mono); color: #8b1a12; }
+  .drag-chip.correct-chip { outline: 2px solid var(--success); }
+  .drag-chip.wrong-chip   { outline: 2px solid var(--mono); }
+
+  .check-btn {
+    margin-top: 1.2rem;
+    background: var(--ink);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.6rem;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 600;
+  }
+  .check-btn:hover { background: #2d2d4e; }
+  .reset-btn {
+    margin-top: 0.6rem; margin-left: 0.6rem;
+    background: transparent;
+    color: #888;
+    border: 1px solid var(--border);
+    padding: 0.7rem 1.2rem;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+  .reset-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── SCORE BADGE ── */
+  .score-bar {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .score-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; }
+  .score-num { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--ink); }
+
+  /* ── FORMULA BLOCKS ── */
+  .formula {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #1a1a2e;
+    color: #7dd3fc;
+    padding: 0.9rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin: 0.8rem 0;
+    overflow-x: auto;
+  }
+
+  /* ── KEY CONCEPTS ── */
+  .concept-pill {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--ink);
+    color: var(--gold);
+    padding: 0.3rem 0.75rem;
+    border-radius: 3px;
+    margin: 0.25rem;
+  }
+
+  /* ── GRAPH VISUAL ── */
+  .graph-wrap { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem; }
+  .graph-box {
+    flex: 1; min-width: 260px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem;
+  }
+  .graph-box h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.7rem; }
+  svg text { font-family: 'IBM Plex Mono', monospace; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: #aaa;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">Economics · Market Structures</div>
+  <h1>Perfect Competition<br>vs Monopoly</h1>
+  <p>An interactive case study &amp; activity resource for students. No login required — open in any browser.</p>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('overview')">📋 Overview</button>
+  <button onclick="showTab('casestudy')">📖 Case Studies</button>
+  <button onclick="showTab('graphs')">📈 Graphs</button>
+  <button onclick="showTab('compare')">⚖️ Compare</button>
+  <button onclick="showTab('quiz')">🧠 Quiz</button>
+  <button onclick="showTab('sorting')">🃏 Sorting Activity</button>
+</nav>
+
+<!-- ══════════════════════ OVERVIEW ══════════════════════ -->
+<div id="overview" class="section active">
+  <div class="sec-heading">What Are Market Structures?</div>
+  <div class="sec-sub">FOUNDATION CONCEPTS</div>
+
+  <div class="card" style="border-left:5px solid var(--gold)">
+    <div class="card-title" style="color:var(--gold)">Why It Matters</div>
+    <p>Market structure describes how a market is organised — how many sellers exist, how much control they have over price, and how easy it is to enter. Understanding this helps us explain why wheat farmers earn little profit while pharmaceutical companies earn billions.</p>
+  </div>
+
+  <div class="two-col">
+    <div class="card comp-card">
+      <div class="card-title">🟦 Perfect Competition</div>
+      <p><strong>Many sellers, identical products.</strong> No single firm can influence the market price. Each firm is a <em>price taker</em>.</p>
+      <p>Key conditions:</p>
+      <p>① Many buyers &amp; sellers<br>② Identical (homogeneous) products<br>③ Free entry &amp; exit<br>④ Perfect information<br>⑤ No transport costs</p>
+      <div style="margin-top:0.8rem">
+        <span class="concept-pill">Price = MC</span>
+        <span class="concept-pill">Normal profit LR</span>
+        <span class="concept-pill">Allocatively efficient</span>
+      </div>
+    </div>
+    <div class="card mono-card">
+      <div class="card-title">🟥 Monopoly</div>
+      <p><strong>One seller dominates the market.</strong> The firm is a <em>price maker</em> — it sets price by choosing output level.</p>
+      <p>Key conditions:</p>
+      <p>① Single producer<br>② Unique product (no close substitutes)<br>③ High barriers to entry<br>④ Price maker<br>⑤ Supernormal profit possible in LR</p>
+      <div style="margin-top:0.8rem">
+        <span class="concept-pill">P &gt; MC</span>
+        <span class="concept-pill">Supernormal profit</span>
+        <span class="concept-pill">Deadweight loss</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Key Formulas at a Glance</div>
+    <div class="formula">Perfect Competition:  P = MR = AR = MC  (at profit max)</div>
+    <div class="formula">Monopoly:             MR &lt; AR = P     (at profit max: MR = MC, but P &gt; MC)</div>
+    <div class="formula">Profit = (P − ATC) × Q</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ CASE STUDIES ══════════════════════ -->
+<div id="casestudy" class="section">
+  <div class="sec-heading">Real-World Case Studies</div>
+  <div class="sec-sub">APPLYING THEORY TO THE REAL WORLD</div>
+
+  <!-- PC Case -->
+  <div class="card comp-card">
+    <div class="card-title">🌾 Case Study 1 — The Wheat Market (Perfect Competition)</div>
+    <p><strong>Background:</strong> Kansas wheat farmers sell into one of the world's closest approximations of a perfectly competitive market. In 2023, roughly 25,000 wheat farms operated in Kansas alone, each producing virtually identical Grade 1 Hard Red Winter Wheat.</p>
+    <p><strong>Key facts:</strong></p>
+    <p>• Market price is set globally on the Chicago Mercantile Exchange — no single farmer influences it.<br>
+       • If farmer A charges $0.01 more per bushel than the market price, buyers switch instantly.<br>
+       • Entry &amp; exit: Any landowner can plant wheat next season with minimal capital.<br>
+       • In 2022–23, unusually high demand (Ukraine war) temporarily pushed profits above normal. New farmers entered and acreage expanded, pushing price back toward average cost by 2024.</p>
+    <p><strong>Economic outcome:</strong> In the long run, economic (supernormal) profit = $0. Farmers earn only a <em>normal profit</em> — enough to cover opportunity cost. Resources are allocated efficiently: P = MC.</p>
+    <p><strong>Discussion question:</strong> Why do wheat farmers keep farming if economic profit is zero in the long run?</p>
+  </div>
+
+  <!-- Monopoly Case -->
+  <div class="card mono-card">
+    <div class="card-title">💊 Case Study 2 — EpiPen Pricing (Monopoly Power)</div>
+    <p><strong>Background:</strong> Mylan Pharmaceuticals held near-exclusive rights to sell the EpiPen auto-injector in the United States. From 2007 to 2016, the price of a two-pack rose from approximately $100 to over $600 — a 500% increase.</p>
+    <p><strong>Why was Mylan a price maker?</strong></p>
+    <p>• Patent protection created a legal barrier to entry.<br>
+       • No close substitutes existed in an easy-to-use auto-injector format.<br>
+       • Demand was inelastic — patients with severe allergies <em>had</em> to buy.<br>
+       • Brand loyalty and prescribing habits locked in consumers.</p>
+    <p><strong>Economic outcome:</strong> Mylan earned supernormal profits for years. Price was set far above MC, creating a significant deadweight loss — many low-income families could not afford EpiPens. Congress held hearings in 2016; generic competitors eventually entered, and price fell.</p>
+    <p><strong>Discussion question:</strong> Was patent protection socially beneficial or harmful in this case? Can you think of arguments on both sides?</p>
+  </div>
+
+  <!-- Microsoft Case -->
+  <div class="card mono-card">
+    <div class="card-title">💻 Case Study 3 — Microsoft Windows (Natural Monopoly & Network Effects)</div>
+    <p><strong>Background:</strong> By the late 1990s, Microsoft Windows held over 90% of the desktop operating system market. The U.S. Department of Justice sued Microsoft in 1998 for anti-competitive behaviour.</p>
+    <p><strong>How did the monopoly form?</strong></p>
+    <p>• <em>Network effects:</em> The more people used Windows, the more valuable it became (software developers wrote for Windows because users used it; users chose Windows because software existed for it).<br>
+       • <em>Switching costs:</em> Once businesses trained staff on Windows, switching to a rival OS was expensive.<br>
+       • Bundling Internet Explorer with Windows squeezed rivals like Netscape out of the browser market.</p>
+    <p><strong>Economic outcome:</strong> Microsoft set prices above competitive levels and maintained supernormal profits. The 2001 settlement required Microsoft to share its APIs with competitors. Today, mobile operating systems (iOS, Android) have disrupted desktop dominance.</p>
+    <p><strong>Discussion question:</strong> Are network-effect monopolies different from patent monopolies? Should they be regulated the same way?</p>
+  </div>
+
+  <!-- Farmers market PC -->
+  <div class="card comp-card">
+    <div class="card-title">🐟 Case Study 4 — Fish Auction Markets (Near-Perfect Competition)</div>
+    <p><strong>Background:</strong> Fish auctions in Japan (e.g., Tsukiji/Toyosu) and the Netherlands (Urk fish market) are textbook examples of near-perfect competition. Hundreds of fishing boats sell similar grades of fish to hundreds of buyers each morning.</p>
+    <p><strong>Conditions met:</strong></p>
+    <p>• Large number of buyers and sellers — no single party controls price.<br>
+       • Fish of the same species and grade are virtually homogeneous.<br>
+       • Auction format ensures transparent, real-time price discovery.<br>
+       • Prices fluctuate daily based on the previous night's catch and buyer demand.</p>
+    <p><strong>Economic outcome:</strong> Prices quickly reflect supply and demand. A large catch drives prices down; a storm that reduces supply drives prices up. Profit margins are thin, and in bad years, some fishing boats exit the market.</p>
+    <p><strong>Discussion question:</strong> What would happen to this market if one large company bought all the fishing boats? Draw a diagram to illustrate the change.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════ GRAPHS ══════════════════════ -->
+<div id="graphs" class="section">
+  <div class="sec-heading">Diagram Guide</div>
+  <div class="sec-sub">UNDERSTANDING THE GRAPHS</div>
+
+  <div class="graph-wrap">
+    <!-- Perfect Competition -->
+    <div class="graph-box">
+      <h4 style="color:var(--comp)">🟦 Perfect Competition — Short Run</h4>
+      <svg viewBox="0 0 280 220" width="100%" style="display:block">
+        <!-- axes -->
+        <line x1="40" y1="180" x2="260" y2="180" stroke="#aaa" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="180" stroke="#aaa" stroke-width="1.5"/>
+        <text x="265" y="183" font-size="10" fill="#888">Q</text>
+        <text x="30" y="18" font-size="10" fill="#888">P</text>
+
+        <!-- P=MR=AR (horizontal) at y=75 -->
+        <line x1="40" y1="75" x2="240" y2="75" stroke="#0a7ea4" stroke-width="2.5"/>
+        <text x="242" y="79" font-size="9" fill="#0a7ea4">P=MR=AR</text>
+        <text x="22" y="79" font-size="9" fill="#0a7ea4">P*</text>
+
+        <!-- MC curve: U-then-up, starts high, dips, then rises steeply -->
+        <!-- MC starts at (55,158), minimum around (90,115), then rises to (210,38) -->
+        <path d="M 55 158 Q 85 108 105 108 Q 150 108 210 38" stroke="#e67e22" stroke-width="2.5" fill="none"/>
+        <text x="212" y="36" font-size="9" fill="#e67e22">MC</text>
+
+        <!-- ATC curve: true U-shape — high left, falls to min ~(120,88), rises right -->
+        <path d="M 55 152 C 80 152 105 88 120 88 C 140 88 170 95 215 115" stroke="#555" stroke-width="2" fill="none" stroke-dasharray="4,3"/>
+        <text x="216" y="118" font-size="9" fill="#555">ATC</text>
+
+        <!-- Q* where MC crosses P line: MC=75 → on our MC path that's around x=155 -->
+        <line x1="152" y1="75" x2="152" y2="180" stroke="#aaa" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="147" y="192" font-size="9" fill="#555">Q*</text>
+
+        <!-- ATC at Q* (x=152) ≈ y=97 on new U-shaped curve -->
+        <line x1="40" y1="97" x2="152" y2="97" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="22" y="101" font-size="9" fill="#555">ATC</text>
+
+        <!-- Supernormal profit rectangle: from y=75 (P*) down to y=97 (ATC), x=40 to x=152 -->
+        <rect x="40" y="75" width="112" height="22" fill="#0a7ea4" opacity="0.18"/>
+        <text x="60" y="89" font-size="8" fill="#0a7ea4">Supernormal π</text>
+      </svg>
+      <p style="font-size:0.8rem;color:#666;margin-top:0.5rem">Firm is a price taker. If P > ATC, supernormal profit exists — attracting new entrants.</p>
+    </div>
+
+    <!-- Monopoly -->
+    <div class="graph-box">
+      <h4 style="color:var(--mono)">🟥 Monopoly — Profit Maximising</h4>
+      <svg viewBox="0 0 280 220" width="100%" style="display:block">
+        <!-- axes -->
+        <line x1="40" y1="180" x2="260" y2="180" stroke="#aaa" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="180" stroke="#aaa" stroke-width="1.5"/>
+        <text x="265" y="183" font-size="10" fill="#888">Q</text>
+        <text x="30" y="18" font-size="10" fill="#888">P</text>
+
+        <!-- Demand / AR (downward) -->
+        <line x1="50" y1="35" x2="235" y2="170" stroke="#c0392b" stroke-width="2.5"/>
+        <text x="237" y="172" font-size="9" fill="#c0392b">AR=D</text>
+
+        <!-- MR: same intercept as AR, twice the slope (hits x-axis at midpoint of AR's x-range) -->
+        <!-- AR: from (50,35) to (235,170). Midpoint x ≈ 142. MR hits y=180 at x=142 -->
+        <line x1="50" y1="35" x2="142" y2="170" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,3"/>
+        <text x="144" y="174" font-size="9" fill="#e74c3c">MR</text>
+
+        <!-- MC curve: gently upward sloping (starts low, rises gradually) -->
+        <!-- MC from (50,160) curving up to (200,60) -->
+        <path d="M 50 160 Q 100 130 140 105 Q 170 85 205 58" stroke="#e67e22" stroke-width="2.5" fill="none"/>
+        <text x="207" y="56" font-size="9" fill="#e67e22">MC</text>
+
+        <!-- MR=MC intersection: MR line at x=105 → y = 35 + (170-35)*(105-50)/(142-50) = 35+135*55/92 ≈ 116
+             MC at x=105 → approx y=118. Close enough. Use x=105, y=117 as MR=MC point -->
+        <!-- Qm vertical -->
+        <line x1="105" y1="117" x2="105" y2="180" stroke="#aaa" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="99" y="192" font-size="9" fill="#555">Qm</text>
+
+        <!-- Pm: read off AR/D at x=105 → y = 35 + 135*(105-50)/185 = 35+40 = 75 -->
+        <line x1="40" y1="75" x2="105" y2="75" stroke="#c0392b" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="22" y="79" font-size="9" fill="#c0392b">Pm</text>
+
+        <!-- ATC curve: true U-shape — high left, falls to min ~(95,100), rises right -->
+        <path d="M 48 158 C 68 158 85 100 98 100 C 118 100 155 108 210 130" stroke="#555" stroke-width="2" fill="none" stroke-dasharray="4,3"/>
+        <text x="197" y="134" font-size="9" fill="#555">ATC</text>
+
+        <!-- ATC at Qm (x=105) ≈ y=103 on new U-shaped curve -->
+        <line x1="40" y1="103" x2="105" y2="103" stroke="#555" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="18" y="107" font-size="9" fill="#555">ATC</text>
+
+        <!-- Supernormal profit rectangle: from Pm(y=75) down to ATC(y=103), x=40 to x=105 -->
+        <rect x="40" y="75" width="65" height="28" fill="#c0392b" opacity="0.15"/>
+        <text x="44" y="92" font-size="8" fill="#c0392b">Supernormal π</text>
+
+        <!-- Competitive output Qc: where MC = AR/D -->
+        <!-- AR at x: y = 35+135*(x-50)/185. MC at x=167 ≈ y=75 (on MC path). AR at x=167 ≈ 35+135*117/185≈120 — not equal -->
+        <!-- Find where MC crosses AR: by inspection on our curves, around x=168, y=80 -->
+        <line x1="168" y1="80" x2="168" y2="180" stroke="#27ae60" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="163" y="192" font-size="9" fill="#27ae60">Qc</text>
+
+        <!-- DWL triangle: between Qm and Qc, between MC and AR (demand) -->
+        <!-- Points: (105,117)[MR=MC on MC], (168,80)[Qc on MC≈AR], (105,75)[Pm on demand at Qm] -->
+        <!-- Better: (105,75) top-left, (168,80) right, (105,117) bottom-left -->
+        <polygon points="105,75 168,80 105,117" fill="#f39c12" opacity="0.28"/>
+        <text x="118" y="102" font-size="8" fill="#c77a00">DWL</text>
+      </svg>
+      <p style="font-size:0.8rem;color:#666;margin-top:0.5rem">Monopolist sets MR = MC, then reads price off demand curve. P > MC creates deadweight loss (DWL).</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem">
+    <div class="card-title">How to Read These Diagrams</div>
+    <p><strong>Step 1 — Find the profit-maximising output:</strong> Where MR = MC (vertical dashed line).</p>
+    <p><strong>Step 2 — Find the price:</strong> In perfect competition, P is given (horizontal line). In monopoly, read up from Q* to the <em>demand curve</em>.</p>
+    <p><strong>Step 3 — Identify profit/loss:</strong> If P > ATC → supernormal profit (shaded rectangle). If P < ATC → loss.</p>
+    <p><strong>Step 4 — Check for deadweight loss:</strong> In monopoly, output is restricted below the competitive level. The triangle between the competitive Q and monopoly Q, between MC and demand, is the deadweight loss to society.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════ COMPARE ══════════════════════ -->
+<div id="compare" class="section">
+  <div class="sec-heading">Head-to-Head Comparison</div>
+  <div class="sec-sub">PERFECT COMPETITION vs MONOPOLY</div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>🟦 Perfect Competition</th>
+        <th>🟥 Monopoly</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Number of firms</td><td>Very many (hundreds to thousands)</td><td>One</td></tr>
+      <tr><td>Product type</td><td>Identical / homogeneous</td><td>Unique (no close substitutes)</td></tr>
+      <tr><td>Barriers to entry</td><td>None / very low</td><td>High (patents, economies of scale, regulation)</td></tr>
+      <tr><td>Price control</td><td>Price taker (P set by market)</td><td>Price maker (sets own P via output)</td></tr>
+      <tr><td>Demand curve</td><td>Perfectly elastic (horizontal)</td><td>Downward sloping</td></tr>
+      <tr><td>MR vs Price</td><td>MR = P = AR</td><td>MR &lt; AR = P</td></tr>
+      <tr><td>Profit-max condition</td><td>P = MC = MR</td><td>MR = MC, then P from demand</td></tr>
+      <tr><td>Short-run profit</td><td>Can be supernormal, normal, or loss</td><td>Typically supernormal</td></tr>
+      <tr><td>Long-run profit</td><td>Normal profit only (free entry)</td><td>Supernormal profit (barriers block entry)</td></tr>
+      <tr><td>Allocative efficiency</td><td>✅ P = MC (efficient)</td><td>❌ P &gt; MC (deadweight loss)</td></tr>
+      <tr><td>Productive efficiency</td><td>✅ LR output at min ATC</td><td>❌ Not necessarily at min ATC</td></tr>
+      <tr><td>Dynamic efficiency</td><td>Limited (thin margins, low R&amp;D budget)</td><td>Possible (supernormal profit funds R&amp;D)</td></tr>
+      <tr><td>Consumer surplus</td><td>Maximised</td><td>Reduced (transferred to producer or lost)</td></tr>
+      <tr><td>Real-world examples</td><td>Wheat, fish auction, foreign exchange</td><td>EpiPen (2007–16), local water utility, Google Search</td></tr>
+    </tbody>
+  </table>
+
+  <div class="card" style="margin-top:1.5rem; border-left:5px solid var(--gold)">
+    <div class="card-title" style="color:var(--gold)">⚡ The Dynamic Efficiency Debate</div>
+    <p>Monopolies are statically inefficient (P > MC, DWL) but can be <em>dynamically efficient</em>. Supernormal profits fund research and innovation — think pharmaceutical breakthroughs or tech giants' AI investment. This is why patents grant <em>temporary</em> monopoly power as an innovation incentive.</p>
+    <p>The policy challenge: how long should a patent last? Long enough to reward innovation, but not so long that consumers are overcharged indefinitely.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════ QUIZ ══════════════════════ -->
+<div id="quiz" class="section">
+  <div class="sec-heading">Knowledge Check Quiz</div>
+  <div class="sec-sub">CLICK YOUR ANSWER — INSTANT FEEDBACK</div>
+
+  <div class="score-bar">
+    <div><div class="score-label">Your Score</div><div class="score-num" id="score-display">0 / 8</div></div>
+    <button class="reset-btn" onclick="resetQuiz()">↺ Reset Quiz</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-block" id="q1">
+    <div class="q-num">Question 1 of 8</div>
+    <div class="q-text">In perfect competition, what is the relationship between price (P), marginal revenue (MR), and average revenue (AR)?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q1',false)">P > MR = AR</button>
+      <button class="opt-btn" onclick="answer(this,'q1',true)">P = MR = AR</button>
+      <button class="opt-btn" onclick="answer(this,'q1',false)">MR < AR = P</button>
+      <button class="opt-btn" onclick="answer(this,'q1',false)">P < MR < AR</button>
+    </div>
+    <div class="feedback" id="fb-q1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-block" id="q2">
+    <div class="q-num">Question 2 of 8</div>
+    <div class="q-text">A monopolist maximises profit by choosing the output level where:</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q2',false)">Price = Average Total Cost</button>
+      <button class="opt-btn" onclick="answer(this,'q2',false)">Price = Marginal Cost</button>
+      <button class="opt-btn" onclick="answer(this,'q2',true)">Marginal Revenue = Marginal Cost</button>
+      <button class="opt-btn" onclick="answer(this,'q2',false)">Total Revenue is maximised</button>
+    </div>
+    <div class="feedback" id="fb-q2"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-block" id="q3">
+    <div class="q-num">Question 3 of 8</div>
+    <div class="q-text">Which of the following is a key reason why long-run economic profit is zero in perfect competition?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q3',false)">Firms collude to keep prices low</button>
+      <button class="opt-btn" onclick="answer(this,'q3',true)">Free entry attracts new firms when profit exists, driving price down</button>
+      <button class="opt-btn" onclick="answer(this,'q3',false)">The government regulates prices</button>
+      <button class="opt-btn" onclick="answer(this,'q3',false)">Products are differentiated, reducing demand</button>
+    </div>
+    <div class="feedback" id="fb-q3"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-block" id="q4">
+    <div class="q-num">Question 4 of 8</div>
+    <div class="q-text">Deadweight loss in a monopoly occurs because:</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q4',false)">The monopolist produces too much output</button>
+      <button class="opt-btn" onclick="answer(this,'q4',true)">Output is restricted below the socially efficient level, so mutually beneficial trades do not occur</button>
+      <button class="opt-btn" onclick="answer(this,'q4',false)">The monopolist earns zero economic profit</button>
+      <button class="opt-btn" onclick="answer(this,'q4',false)">Consumers have perfect information about prices</button>
+    </div>
+    <div class="feedback" id="fb-q4"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-block" id="q5">
+    <div class="q-num">Question 5 of 8</div>
+    <div class="q-text">Refer to the EpiPen case study. The primary barrier to entry that allowed Mylan to maintain monopoly power was:</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q5',false)">Economies of scale</button>
+      <button class="opt-btn" onclick="answer(this,'q5',false)">Government price controls</button>
+      <button class="opt-btn" onclick="answer(this,'q5',true)">Patent protection preventing rival firms from producing the same product</button>
+      <button class="opt-btn" onclick="answer(this,'q5',false)">A natural monopoly due to high fixed costs</button>
+    </div>
+    <div class="feedback" id="fb-q5"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-block" id="q6">
+    <div class="q-num">Question 6 of 8</div>
+    <div class="q-text">In a perfectly competitive market, an individual firm's demand curve is:</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q6',false)">Downward sloping, like the market demand curve</button>
+      <button class="opt-btn" onclick="answer(this,'q6',false)">Upward sloping (consumers pay more as quantity rises)</button>
+      <button class="opt-btn" onclick="answer(this,'q6',true)">Perfectly elastic (horizontal) at the market price</button>
+      <button class="opt-btn" onclick="answer(this,'q6',false)">Perfectly inelastic (vertical) at the firm's chosen output</button>
+    </div>
+    <div class="feedback" id="fb-q6"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-block" id="q7">
+    <div class="q-num">Question 7 of 8</div>
+    <div class="q-text">Which statement about dynamic efficiency and monopoly is most accurate?</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q7',false)">Monopolies are always dynamically efficient because competition forces innovation</button>
+      <button class="opt-btn" onclick="answer(this,'q7',true)">Supernormal profits may fund R&amp;D, making monopoly potentially more dynamically efficient than perfect competition</button>
+      <button class="opt-btn" onclick="answer(this,'q7',false)">Perfectly competitive firms invest more in R&amp;D because they have more revenue</button>
+      <button class="opt-btn" onclick="answer(this,'q7',false)">Dynamic efficiency refers to firms producing at minimum average cost</button>
+    </div>
+    <div class="feedback" id="fb-q7"></div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-block" id="q8">
+    <div class="q-num">Question 8 of 8</div>
+    <div class="q-text">A local water supply company is the only provider in a region because building duplicate pipe infrastructure would be wasteful. This is best described as a:</div>
+    <div class="options">
+      <button class="opt-btn" onclick="answer(this,'q8',false)">Patent monopoly</button>
+      <button class="opt-btn" onclick="answer(this,'q8',false)">Perfectly competitive market</button>
+      <button class="opt-btn" onclick="answer(this,'q8',true)">Natural monopoly</button>
+      <button class="opt-btn" onclick="answer(this,'q8',false)">Oligopoly</button>
+    </div>
+    <div class="feedback" id="fb-q8"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ SORTING ACTIVITY ══════════════════════ -->
+<div id="sorting" class="section">
+  <div class="sec-heading">Sorting Activity</div>
+  <div class="sec-sub">DRAG &amp; DROP — CLASSIFY EACH SCENARIO</div>
+
+  <div class="card" style="border-left:5px solid var(--gold); margin-bottom:1.5rem">
+    <div class="card-title" style="color:var(--gold); font-size:1rem">📌 Instructions</div>
+    <p>Drag each chip from the pool and drop it into the correct market structure box. When you're done, click <strong>Check Answers</strong>. Green = correct, Red = incorrect. You can reset and try again!</p>
+    <p class="drag-instruction" style="margin-top:0.5rem">Tip: On mobile, tap a chip to select it, then tap the target zone to place it.</p>
+  </div>
+
+  <div class="drag-area">
+    <div class="drag-pool" id="pool">
+      <h4 style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:#888;margin-bottom:0.8rem;font-weight:600">Scenario Pool</h4>
+    </div>
+    <div class="drop-zone comp-zone" id="zone-comp" ondragover="allowDrop(event)" ondrop="drop(event,'comp')">
+      <h4>🟦 Perfect Competition</h4>
+    </div>
+    <div class="drop-zone mono-zone" id="zone-mono" ondragover="allowDrop(event)" ondrop="drop(event,'mono')">
+      <h4>🟥 Monopoly</h4>
+    </div>
+  </div>
+
+  <div style="margin-top:1.2rem">
+    <button class="check-btn" onclick="checkSorting()">✓ Check Answers</button>
+    <button class="reset-btn" onclick="resetSorting()">↺ Reset</button>
+  </div>
+  <div id="sort-result" style="margin-top:1rem;font-size:0.9rem;font-weight:500;color:#555"></div>
+</div>
+
+<footer>Created for classroom use · No account required · Share freely with students</footer>
+
+<script>
+// ── TAB NAVIGATION ──
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── QUIZ ──
+const quizAnswers = {
+  q1: "In perfect competition, the firm is a price taker, so the price is fixed. Selling one more unit earns exactly P in revenue → MR = P. Since every unit sells at the same price, AR = P too. So P = MR = AR.",
+  q2: "The golden rule of profit maximisation for ANY firm is MR = MC. After finding this output (Qm), the monopolist reads the price off the demand curve, which is always above MR.",
+  q3: "Free entry and exit is the key mechanism. Whenever firms earn supernormal profit, new firms enter, increasing supply, which pushes price down until economic profit = 0. Barriers to entry are what prevent this in monopoly.",
+  q4: "The socially efficient output is where D = MC (or P = MC). The monopolist restricts output to Qm < Qc. Those units between Qm and Qc would have generated gains for both consumers and producers, but are not traded — that is the deadweight loss.",
+  q5: "Patent protection is a legal barrier that gave Mylan exclusive rights to produce the EpiPen auto-injector. Without a patent, rival firms would have entered as soon as Mylan raised prices, competing profits away.",
+  q6: "Because the firm can sell as much as it wants at the market price (it's too small to affect P), it faces a horizontal demand curve at P. If it charges even 1 cent more, it sells nothing (buyers go to identical competitors).",
+  q7: "Perfect competition delivers static efficiency (P = MC) but leaves no margin for R&D. Monopolies' supernormal profits can fund innovation — the pharmaceutical industry is often cited. However, this potential efficiency is not guaranteed.",
+  q8: "A natural monopoly arises when one firm can supply the whole market at lower cost than multiple firms, due to very high fixed costs (like pipes or rail tracks) and falling average costs. Duplication would be wasteful."
+};
+
+let scores = {};
+let scoreCount = 0;
+
+function answer(btn, qid, correct) {
+  if (scores[qid] !== undefined) return;
+  scores[qid] = correct;
+  const allBtns = btn.parentElement.querySelectorAll('.opt-btn');
+  allBtns.forEach(b => b.disabled = true);
+  if (correct) {
+    btn.classList.add('correct');
+    scoreCount++;
+  } else {
+    btn.classList.add('wrong');
+    // reveal correct
+    allBtns.forEach(b => {
+      if (b !== btn && b.onclick.toString().includes('true')) b.classList.add('reveal');
+    });
+  }
+  const fb = document.getElementById('fb-' + qid);
+  fb.textContent = (correct ? '✅ Correct! ' : '❌ Not quite. ') + quizAnswers[qid];
+  fb.className = 'feedback show ' + (correct ? 'ok' : 'bad');
+  document.getElementById('score-display').textContent = scoreCount + ' / 8';
+}
+
+function resetQuiz() {
+  scores = {}; scoreCount = 0;
+  document.getElementById('score-display').textContent = '0 / 8';
+  document.querySelectorAll('.q-block').forEach(q => {
+    q.querySelectorAll('.opt-btn').forEach(b => {
+      b.disabled = false;
+      b.className = 'opt-btn';
+    });
+    q.querySelectorAll('.feedback').forEach(f => f.className = 'feedback');
+  });
+}
+
+// ── SORTING DRAG & DROP ──
+const scenarios = [
+  { id:'s1', text:'🌾 Thousands of corn farmers selling identical grain', answer:'comp' },
+  { id:'s2', text:'💊 A pharma company with a 20-year patent on a life-saving drug', answer:'mono' },
+  { id:'s3', text:'🐟 Fish sold at a morning auction with 200 buyers and 180 sellers', answer:'comp' },
+  { id:'s4', text:'🚰 The sole local water utility serving a city', answer:'mono' },
+  { id:'s5', text:'💻 A tech giant holding 95% of the operating system market', answer:'mono' },
+  { id:'s6', text:'💱 Currency traders buying and selling USD/EUR on Forex markets', answer:'comp' },
+  { id:'s7', text:'📡 A single broadband cable provider in a rural area', answer:'mono' },
+  { id:'s8', text:'🌿 Hundreds of soybean farms selling to commodity exchanges', answer:'comp' },
+];
+
+let placed = {}; // id → zone
+let selectedChip = null;
+
+function buildSorting() {
+  const pool = document.getElementById('pool');
+  // clear non-heading children
+  while (pool.children.length > 1) pool.removeChild(pool.lastChild);
+  document.getElementById('zone-comp').innerHTML = '<h4>🟦 Perfect Competition</h4>';
+  document.getElementById('zone-mono').innerHTML = '<h4>🟥 Monopoly</h4>';
+  document.getElementById('sort-result').textContent = '';
+  placed = {};
+
+  scenarios.forEach(sc => {
+    const chip = makeChip(sc);
+    pool.appendChild(chip);
+  });
+}
+
+function makeChip(sc) {
+  const chip = document.createElement('span');
+  chip.className = 'drag-chip';
+  chip.id = 'chip-' + sc.id;
+  chip.draggable = true;
+  chip.textContent = sc.text;
+  chip.dataset.id = sc.id;
+  chip.dataset.answer = sc.answer;
+  chip.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', sc.id);
+    selectedChip = chip;
+  });
+  chip.addEventListener('click', () => {
+    // mobile tap-to-select
+    if (selectedChip === chip) { selectedChip = null; chip.style.boxShadow=''; return; }
+    if (selectedChip) { selectedChip.style.boxShadow = ''; }
+    selectedChip = chip;
+    chip.style.boxShadow = '0 0 0 2.5px var(--gold)';
+  });
+  return chip;
+}
+
+function allowDrop(e) { e.preventDefault(); }
+
+function drop(e, zone) {
+  e.preventDefault();
+  const id = e.dataTransfer ? e.dataTransfer.getData('text/plain') : (selectedChip ? selectedChip.dataset.id : null);
+  if (!id) return;
+  placeChip(id, zone);
+  selectedChip = null;
+}
+
+document.getElementById('zone-comp').addEventListener('click', function() {
+  if (selectedChip) { placeChip(selectedChip.dataset.id, 'comp'); selectedChip.style.boxShadow=''; selectedChip=null; }
+});
+document.getElementById('zone-mono').addEventListener('click', function() {
+  if (selectedChip) { placeChip(selectedChip.dataset.id, 'mono'); selectedChip.style.boxShadow=''; selectedChip=null; }
+});
+
+function placeChip(id, zone) {
+  const chip = document.getElementById('chip-' + id);
+  if (!chip) return;
+  // remove from wherever it is
+  chip.remove();
+  chip.className = 'drag-chip placed-' + zone;
+  chip.style.boxShadow = '';
+  placed[id] = zone;
+  const target = document.getElementById('zone-' + zone);
+  target.appendChild(chip);
+}
+
+function checkSorting() {
+  let correct = 0, total = scenarios.length;
+  scenarios.forEach(sc => {
+    const chip = document.getElementById('chip-' + sc.id);
+    if (!chip) return;
+    chip.classList.remove('correct-chip', 'wrong-chip');
+    if (placed[sc.id] === sc.answer) {
+      chip.classList.add('correct-chip'); correct++;
+    } else if (placed[sc.id]) {
+      chip.classList.add('wrong-chip');
+    }
+  });
+  const unplaced = total - Object.keys(placed).length;
+  let msg = `Score: ${correct} / ${total}`;
+  if (unplaced > 0) msg += ` · ${unplaced} scenario(s) not placed yet.`;
+  if (correct === total) msg = '🎉 Perfect score! All scenarios correctly classified!';
+  document.getElementById('sort-result').textContent = msg;
+}
+
+function resetSorting() { buildSorting(); }
+
+// Init
+buildSorting();
+</script>
+</body>
+</html>

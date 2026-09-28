@@ -1,0 +1,1203 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cedar Flats GDP Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --bg:#EFF3F2; --surface:#FFFFFF; --surface-2:#F6F9F8; --surface-3:#E7EDEC;
+  --ink:#0F2429; --ink-soft:#4B6168; --ink-faint:#7B9198;
+  --rule:#D3DEDC; --rule-strong:#B4C4C2;
+  --accent:#0E7C8A; --accent-deep:#075662; --accent-wash:#E2F1F2;
+  --admit:#1C7047; --admit-wash:#E2F0E8;
+  --reject:#AE2F1C; --reject-wash:#F8E6E2;
+  --ochre:#9C6A0C; --ochre-wash:#F7EDD8;
+  --shadow:0 1px 2px rgba(15,36,41,.06), 0 8px 24px -14px rgba(15,36,41,.28);
+  --font-display:'Archivo', system-ui, 'Helvetica Neue', Arial, sans-serif;
+  --font-body:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+}
+:root:not([data-theme="light"]){
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0B1719; --surface:#122326; --surface-2:#162B2F; --surface-3:#1D373C;
+    --ink:#E3EDEC; --ink-soft:#9AB0B4; --ink-faint:#728B90;
+    --rule:#254045; --rule-strong:#33565C;
+    --accent:#3FB9C6; --accent-deep:#8AD9E1; --accent-wash:#0F3238;
+    --admit:#57BE87; --admit-wash:#102E22;
+    --reject:#E97C64; --reject-wash:#381913;
+    --ochre:#DCA843; --ochre-wash:#33260D;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0B1719; --surface:#122326; --surface-2:#162B2F; --surface-3:#1D373C;
+  --ink:#E3EDEC; --ink-soft:#9AB0B4; --ink-faint:#728B90;
+  --rule:#254045; --rule-strong:#33565C;
+  --accent:#3FB9C6; --accent-deep:#8AD9E1; --accent-wash:#0F3238;
+  --admit:#57BE87; --admit-wash:#102E22;
+  --reject:#E97C64; --reject-wash:#381913;
+  --ochre:#DCA843; --ochre-wash:#33260D;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1010px; margin:0 auto; padding-inline:18px; padding-block:0 56px}
+h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0; line-height:1.18}
+p{margin:0}
+button{font:inherit; color:inherit}
+:focus-visible{outline:2.5px solid var(--accent); outline-offset:2px; border-radius:3px}
+
+/* ---------- status bar ---------- */
+.bar{
+  position:sticky; top:0; z-index:20; background:var(--surface);
+  border-bottom:1px solid var(--rule);
+}
+.bar-in{
+  max-width:1010px; margin:0 auto; padding:10px 18px;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+.stamp{
+  font-family:var(--font-display); font-weight:700; font-size:12px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent-deep);
+  border:2px solid var(--accent); border-radius:2px; padding:3px 8px;
+  transform:rotate(-1.5deg);
+}
+.bar-title{font-family:var(--font-display); font-weight:600; font-size:14.5px; letter-spacing:-.005em}
+.bar-sub{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); letter-spacing:.02em}
+.bar-spacer{flex:1 1 auto; min-width:8px}
+.tally{display:flex; gap:16px; font-family:var(--font-mono); font-size:12px; font-variant-numeric:tabular-nums}
+.tally b{display:block; font-size:17px; font-weight:600; color:var(--ink)}
+.tally span{color:var(--ink-faint); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase}
+.theme-btn{
+  background:none; border:1px solid var(--rule-strong); border-radius:2px;
+  padding:5px 9px; font-family:var(--font-mono); font-size:11px; cursor:pointer;
+  color:var(--ink-soft); letter-spacing:.04em;
+}
+.theme-btn:hover{border-color:var(--accent); color:var(--accent)}
+
+/* progress rail */
+.rail{display:flex; height:4px; background:var(--surface-3)}
+.rail i{display:block; height:100%; background:var(--accent); width:0; transition:width .35s ease}
+
+/* ---------- generic blocks ---------- */
+.panel{
+  background:var(--surface); border:1px solid var(--rule);
+  border-radius:4px; box-shadow:var(--shadow);
+}
+.eyebrow{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--accent); font-weight:500;
+}
+.lede{font-size:17px; color:var(--ink-soft); max-width:63ch}
+.small{font-size:13.5px; color:var(--ink-soft)}
+.mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+.screen{display:none}
+.screen.live{display:block}
+
+/* ---------- landing ---------- */
+.hero{padding:38px 0 26px; display:grid; gap:14px}
+.hero h1{font-size:clamp(30px,5.4vw,46px); letter-spacing:-.022em}
+.hero .sig{
+  font-family:var(--font-mono); font-size:12px; color:var(--ink-faint);
+  letter-spacing:.05em; border-top:1px solid var(--rule); padding-top:12px;
+}
+.def{
+  padding:22px; display:grid; gap:16px; margin-bottom:22px;
+  border-left:4px solid var(--accent);
+}
+.def q{display:block; font-size:19px; line-height:1.45; quotes:none}
+.def q b{font-family:var(--font-display); font-weight:700}
+.gates{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+.gate{
+  background:var(--surface-2); border:1px solid var(--rule); border-radius:3px;
+  padding:11px 12px; display:grid; gap:4px; align-content:start;
+}
+.gate em{
+  font-family:var(--font-mono); font-style:normal; font-size:10.5px;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+}
+.gate strong{font-family:var(--font-display); font-size:14.5px; font-weight:600}
+.gate p{font-size:12.5px; color:var(--ink-soft); line-height:1.4}
+
+.rounds{display:grid; gap:0; margin-bottom:24px}
+.rd{
+  display:grid; grid-template-columns:52px 1fr auto; gap:16px; align-items:baseline;
+  padding:15px 20px; border:1px solid var(--rule); border-bottom:none; background:var(--surface);
+}
+.rd:first-child{border-radius:4px 4px 0 0}
+.rd:last-child{border-bottom:1px solid var(--rule); border-radius:0 0 4px 4px}
+.rd .n{
+  font-family:var(--font-mono); font-size:12px; color:var(--accent);
+  letter-spacing:.08em; font-weight:600;
+}
+.rd h3{font-size:16.5px; margin-bottom:3px}
+.rd p{font-size:13.5px; color:var(--ink-soft)}
+.rd .ct{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); white-space:nowrap}
+
+.btn{
+  font-family:var(--font-display); font-weight:600; font-size:15px;
+  background:var(--accent); color:#fff; border:none; border-radius:3px;
+  padding:12px 26px; cursor:pointer; letter-spacing:.005em;
+}
+:root[data-theme="dark"] .btn{color:#07191C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#07191C}}
+.btn:hover{background:var(--accent-deep)}
+.btn.ghost{background:none; color:var(--accent); border:1px solid var(--rule-strong)}
+.btn.ghost:hover{background:var(--accent-wash); border-color:var(--accent)}
+.btn[disabled]{opacity:.4; cursor:not-allowed}
+.btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
+/* ---------- round shell ---------- */
+.rhead{padding:26px 0 16px; display:grid; gap:8px}
+.rhead h2{font-size:clamp(22px,3.6vw,30px); letter-spacing:-.018em}
+.brief{
+  background:var(--accent-wash); border:1px solid var(--rule); border-radius:3px;
+  padding:13px 16px; font-size:14px; color:var(--ink-soft); line-height:1.5;
+  margin-bottom:18px;
+}
+.brief b{color:var(--ink)}
+
+/* transaction card */
+.card{padding:0; overflow:hidden; margin-bottom:14px}
+.card-top{
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  padding:9px 18px; border-bottom:1px solid var(--rule); background:var(--surface-2);
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-faint);
+}
+.card-body{padding:24px 18px 26px; display:grid; gap:12px}
+.card-body .txn{font-size:clamp(18px,2.7vw,22px); line-height:1.42; max-width:56ch}
+.card-body .amt{
+  font-family:var(--font-mono); font-size:13px; color:var(--accent);
+  letter-spacing:.04em; font-weight:500;
+}
+
+/* choice grid */
+.choices{display:grid; gap:8px; margin-bottom:14px}
+.choices.two{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.choices.three{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.opt{
+  text-align:left; background:var(--surface); border:1px solid var(--rule-strong);
+  border-radius:3px; padding:12px 14px; cursor:pointer; display:grid; gap:3px;
+  font-family:var(--font-display); font-size:14.5px; font-weight:600; line-height:1.3;
+}
+.opt small{font-family:var(--font-body); font-weight:400; font-size:12.5px; color:var(--ink-soft); line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--accent); background:var(--accent-wash)}
+.opt:disabled{cursor:default}
+.opt.pick-yes{border-color:var(--admit); background:var(--admit-wash)}
+.opt.pick-no{border-color:var(--reject); background:var(--reject-wash)}
+.opt.show-yes{border-color:var(--admit); border-width:2px}
+.opt.dim{opacity:.42}
+.opt .tag{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-faint);
+}
+
+/* verdict */
+.verdict{
+  border-radius:3px; padding:15px 17px; display:grid; gap:7px; margin-bottom:16px;
+  border:1px solid var(--rule); border-left-width:4px;
+}
+.verdict.ok{border-left-color:var(--admit); background:var(--admit-wash)}
+.verdict.no{border-left-color:var(--reject); background:var(--reject-wash)}
+.verdict h4{
+  font-family:var(--font-display); font-size:12px; font-weight:700; margin:0;
+  letter-spacing:.14em; text-transform:uppercase;
+}
+.verdict.ok h4{color:var(--admit)}
+.verdict.no h4{color:var(--reject)}
+.verdict p{font-size:14.5px; line-height:1.52}
+.verdict .why{color:var(--ink-soft); font-size:13.5px}
+
+/* ---------- ledger table ---------- */
+.ledger-wrap{overflow-x:auto; margin-bottom:16px}
+table.ledger{
+  width:100%; min-width:460px; border-collapse:collapse;
+  background:var(--surface); font-size:14.5px;
+}
+table.ledger caption{
+  text-align:left; padding:12px 16px; border:1px solid var(--rule); border-bottom:none;
+  background:var(--surface-2); font-family:var(--font-mono); font-size:11px;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--ink-faint);
+}
+table.ledger th{
+  text-align:left; font-family:var(--font-mono); font-weight:500; font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint);
+  padding:8px 16px; border-bottom:1px solid var(--rule-strong);
+  border-left:1px solid var(--rule); border-right:1px solid var(--rule);
+}
+table.ledger th:nth-child(2){text-align:right; border-left:none}
+table.ledger th:first-child{border-right:none}
+table.ledger td{
+  padding:7px 16px; border-bottom:1px solid var(--rule);
+  border-left:1px solid var(--rule); border-right:1px solid var(--rule);
+}
+table.ledger td:nth-child(2){
+  text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  border-left:none; white-space:nowrap;
+}
+table.ledger td:first-child{border-right:none}
+table.ledger tr:nth-child(even) td{background:var(--surface-2)}
+table.ledger tr.flagged td:first-child::after{
+  content:'excluded'; font-family:var(--font-mono); font-size:9.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--reject); border:1px solid var(--reject);
+  border-radius:2px; padding:1px 5px; margin-left:9px; white-space:nowrap;
+}
+.inputs{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:14px}
+.field{
+  background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:11px 13px; display:grid; gap:5px;
+}
+.field label{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-faint);
+}
+.field label b{color:var(--accent); font-weight:600}
+.field input{
+  font-family:var(--font-mono); font-size:19px; font-variant-numeric:tabular-nums;
+  width:100%; border:none; border-bottom:2px solid var(--rule-strong);
+  background:none; color:var(--ink); padding:2px 0; border-radius:0;
+}
+.field input:focus{outline:none; border-bottom-color:var(--accent)}
+.field.right input{border-bottom-color:var(--admit); color:var(--admit)}
+.field.wrong input{border-bottom-color:var(--reject); color:var(--reject)}
+.field .fix{font-family:var(--font-mono); font-size:11.5px; color:var(--reject)}
+.field.total{background:var(--accent-wash); border-color:var(--accent)}
+
+/* ---------- circular flow ---------- */
+.flowbox{
+  background:var(--surface); border:1px solid var(--rule); border-radius:4px;
+  padding:10px; margin-bottom:14px; box-shadow:var(--shadow); overflow-x:auto;
+}
+.flowbox svg{display:block; width:100%; height:auto; min-width:620px}
+.node{fill:var(--surface-2); stroke:var(--rule-strong); stroke-width:1.5}
+.node.mkt{fill:var(--accent-wash); stroke:var(--accent); stroke-width:1.5}
+.nlabel{
+  font-family:var(--font-display); font-size:15px; font-weight:600;
+  fill:var(--ink); text-anchor:middle;
+}
+.nlabel.sm{font-size:12.5px}
+.nsub{font-family:var(--font-mono); font-size:9.5px; fill:var(--ink-faint); text-anchor:middle; letter-spacing:.08em}
+.flow{fill:none; stroke:var(--rule-strong); stroke-width:2.5; marker-end:url(#ah); transition:stroke .3s ease}
+.flow.on{stroke:var(--accent); stroke-width:4; marker-end:url(#ahOn)}
+.flow.done{stroke:var(--admit); stroke-width:3; marker-end:url(#ahDone)}
+.flab{
+  font-family:var(--font-mono); font-size:11px; font-weight:500;
+  fill:var(--ink-faint); text-anchor:middle; letter-spacing:.03em;
+  paint-order:stroke fill; stroke:var(--surface); stroke-width:5px;
+  stroke-linejoin:round; stroke-linecap:round;
+}
+.flab.on{fill:var(--accent); font-weight:600}
+.flab.done{fill:var(--admit)}
+@media (prefers-reduced-motion:no-preference){
+  .flow.on{stroke-dasharray:9 7; animation:march 1s linear infinite}
+}
+@keyframes march{to{stroke-dashoffset:-32}}
+
+.trace{display:grid; grid-template-columns:1fr; gap:14px}
+.purse{
+  display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+  padding:11px 16px; background:var(--surface-2); border:1px solid var(--rule);
+  border-radius:3px; margin-bottom:14px; font-family:var(--font-mono); font-size:12.5px;
+}
+.purse b{font-size:16px; font-weight:600; color:var(--accent)}
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.06em;
+  border:1px solid var(--rule-strong); border-radius:2px; padding:2px 8px;
+  color:var(--ink-faint);
+}
+.chip.lit{border-color:var(--admit); color:var(--admit); background:var(--admit-wash)}
+
+/* ---------- results ---------- */
+.scorehead{display:grid; gap:12px; padding:28px 22px; margin-bottom:18px; text-align:center}
+.bigscore{
+  font-family:var(--font-mono); font-size:clamp(44px,10vw,72px); font-weight:600;
+  line-height:1; color:var(--accent); font-variant-numeric:tabular-nums;
+}
+.breakdown{display:grid; gap:0; margin-bottom:18px}
+.brow{
+  display:grid; grid-template-columns:1fr auto 78px; gap:14px; align-items:center;
+  padding:13px 18px; border:1px solid var(--rule); border-bottom:none; background:var(--surface);
+}
+.brow:first-child{border-radius:4px 4px 0 0}
+.brow:last-child{border-bottom:1px solid var(--rule); border-radius:0 0 4px 4px}
+.brow h4{font-family:var(--font-display); font-size:15px; font-weight:600; margin:0}
+.brow .sc{font-family:var(--font-mono); font-size:15px; font-variant-numeric:tabular-nums; text-align:right}
+.meter{height:7px; background:var(--surface-3); border-radius:4px; overflow:hidden}
+.meter i{display:block; height:100%; background:var(--accent)}
+.review{padding:20px 22px; display:grid; gap:11px}
+.review h3{font-size:17px}
+.review ul{margin:0; padding-left:19px; display:grid; gap:7px}
+.review li{font-size:14.5px; color:var(--ink-soft)}
+.review li b{color:var(--ink)}
+
+@media (max-width:720px){
+  .gates{grid-template-columns:repeat(2,1fr)}
+  .rd{grid-template-columns:40px 1fr; gap:10px}
+  .rd .ct{grid-column:2; margin-top:2px}
+  .brow{grid-template-columns:1fr auto; }
+  .brow .meter{grid-column:1 / -1}
+}
+@media (max-width:440px){
+  .gates{grid-template-columns:1fr}
+}
+</style>
+<style>
+#ah path{fill:var(--rule-strong)}
+#ahOn path{fill:var(--accent)}
+#ahDone path{fill:var(--admit)}
+</style>
+
+<header class="bar">
+  <div class="bar-in">
+    <span class="stamp">B E A</span>
+    <div>
+      <div class="bar-title">Cedar Flats GDP Audit</div>
+      <div class="bar-sub" id="barSub">National income &amp; product accounts &middot; training file</div>
+    </div>
+    <div class="bar-spacer"></div>
+    <div class="tally">
+      <div><span>Correct</span><b id="tCorrect">0</b></div>
+      <div><span>Attempted</span><b id="tSeen">0</b></div>
+    </div>
+    <button class="theme-btn" id="themeBtn" type="button">Dark</button>
+  </div>
+  <div class="rail"><i id="rail"></i></div>
+</header>
+
+<main class="wrap">
+
+<!-- ======================= HOME ======================= -->
+<section class="screen live" id="s-home">
+  <div class="hero">
+    <div class="eyebrow">Bureau of Economic Analysis &middot; Analyst Training, Module 1</div>
+    <h1>You are auditing the books of Cedar Flats, Texas.</h1>
+    <p class="lede">Every transaction in town lands on your desk. Some belong in Gross Domestic Product. Most of the ones that look like they belong do not. Your job is to decide which is which, add up what survives, and then follow a single dollar all the way around the economy.</p>
+    <div class="sig">Population 41,200 &middot; Reporting year 2026 &middot; Four rounds, roughly 35 minutes</div>
+  </div>
+
+  <div class="panel def">
+    <q><b>GDP</b> is the market value of all final goods and services produced in a country in a given time period.</q>
+    <div class="gates">
+      <div class="gate">
+        <em>Test 1</em><strong>Market value</strong>
+        <p>Valued at the price it sold for. No price, no entry.</p>
+      </div>
+      <div class="gate">
+        <em>Test 2</em><strong>Final goods &amp; services</strong>
+        <p>Bought by its final user, and something was actually produced.</p>
+      </div>
+      <div class="gate">
+        <em>Test 3</em><strong>Produced within the country</strong>
+        <p>Where it was made, not who owns the firm.</p>
+      </div>
+      <div class="gate">
+        <em>Test 4</em><strong>In a given time period</strong>
+        <p>Produced this year. Not resold this year.</p>
+      </div>
+    </div>
+    <p class="small">A transaction has to pass all four to enter GDP. Every wrong answer in Round 1 comes from one of these four tests.</p>
+  </div>
+
+  <div class="rounds">
+    <div class="rd"><div class="n">R1</div><div><h3>The Admissions Desk</h3><p>Fourteen transactions. For each one: does it clear all four tests, or which test does it fail?</p></div><div class="ct">14 items</div></div>
+    <div class="rd"><div class="n">R2</div><div><h3>Sort the Spending</h3><p>Everything here counts. Put each purchase in C, I, G, or net exports &mdash; and catch the two that sneak in.</p></div><div class="ct">10 items</div></div>
+    <div class="rd"><div class="n">R3</div><div><h3>Close the Books</h3><p>Two full sets of national accounts. Compute C, I, G, NX and GDP. The traps are on the page.</p></div><div class="ct">2 ledgers</div></div>
+    <div class="rd"><div class="n">R4</div><div><h3>Trace the Dollar</h3><p>Nia spends $120 on running shoes. Follow every cent through the circular flow until expenditure equals income.</p></div><div class="ct">10 steps</div></div>
+  </div>
+
+  <div class="btnrow">
+    <button class="btn" id="startBtn" type="button">Open Round 1</button>
+    <span class="small">Nothing is saved or sent. Refresh to start over.</span>
+  </div>
+</section>
+
+<!-- ======================= SORT (Rounds 1 &amp; 2) ======================= -->
+<section class="screen" id="s-sort">
+  <div class="rhead">
+    <div class="eyebrow" id="sortEyebrow">Round 1</div>
+    <h2 id="sortTitle">The Admissions Desk</h2>
+  </div>
+  <div class="brief" id="sortBrief"></div>
+
+  <div class="panel card">
+    <div class="card-top">
+      <span id="sortCounter">Item 1 of 14</span>
+      <span id="sortDocket">Docket CF&ndash;2026</span>
+    </div>
+    <div class="card-body">
+      <p class="txn" id="sortTxn"></p>
+      <p class="amt" id="sortAmt"></p>
+    </div>
+  </div>
+
+  <div class="choices" id="sortChoices"></div>
+  <div id="sortVerdict"></div>
+  <div class="btnrow"><button class="btn" id="sortNext" type="button" disabled>Next item</button></div>
+</section>
+
+<!-- ======================= LEDGER (Round 3) ======================= -->
+<section class="screen" id="s-ledger">
+  <div class="rhead">
+    <div class="eyebrow" id="ledEyebrow">Round 3</div>
+    <h2 id="ledTitle">Close the Books</h2>
+  </div>
+  <div class="brief">
+    Every line below was reported to your office. <b>Not every line belongs in GDP.</b> Decide what goes where, then enter the four components and the total. Figures are in millions of dollars; use whole numbers and a minus sign where you need one.
+  </div>
+
+  <div class="ledger-wrap">
+    <table class="ledger">
+      <caption id="ledCaption"></caption>
+      <thead><tr><th scope="col">Reported line item</th><th scope="col">$ millions</th></tr></thead>
+      <tbody id="ledBody"></tbody>
+    </table>
+  </div>
+
+  <div class="inputs" id="ledInputs">
+    <div class="field"><label for="inC">Consumption <b>C</b></label><input id="inC" type="text" inputmode="numeric" autocomplete="off"></div>
+    <div class="field"><label for="inI">Investment <b>I</b></label><input id="inI" type="text" inputmode="numeric" autocomplete="off"></div>
+    <div class="field"><label for="inG">Government <b>G</b></label><input id="inG" type="text" inputmode="numeric" autocomplete="off"></div>
+    <div class="field"><label for="inNX">Net exports <b>NX</b></label><input id="inNX" type="text" inputmode="numeric" autocomplete="off"></div>
+    <div class="field total"><label for="inGDP">Gross domestic product <b>GDP</b></label><input id="inGDP" type="text" inputmode="numeric" autocomplete="off"></div>
+  </div>
+
+  <div id="ledVerdict"></div>
+  <div class="btnrow">
+    <button class="btn" id="ledCheck" type="button">Check the ledger</button>
+    <button class="btn ghost" id="ledNext" type="button" style="display:none">Next ledger</button>
+  </div>
+</section>
+
+<!-- ======================= FLOW (Round 4) ======================= -->
+<section class="screen" id="s-flow">
+  <div class="rhead">
+    <div class="eyebrow">Round 4</div>
+    <h2>Trace the Dollar</h2>
+  </div>
+  <div class="brief">
+    Nia Ramirez pays <b>$120</b> for running shoes at Lone Star Athletics on Congress Street. Follow that money. Each correct answer lights the arrow it travels along. Money flows only &mdash; the goods and labor moving the other way are left off so the two loops stay readable.
+  </div>
+
+  <div class="purse">
+    <span>Arrows lit</span><b id="flowTraced">0 / 12</b>
+    <span class="bar-spacer"></span>
+    <div class="chips" id="flowChips">
+      <span class="chip" data-k="C">C</span><span class="chip" data-k="I">I</span><span class="chip" data-k="G">G</span><span class="chip" data-k="X">X</span><span class="chip" data-k="M">M</span><span class="chip" data-k="Y">Y</span>
+    </div>
+  </div>
+
+  <div class="flowbox">
+    <svg viewBox="0 0 900 620" role="img" aria-labelledby="flowTitle flowDesc">
+      <title id="flowTitle">Circular flow of income and expenditure</title>
+      <desc id="flowDesc">Money flows between households, firms, goods markets, factor markets, government, financial markets, and the rest of the world.</desc>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+        <marker id="ahOn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+        <marker id="ahDone" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"></path></marker>
+      </defs>
+
+      <!-- flows -->
+      <path class="flow" id="f-x"   d="M194,58 L322,58"></path>
+      <path class="flow" id="f-m"   d="M330,86 L194,86"></path>
+      <path class="flow" id="f-c"   d="M146,250 C146,170 240,110 366,102"></path>
+      <path class="flow" id="f-g"   d="M470,210 L470,116"></path>
+      <path class="flow" id="f-i"   d="M858,248 C892,160 780,34 600,48"></path>
+      <path class="flow" id="f-exp" d="M572,104 C680,120 790,168 794,248"></path>
+      <path class="flow" id="f-y"   d="M794,356 C794,450 720,524 610,536"></path>
+      <path class="flow" id="f-fh"  d="M330,536 C220,524 146,450 146,356"></path>
+      <path class="flow" id="f-th"  d="M236,288 C300,282 340,258 386,246"></path>
+      <path class="flow" id="f-tf"  d="M704,288 C640,282 600,258 554,246"></path>
+      <path class="flow" id="f-s"   d="M236,320 C290,338 316,368 354,382"></path>
+      <path class="flow" id="f-fi"  d="M586,384 C630,378 668,352 704,336"></path>
+
+      <!-- flow labels -->
+      <text class="flab" id="l-x"   x="258" y="46">X  exports</text>
+      <text class="flab" id="l-m"   x="262" y="104">M  imports</text>
+      <text class="flab" id="l-c"   x="232" y="168">C  consumption</text>
+      <text class="flab" id="l-g"   x="556" y="172">G  purchases</text>
+      <text class="flab" id="l-i"   x="790" y="112">I  investment</text>
+      <text class="flab" id="l-exp" x="716" y="146">firms&#8217; revenue</text>
+      <text class="flab" id="l-y"   x="746" y="466">Y  income paid out</text>
+      <text class="flab" id="l-fh"  x="182" y="466">wages, rent, profit</text>
+      <text class="flab" id="l-th"  x="300" y="252">net taxes</text>
+      <text class="flab" id="l-tf"  x="640" y="252">net taxes</text>
+      <text class="flab" id="l-s"   x="268" y="360">S  saving</text>
+      <text class="flab" id="l-fi"  x="654" y="378">loans</text>
+
+      <!-- nodes -->
+      <ellipse class="node mkt" cx="470" cy="70" rx="150" ry="42"></ellipse>
+      <text class="nlabel" x="470" y="66">GOODS MARKETS</text>
+      <text class="nsub" x="470" y="85">where output is bought</text>
+
+      <rect class="node" x="40" y="38" width="152" height="64" rx="3"></rect>
+      <text class="nlabel sm" x="116" y="64">REST OF WORLD</text>
+      <text class="nsub" x="116" y="82">trade partners</text>
+
+      <rect class="node" x="58" y="250" width="176" height="104" rx="3"></rect>
+      <text class="nlabel" x="146" y="298">HOUSEHOLDS</text>
+      <text class="nsub" x="146" y="318">spend, earn, save, pay tax</text>
+
+      <rect class="node" x="706" y="250" width="176" height="104" rx="3"></rect>
+      <text class="nlabel" x="794" y="298">FIRMS</text>
+      <text class="nsub" x="794" y="318">produce, hire, invest</text>
+
+      <rect class="node" x="390" y="212" width="160" height="76" rx="3"></rect>
+      <text class="nlabel sm" x="470" y="246">GOVERNMENT</text>
+      <text class="nsub" x="470" y="265">taxes in, purchases out</text>
+
+      <ellipse class="node mkt" cx="470" cy="392" rx="118" ry="40"></ellipse>
+      <text class="nlabel sm" x="470" y="389">FINANCIAL MARKETS</text>
+      <text class="nsub" x="470" y="407">saving funds borrowing</text>
+
+      <ellipse class="node mkt" cx="470" cy="548" rx="150" ry="42"></ellipse>
+      <text class="nlabel" x="470" y="544">FACTOR MARKETS</text>
+      <text class="nsub" x="470" y="563">labor, land, capital, enterprise</text>
+    </svg>
+  </div>
+
+  <div class="panel card">
+    <div class="card-top">
+      <span id="flowCounter">Step 1 of 10</span>
+      <span id="flowTag">The purchase</span>
+    </div>
+    <div class="card-body">
+      <p class="txn" id="flowQ"></p>
+      <p class="amt" id="flowAmt"></p>
+    </div>
+  </div>
+
+  <div class="choices" id="flowChoices"></div>
+  <div id="flowVerdict"></div>
+  <div class="btnrow"><button class="btn" id="flowNext" type="button" disabled>Next step</button></div>
+</section>
+
+<!-- ======================= RESULTS ======================= -->
+<section class="screen" id="s-done">
+  <div class="panel scorehead">
+    <div class="eyebrow">Audit complete</div>
+    <div class="bigscore" id="finalScore">0 / 35</div>
+    <h2 id="finalVerdict"></h2>
+    <p class="small" id="finalNote" style="margin-inline:auto; max-width:52ch"></p>
+  </div>
+  <div class="breakdown" id="finalBreakdown"></div>
+  <div class="panel review" id="finalReview"></div>
+  <div class="btnrow" style="margin-top:18px">
+    <button class="btn" id="againBtn" type="button">Run the audit again</button>
+    <button class="btn ghost" id="printBtn" type="button">Print this summary</button>
+  </div>
+</section>
+
+</main>
+<script>
+"use strict";
+
+/* ============================ ROUND 1 ============================ */
+const R1_OPTS = [
+  {k:"pass",     t:"Counts in GDP",                    s:"Clears all four tests"},
+  {k:"value",    t:"Fails Test 1 — no market value",     s:"Real production, but no price was paid"},
+  {k:"final",    t:"Fails Test 2 — intermediate good",   s:"Its value is already inside another good’s price"},
+  {k:"produced", t:"Fails Test 2 — nothing produced",    s:"Money moved, but no good or service was made"},
+  {k:"where",    t:"Fails Test 3 — not produced here",   s:"Made in another country"},
+  {k:"when",     t:"Fails Test 4 — not produced this year", s:"Made in an earlier year"}
+];
+
+const R1 = [
+  {q:"Nia Ramirez pays Cedar Flats Barbers for a haircut.", a:"$28", k:"pass",
+   why:"A final service, sold at a market price, produced in Cedar Flats this year. All four tests clear. Services are the majority of U.S. GDP — a haircut counts as fully as a car does."},
+  {q:"Hill Country Bakery buys flour from a mill in Sherman, Texas, to bake the bread it sells.", a:"$900", k:"final",
+   why:"An intermediate good. The $900 of flour is already buried inside the price of the bread. Count both and you count the flour twice."},
+  {q:"Guadalupe Motors buys tires from a plant in Tyler, Texas to fit on the new cars on its lot.", a:"$180,000", k:"final",
+   why:"Also intermediate. The tires are an input into a good that has not reached its final user yet. Only the finished car’s price enters GDP."},
+  {q:"Marcus Webb buys a 2019 pickup from Guadalupe Motors.", a:"$14,500", k:"when",
+   why:"The truck entered GDP in 2019, the year it was built. Only the dealer’s markup — the service of arranging the sale — is 2026 production."},
+  {q:"Nia’s mother spends Saturday repainting the family kitchen herself.", a:"no money changes hands", k:"value",
+   why:"Real production with no market price, so the accounts have nothing to record. Hire a painter for $600 and GDP rises by $600 — identical work, now measured."},
+  {q:"A Toyota SUV rolls off the assembly line at the plant in San Antonio.", a:"$41,000", k:"pass",
+   why:"Test 3 asks where it was produced, not who owns the firm. Made in Texas, so the $41,000 is U.S. GDP. Foreign ownership changes who receives the profit, not where the output was made."},
+  {q:"A Ford assembled in Hermosillo, Mexico arrives at a Cedar Flats dealership.", a:"$32,000", k:"where",
+   why:"Mexico produced it, so it is Mexico’s GDP. In the U.S. accounts it is added to consumption when someone buys it and subtracted again as an import — net contribution to U.S. GDP: zero."},
+  {q:"Nia buys ten shares of stock in a listed company.", a:"$700", k:"produced",
+   why:"Ownership of an asset that already exists changes hands; nothing new is made. The broker’s $9 commission is a produced service and does count."},
+  {q:"Marcus’s grandmother receives her monthly Social Security payment.", a:"$1,800", k:"produced",
+   why:"A transfer payment. The government gets no good or service in return, so nothing was produced. What she buys with the money does count — as consumption, when she spends it."},
+  {q:"Marcus pays the monthly rent on his apartment.", a:"$1,250", k:"pass",
+   why:"Housing services are a final service, bought by the household that uses them, produced this year. This is consumption expenditure. The BEA even imputes a rent for owner-occupied homes so owners and renters are treated alike."},
+  {q:"Cedar Flats ISD pays a high school economics teacher’s annual salary.", a:"$58,000", k:"pass",
+   why:"Public education has no market price, so the accounts value it at what it cost to produce — and the salary is that cost. It enters GDP as part of G. This is the one standard exception to Test 1."},
+  {q:"The Ramirez family sells their old sofa at a garage sale.", a:"$75", k:"when",
+   why:"A used good. The sofa was counted the year it was manufactured. Reselling it only moves an existing item from one household to another."},
+  {q:"Hill Country Bakery bakes 200 loaves in late December that are still on the shelf on the 31st.", a:"$4,000", k:"pass",
+   why:"Produced this year, so it belongs in this year’s GDP even though nobody bought it. Unsold output is recorded as inventory investment — the firm is treated as having bought its own product. Round 2 asks you which component."},
+  {q:"A volunteer works a six-hour shift at the Cedar Flats food bank.", a:"unpaid", k:"value",
+   why:"Genuine production, no market transaction, no entry. This is one of GDP’s real blind spots: household and volunteer work is a large share of what an economy actually produces and none of it is measured."}
+];
+
+/* ============================ ROUND 2 ============================ */
+const R2_OPTS = [
+  {k:"C",    t:"Consumption — C",        s:"Households buying final goods and services"},
+  {k:"I",    t:"Investment — I",         s:"New capital, new homes, and changes in inventories"},
+  {k:"G",    t:"Government purchases — G", s:"Government buying goods and services"},
+  {k:"X",    t:"Export — X",             s:"Produced here, sold abroad. Added"},
+  {k:"M",    t:"Import — M",             s:"Produced abroad, bought here. Subtracted"},
+  {k:"none", t:"Not in GDP at all",       s:"Fails one of the four tests"}
+];
+
+const R2 = [
+  {q:"Nia buys a week of groceries at the store on Main Street.", a:"$95", k:"C",
+   why:"Nondurable goods bought by a household for final use. Consumption runs close to two-thirds of U.S. GDP, which is why C moves the headline number more than anything else."},
+  {q:"Lone Star Athletics installs new shelving and a point-of-sale system.", a:"$18,000", k:"I",
+   why:"A firm buying new capital that will help produce output for years. Note what makes it investment: not that a business bought it, but that it is newly produced capital."},
+  {q:"The Ramirez family buys a newly built house on Pecan Ridge.", a:"$310,000", k:"I",
+   why:"The most-missed line in the accounts. New residential construction is investment, not consumption. Households consume housing <em>services</em> year by year; the structure itself is capital."},
+  {q:"Cedar Flats buys three new police cruisers.", a:"$135,000", k:"G",
+   why:"Government purchases of goods and services. The cruisers count even though no household would ever buy one — the accounts care that output was produced and bought, not who bought it."},
+  {q:"Hill Country Bakery’s unsold December bread sits in inventory on December 31.", a:"$4,000", k:"I",
+   why:"Inventory investment. It was produced this year, so it counts this year, and the firm is treated as buying its own unsold product. When the bread sells in January it moves into C and out of I, so it is never counted twice."},
+  {q:"A German sporting-goods chain orders trail shoes made at the Cedar Flats plant.", a:"$52,000", k:"X",
+   why:"Produced here, bought by a foreigner. No domestic C, I, or G captured it, so exports are added separately."},
+  {q:"Nia buys a laptop assembled in Shenzhen.", a:"$1,100", k:"M",
+   why:"It enters C at $1,100 and leaves again in M at $1,100, so the net effect on U.S. GDP is zero — correctly, because no U.S. production happened. Only the retailer’s margin is U.S. output."},
+  {q:"The state pays a contractor to resurface the highway through town.", a:"$2,400,000", k:"G",
+   why:"G is officially “government consumption expenditures <em>and gross investment</em>,” so the government’s own capital projects sit inside G. The letter I is reserved for private investment."},
+  {q:"Marcus’s grandmother’s Social Security payment arrives.", a:"$1,800", k:"none",
+   why:"A transfer payment belongs to no component at all, because nothing was produced. It reappears in C the moment she spends it."},
+  {q:"The Webb family pays a plumber to clear a blocked drain.", a:"$220", k:"C",
+   why:"A final service bought by a household — consumption. Careful with the neighboring case: building a new home, or a major addition to one, would be investment instead."}
+];
+
+/* ============================ ROUND 3 ============================ */
+const R3 = [
+  {
+    caption:"Cedar Flats reporting area — calendar year 2026",
+    rows:[
+      ["Household purchases of goods and services", 620, false],
+      ["New home construction", 85, false],
+      ["Business purchases of new equipment and structures", 140, false],
+      ["Increase in business inventories", 15, false],
+      ["Government purchases of goods and services", 210, false],
+      ["Social Security and unemployment benefits paid", 95, true],
+      ["Exports of goods and services", 130, false],
+      ["Imports of goods and services", 175, false],
+      ["Purchases of used cars", 40, true],
+      ["Household purchases of corporate stock", 60, true]
+    ],
+    ans:{C:620, I:240, G:210, NX:-45, GDP:1025},
+    work:{
+      C:"Only the first line is household purchases of final goods and services.",
+      I:"85 new homes + 140 equipment and structures + 15 inventory change = 240.",
+      G:"210. The $95 of benefits is a transfer, not a purchase of output.",
+      NX:"130 exports − 175 imports = −45. This economy runs a trade deficit.",
+      GDP:"620 + 240 + 210 − 45 = 1,025."
+    },
+    traps:"Three lines never enter GDP: benefit payments (a transfer — nothing produced), used cars (produced in an earlier year), and stock purchases (an existing asset changing hands)."
+  },
+  {
+    caption:"Cedar Flats reporting area — calendar year 2027, revised",
+    rows:[
+      ["Consumption expenditure", 480, false],
+      ["Purchases of new machinery by firms", 95, false],
+      ["Change in business inventories", -20, false],
+      ["New residential construction", 60, false],
+      ["Federal, state, and local purchases of goods and services", 175, false],
+      ["Interest paid on the government debt", 30, true],
+      ["Exports of goods and services", 145, false],
+      ["Imports of goods and services", 110, false],
+      ["Intermediate goods purchased by firms", 260, true],
+      ["Sales of existing homes", 55, true]
+    ],
+    ans:{C:480, I:135, G:175, NX:35, GDP:825},
+    work:{
+      C:"480, given directly.",
+      I:"95 machinery − 20 inventories + 60 residential = 135. Inventories fell, so investment is reduced by 20.",
+      G:"175. Interest on the government debt is a transfer, not a purchase.",
+      NX:"145 − 110 = +35. A trade surplus this year.",
+      GDP:"480 + 135 + 175 + 35 = 825."
+    },
+    traps:"A <em>fall</em> in inventories subtracts from investment — those goods were produced in an earlier year and are being sold out of stock now. The other three excluded lines are a transfer, double-counting, and a used good."
+  }
+];
+
+/* ============================ ROUND 4 ============================ */
+const R4 = [
+  {tag:"The purchase",
+   q:"Nia hands Lone Star Athletics $120 for a pair of running shoes. Where does that $120 enter the circular flow?",
+   a:"$120",
+   opts:[
+     {t:"Households → goods markets → firms", s:"Consumption expenditure, C", ok:true},
+     {t:"Firms → factor markets → households", s:"Income paid out, Y"},
+     {t:"Households → factor markets", s:"Payment for labor services"},
+     {t:"Households → government", s:"Net taxes"}
+   ],
+   flows:["f-c","f-exp"], chip:"C",
+   why:"Consumption expenditure. Households buy final goods in the goods markets, and the money carries on to the firm as revenue. This is the C in C + I + G + NX."},
+
+  {tag:"Wages",
+   q:"Lone Star Athletics pays $70 of that revenue to Marcus for his hours on the floor. Which arrow does the $70 travel?",
+   a:"$70",
+   opts:[
+     {t:"Firms → factor markets → households", s:"Wages: income paid to a household", ok:true},
+     {t:"Firms → goods markets", s:"Investment"},
+     {t:"Households → firms", s:"Consumption"},
+     {t:"Firms → government", s:"Net taxes"}
+   ],
+   flows:["f-y","f-fh"], chip:"Y",
+   why:"Labor is a factor of production, so it is bought and priced in the factor markets. Wages and salaries are the largest single component of income in the U.S. accounts."},
+
+  {tag:"Profit",
+   q:"After paying wages, rent, and suppliers, the owner Dana keeps $18 as profit. Where does profit go in the circular flow?",
+   a:"$18",
+   opts:[
+     {t:"Firms → factor markets → households", s:"Profit is income to the owner’s household", ok:true},
+     {t:"It stays inside the firm and leaves the flow", s:"Retained by the business"},
+     {t:"Firms → goods markets", s:"Recorded as investment"},
+     {t:"Firms → financial markets", s:"Recorded as saving"}
+   ],
+   flows:["f-y","f-fh"], chip:"Y",
+   why:"Profit is the income earned by enterprise, and firms are ultimately owned by households. This is exactly why the two loops must be equal: every dollar a firm takes in leaves again as someone’s wages, rent, interest, or profit. Nothing is left over."},
+
+  {tag:"Taxes",
+   q:"Marcus pays $14 of his wages in income and payroll taxes, after netting out the benefits he receives back. Which arrow?",
+   a:"$14",
+   opts:[
+     {t:"Households → government", s:"Net taxes, T", ok:true},
+     {t:"Government → households", s:"A transfer payment"},
+     {t:"Households → goods markets", s:"Consumption"},
+     {t:"Households → financial markets", s:"Saving"}
+   ],
+   flows:["f-th"], chip:null,
+   why:"Net taxes are taxes paid minus transfers received. Notice what the diagram does <em>not</em> draw: no arrow from government to households through the goods markets, because transfer payments buy no production."},
+
+  {tag:"Government purchases",
+   q:"Cedar Flats uses tax revenue to hire a paving contractor for a stretch of Congress Street. Which arrow, and which GDP component?",
+   a:"$14",
+   opts:[
+     {t:"Government → goods markets", s:"This is G", ok:true},
+     {t:"Government → households", s:"This is a transfer"},
+     {t:"Government → factor markets", s:"This is income"},
+     {t:"It is not part of GDP", s:"Government output is not sold"}
+   ],
+   flows:["f-g"], chip:"G",
+   why:"Government purchases of goods and services are G. The line that matters: this dollar buys produced output, so it counts. The grandmother’s Social Security dollar buys nothing, so it does not."},
+
+  {tag:"Saving",
+   q:"Marcus deposits $20 of his paycheck in a credit union account. Where does the $20 go?",
+   a:"$20",
+   opts:[
+     {t:"Households → financial markets", s:"Saving, S", ok:true},
+     {t:"It leaves the economy entirely", s:"Money withdrawn from circulation"},
+     {t:"Households → goods markets", s:"Consumption"},
+     {t:"Households → firms", s:"Investment"}
+   ],
+   flows:["f-s"], chip:null,
+   why:"Saving is not money disappearing from the economy. It is money handed to the financial markets, which lend it out. The next step shows where it goes."},
+
+  {tag:"Investment",
+   q:"Lone Star Athletics borrows from the credit union and buys a $32 display rack from a fixture maker in Round Rock. Trace it.",
+   a:"$32",
+   opts:[
+     {t:"Financial markets → firms → goods markets", s:"This is investment, I", ok:true},
+     {t:"Financial markets → firms", s:"This is consumption, C"},
+     {t:"Firms → factor markets", s:"This is income, Y"},
+     {t:"Not part of GDP — the money was borrowed", s:"Borrowed funds are not spending"}
+   ],
+   flows:["f-fi","f-i"], chip:"I",
+   why:"Saving funds investment: that is what the financial markets are doing in this diagram. The rack is newly produced capital bought by a firm, so it is I — and the fixture maker’s revenue becomes income to another household, which is how the loop closes."},
+
+  {tag:"Imports",
+   q:"Of Nia’s $120, about $45 goes to the Vietnamese factory that actually made the shoes. Which arrow, and what do the accounts do with it?",
+   a:"$45",
+   opts:[
+     {t:"Goods markets → rest of world", s:"An import, M — subtracted", ok:true},
+     {t:"Rest of world → goods markets", s:"An export, X — added"},
+     {t:"Firms → factor markets", s:"Income, Y"},
+     {t:"Nothing — it left the country, so it is ignored", s:"Out of scope"}
+   ],
+   flows:["f-m"], chip:"M",
+   why:"That $45 was already counted once, inside the $120 of consumption. Subtracting it as an import strips out the part Vietnam produced and leaves only U.S. production in U.S. GDP."},
+
+  {tag:"Exports",
+   q:"A running club in Munich orders $60 of trail shoes made at the Cedar Flats plant. Which arrow?",
+   a:"$60",
+   opts:[
+     {t:"Rest of world → goods markets", s:"An export, X — added", ok:true},
+     {t:"Goods markets → rest of world", s:"An import, M — subtracted"},
+     {t:"Households → goods markets", s:"Consumption, C"},
+     {t:"Firms → government", s:"Net taxes"}
+   ],
+   flows:["f-x"], chip:"X",
+   why:"Produced here, bought by a foreigner. No domestic C, I, or G picked it up, so exports are added separately. Net exports across these two steps: $60 − $45 = $15."},
+
+  {tag:"The identity",
+   q:"The diagram now has two complete loops running around it. What does that prove about GDP?",
+   a:"the whole flow",
+   opts:[
+     {t:"Total expenditure equals total income", s:"So GDP can be measured either way", ok:true},
+     {t:"Spending must exceed income", s:"Otherwise firms could not earn a profit"},
+     {t:"Income must exceed spending", s:"Because households save part of it"},
+     {t:"The loops match only with a balanced budget", s:"Deficits break the identity"}
+   ],
+   flows:["f-c","f-exp","f-y","f-fh","f-g","f-i","f-x","f-m","f-s","f-fi","f-th","f-tf"], chip:null,
+   why:"Every dollar spent on final output arrives at a firm, and every dollar a firm receives leaves again as wages, rent, interest, or profit. So C + I + G + (X − M) = Y. The expenditure approach and the income approach measure the same thing from opposite sides, which is why the BEA computes both and reports the small gap between them as a statistical discrepancy."}
+];
+
+/* ============================ STATE ============================ */
+const TOTAL = R1.length + R2.length + (R3.length * 5) + R4.length; /* 14+10+10+10 = 44 */
+const S = {
+  seen:0, correct:0,
+  r1:{score:0, miss:[]}, r2:{score:0, miss:[]},
+  r3:{score:0, miss:[]}, r4:{score:0, miss:[]},
+  idx:0, round:0, ledger:0, lit:new Set()
+};
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/&(?![a-z#]+;)/g, "&amp;").replace(/</g, "&lt;");
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(n => n.classList.remove("live"));
+  $(id).classList.add("live");
+  window.scrollTo({top:0, behavior:"auto"});
+}
+function tally(){
+  $("tCorrect").textContent = S.correct;
+  $("tSeen").textContent = S.seen;
+  $("rail").style.width = Math.round((S.seen / TOTAL) * 100) + "%";
+}
+function verdictHTML(ok, head, body, why){
+  return '<div class="verdict ' + (ok ? "ok" : "no") + '">' +
+    '<h4>' + head + '</h4>' +
+    (body ? '<p>' + body + '</p>' : '') +
+    '<p class="why">' + why + '</p></div>';
+}
+
+/* ============================ ROUNDS 1 & 2 ============================ */
+const SORTCFG = {
+  1:{data:R1, opts:R1_OPTS, cls:"three", title:"The Admissions Desk", eyebrow:"Round 1 of 4",
+     brief:'Each transaction was reported to your office this year. Decide whether it clears all four tests — or name the test it fails. <b>Five of the fourteen belong in GDP.</b>'},
+  2:{data:R2, opts:R2_OPTS, cls:"three", title:"Sort the Spending", eyebrow:"Round 2 of 4",
+     brief:'Tag each line with the component it belongs to. Two rules to hold onto: <b>a newly built house is investment, not consumption</b>, and anything produced abroad is tagged as an <b>import</b> — the accounts add it to C and subtract it in M, so it nets to zero. One line here belongs in no component at all.'}
+};
+
+function startSort(round){
+  S.round = round; S.idx = 0;
+  const c = SORTCFG[round];
+  $("sortEyebrow").textContent = c.eyebrow;
+  $("sortTitle").textContent = c.title;
+  $("sortBrief").innerHTML = c.brief;
+  $("sortDocket").textContent = round === 1 ? "Docket CF–2026" : "Expenditure schedule";
+  show("s-sort"); renderSort();
+}
+
+function renderSort(){
+  const c = SORTCFG[S.round], it = c.data[S.idx];
+  $("sortCounter").textContent = "Item " + (S.idx + 1) + " of " + c.data.length;
+  $("sortTxn").textContent = it.q;
+  $("sortAmt").textContent = it.a;
+  $("sortVerdict").innerHTML = "";
+  $("sortNext").disabled = true;
+  $("sortNext").textContent = (S.idx + 1 === c.data.length)
+    ? (S.round === 1 ? "Go to Round 2" : "Go to Round 3") : "Next item";
+
+  const box = $("sortChoices");
+  box.className = "choices " + c.cls;
+  box.innerHTML = "";
+  c.opts.forEach(o => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.dataset.k = o.k;
+    b.innerHTML = esc(o.t) + "<small>" + esc(o.s) + "</small>";
+    b.addEventListener("click", () => answerSort(o.k));
+    box.appendChild(b);
+  });
+}
+
+function answerSort(pick){
+  const c = SORTCFG[S.round], it = c.data[S.idx];
+  const ok = pick === it.k;
+  const right = c.opts.find(o => o.k === it.k);
+
+  document.querySelectorAll("#sortChoices .opt").forEach(b => {
+    b.disabled = true;
+    if (b.dataset.k === pick) b.classList.add(ok ? "pick-yes" : "pick-no");
+    if (b.dataset.k === it.k) b.classList.add("show-yes");
+    if (b.dataset.k !== pick && b.dataset.k !== it.k) b.classList.add("dim");
+  });
+
+  S.seen++;
+  const R = S.round === 1 ? S.r1 : S.r2;
+  if (ok){ S.correct++; R.score++; }
+  else R.miss.push({q:it.q, ans:right.t});
+
+  $("sortVerdict").innerHTML = verdictHTML(
+    ok,
+    ok ? "Correct" : "Not quite",
+    ok ? "" : "The right entry is <b>" + esc(right.t) + "</b>.",
+    it.why
+  );
+  $("sortNext").disabled = false;
+  tally();
+}
+
+$("sortNext").addEventListener("click", () => {
+  const c = SORTCFG[S.round];
+  if (S.idx + 1 < c.data.length){ S.idx++; renderSort(); }
+  else if (S.round === 1) startSort(2);
+  else startLedger(0);
+});
+
+/* ============================ ROUND 3 ============================ */
+const FIELDS = [
+  {k:"C",  el:"inC"},  {k:"I", el:"inI"}, {k:"G", el:"inG"},
+  {k:"NX", el:"inNX"}, {k:"GDP", el:"inGDP"}
+];
+
+function startLedger(i){
+  S.ledger = i;
+  const L = R3[i];
+  $("ledEyebrow").textContent = "Round 3 of 4 · Ledger " + (i + 1) + " of " + R3.length;
+  $("ledCaption").textContent = L.caption;
+  const tb = $("ledBody"); tb.innerHTML = "";
+  L.rows.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + esc(r[0]) + "</td><td>" + (r[1] < 0 ? "−" + Math.abs(r[1]) : r[1]) + "</td>";
+    tr.dataset.excl = r[2] ? "1" : "0";
+    tb.appendChild(tr);
+  });
+  FIELDS.forEach(f => {
+    const inp = $(f.el);
+    inp.value = ""; inp.disabled = false;
+    const w = inp.closest(".field");
+    w.classList.remove("right", "wrong");
+    const fx = w.querySelector(".fix"); if (fx) fx.remove();
+  });
+  $("ledVerdict").innerHTML = "";
+  $("ledCheck").style.display = "";
+  $("ledNext").style.display = "none";
+  $("ledNext").textContent = (i + 1 < R3.length) ? "Next ledger" : "Go to Round 4";
+  show("s-ledger");
+}
+
+function num(v){
+  const t = String(v).replace(/[,$\s]/g, "").replace(/−/g, "-");
+  if (t === "" || !/^-?\d+(\.\d+)?$/.test(t)) return null;
+  return parseFloat(t);
+}
+
+$("ledCheck").addEventListener("click", () => {
+  const L = R3[S.ledger];
+  let got = 0;
+  const wrongKeys = [];
+
+  FIELDS.forEach(f => {
+    const inp = $(f.el), w = inp.closest(".field");
+    const v = num(inp.value), target = L.ans[f.k];
+    const ok = (v !== null && v === target);
+    inp.disabled = true;
+    w.classList.add(ok ? "right" : "wrong");
+    if (ok) got++;
+    else {
+      wrongKeys.push(f.k);
+      const p = document.createElement("p");
+      p.className = "fix";
+      p.textContent = "Should be " + (target < 0 ? "−" + Math.abs(target) : target) + ". " + L.work[f.k];
+      w.appendChild(p);
+    }
+    S.seen++;
+    if (ok) S.correct++;
+  });
+
+  S.r3.score += got;
+  if (wrongKeys.length) S.r3.miss.push({q:L.caption, ans:wrongKeys.join(", ")});
+
+  document.querySelectorAll("#ledBody tr").forEach(tr => {
+    if (tr.dataset.excl === "1") tr.classList.add("flagged");
+  });
+
+  const all = got === FIELDS.length;
+  $("ledVerdict").innerHTML = verdictHTML(
+    all, all ? "Ledger balances" : got + " of 5 correct",
+    "GDP = C + I + G + NX = " + L.ans.C + " + " + L.ans.I + " + " + L.ans.G +
+      " " + (L.ans.NX < 0 ? "− " + Math.abs(L.ans.NX) : "+ " + L.ans.NX) +
+      " = <b>" + L.ans.GDP + "</b> million.",
+    L.traps
+  );
+  $("ledCheck").style.display = "none";
+  $("ledNext").style.display = "";
+  tally();
+});
+
+$("ledNext").addEventListener("click", () => {
+  if (S.ledger + 1 < R3.length) startLedger(S.ledger + 1);
+  else startFlow();
+});
+
+/* ============================ ROUND 4 ============================ */
+function startFlow(){
+  S.idx = 0; S.lit = new Set();
+  document.querySelectorAll(".flow").forEach(p => p.classList.remove("on", "done"));
+  document.querySelectorAll(".flab").forEach(t => t.classList.remove("on", "done"));
+  document.querySelectorAll("#flowChips .chip").forEach(c => c.classList.remove("lit"));
+  $("flowTraced").textContent = "0 / 12";
+  show("s-flow"); renderFlow();
+}
+
+function litFlows(ids, cls){
+  ids.forEach(id => {
+    const p = $(id), l = $("l-" + id.slice(2));
+    if (p){ p.classList.remove("on", "done"); p.classList.add(cls); }
+    if (l){ l.classList.remove("on", "done"); l.classList.add(cls); }
+  });
+}
+
+function renderFlow(){
+  const st = R4[S.idx];
+  $("flowCounter").textContent = "Step " + (S.idx + 1) + " of " + R4.length;
+  $("flowTag").textContent = st.tag;
+  $("flowQ").textContent = st.q;
+  $("flowAmt").textContent = "Following " + st.a;
+  $("flowVerdict").innerHTML = "";
+  $("flowNext").disabled = true;
+  $("flowNext").textContent = (S.idx + 1 === R4.length) ? "See your audit report" : "Next step";
+
+  document.querySelectorAll(".flow.on").forEach(p => { p.classList.remove("on"); p.classList.add("done"); });
+  document.querySelectorAll(".flab.on").forEach(t => { t.classList.remove("on"); t.classList.add("done"); });
+
+  const box = $("flowChoices");
+  box.className = "choices two";
+  box.innerHTML = "";
+  st.opts.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "opt"; b.dataset.i = String(i);
+    b.innerHTML = esc(o.t) + "<small>" + esc(o.s) + "</small>";
+    b.addEventListener("click", () => answerFlow(i));
+    box.appendChild(b);
+  });
+}
+
+function answerFlow(pick){
+  const st = R4[S.idx];
+  const correctIdx = st.opts.findIndex(o => o.ok);
+  const ok = pick === correctIdx;
+
+  document.querySelectorAll("#flowChoices .opt").forEach(b => {
+    const i = Number(b.dataset.i);
+    b.disabled = true;
+    if (i === pick) b.classList.add(ok ? "pick-yes" : "pick-no");
+    if (i === correctIdx) b.classList.add("show-yes");
+    if (i !== pick && i !== correctIdx) b.classList.add("dim");
+  });
+
+  litFlows(st.flows, "on");
+  st.flows.forEach(f => S.lit.add(f));
+  $("flowTraced").textContent = S.lit.size + " / 12";
+  if (st.chip){
+    const c = document.querySelector('#flowChips .chip[data-k="' + st.chip + '"]');
+    if (c) c.classList.add("lit");
+  }
+
+  S.seen++;
+  if (ok){ S.correct++; S.r4.score++; }
+  else S.r4.miss.push({q:st.tag, ans:st.opts[correctIdx].t});
+
+  $("flowVerdict").innerHTML = verdictHTML(
+    ok, ok ? "Traced" : "Wrong arrow",
+    ok ? "" : "The money travels <b>" + esc(st.opts[correctIdx].t) + "</b>.",
+    st.why
+  );
+  $("flowNext").disabled = false;
+  tally();
+}
+
+$("flowNext").addEventListener("click", () => {
+  if (S.idx + 1 < R4.length){ S.idx++; renderFlow(); }
+  else finish();
+});
+
+/* ============================ RESULTS ============================ */
+const ROUNDMETA = [
+  {key:"r1", name:"Round 1 — What counts", max:R1.length,
+   fix:"Go back to the four tests. Every miss here is one test you are not applying yet."},
+  {key:"r2", name:"Round 2 — C, I, G, NX", max:R2.length,
+   fix:"The usual culprits: new houses are investment, unsold inventory is investment, and government capital projects sit inside G."},
+  {key:"r3", name:"Round 3 — Closing the books", max:R3.length * 5,
+   fix:"Work the ledger in the same order every time: strike out transfers, used goods, financial trades and intermediate purchases first, then total each component."},
+  {key:"r4", name:"Round 4 — Circular flow", max:R4.length,
+   fix:"Redraw the diagram from memory. If you can place C, Y, T, G, S, I, X and M without looking, you have it."}
+];
+
+function finish(){
+  const total = S.r1.score + S.r2.score + S.r3.score + S.r4.score;
+  $("finalScore").textContent = total + " / " + TOTAL;
+
+  const pct = total / TOTAL;
+  let verdict, note;
+  if (pct >= 0.9){ verdict = "Signed off."; note = "You are applying the four tests consistently and the circular flow is doing real work for you. Try defending the two hardest calls out loud — the new house and the unsold inventory — without looking at the feedback."; }
+  else if (pct >= 0.75){ verdict = "Approved with notes."; note = "The framework is there. The misses below are the places where a rule is half-learned rather than missing; fix those and the rest holds."; }
+  else if (pct >= 0.5){ verdict = "Returned for revision."; note = "You are getting the clear cases and losing the boundary cases. Work through the list below before the next problem set — the boundary cases are what exams ask about."; }
+  else { verdict = "Start again from the definition."; note = "Read the four tests once more, then rerun the audit. Almost every miss below traces back to one of those four lines."; }
+  $("finalVerdict").textContent = verdict;
+  $("finalNote").textContent = note;
+
+  const bd = $("finalBreakdown"); bd.innerHTML = "";
+  ROUNDMETA.forEach(m => {
+    const sc = S[m.key].score, w = Math.round((sc / m.max) * 100);
+    const d = document.createElement("div");
+    d.className = "brow";
+    d.innerHTML = "<h4>" + m.name + "</h4>" +
+      '<div class="sc">' + sc + " / " + m.max + "</div>" +
+      '<div class="meter"><i style="width:' + w + '%"></i></div>';
+    bd.appendChild(d);
+  });
+
+  const rv = $("finalReview");
+  const missed = ROUNDMETA.filter(m => S[m.key].miss.length);
+  if (!missed.length){
+    rv.innerHTML = "<h3>Nothing to review</h3><p class=\"small\">A clean audit. The extension worth attempting next: work out what this economy’s GDP would look like measured by the income approach instead, and why the two answers should agree.</p>";
+  } else {
+    let h = "<h3>What to review</h3><ul>";
+    missed.forEach(m => {
+      const list = S[m.key].miss;
+      h += "<li><b>" + esc(m.name) + "</b> — " + esc(m.fix) + "<br><span class=\"small\">Missed: " +
+        list.map(x => esc(x.q.length > 74 ? x.q.slice(0, 72) + "…" : x.q) + " → " + esc(x.ans)).join("; ") +
+        "</span></li>";
+    });
+    h += "</ul>";
+    rv.innerHTML = h;
+  }
+  show("s-done");
+}
+
+/* ============================ WIRING ============================ */
+$("startBtn").addEventListener("click", () => startSort(1));
+$("againBtn").addEventListener("click", () => {
+  S.seen = 0; S.correct = 0;
+  ["r1","r2","r3","r4"].forEach(k => { S[k].score = 0; S[k].miss = []; });
+  tally(); show("s-home");
+});
+$("printBtn").addEventListener("click", () => window.print());
+
+const themeBtn = $("themeBtn");
+function currentDark(){
+  const set = document.documentElement.getAttribute("data-theme");
+  if (set) return set === "dark";
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function syncThemeBtn(){ themeBtn.textContent = currentDark() ? "Light" : "Dark"; }
+themeBtn.addEventListener("click", () => {
+  document.documentElement.setAttribute("data-theme", currentDark() ? "light" : "dark");
+  syncThemeBtn();
+});
+syncThemeBtn();
+tally();
+</script>
+
+</body></html>
