@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LLM response review and adjudication sample — Dr. Sarabjeet Kaur Bedi</title>
+<meta name="description" content="Review of an LLM critique and an adjudication of three reviewers.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LLM response review and adjudication sample — Dr. Sarabjeet Kaur Bedi">
+<meta property="og:description" content="Review of an LLM critique and an adjudication of three reviewers.">
+<meta property="og:url" content="https://sksaggi01-debug.github.io/work-samples/llm-review-adjudication.html">
+<meta property="og:image" content="https://sksaggi01-debug.github.io/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://sksaggi01-debug.github.io/work-samples/llm-review-adjudication.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="name" href="../">Dr. Sarabjeet Kaur Bedi</a>
+<nav><a href="../#work">Work samples</a><a href="../#games">Teaching</a><a href="../#contact">Contact</a></nav>
+</div></header>
+<main class="wrap">
+<p class="crumb"><a href="../#work">Work samples</a> / LLM response review and adjudication</p>
+<section class="hero" style="padding-top:14px">
+  <span class="co">LLM benchmark · Response review and adjudication</span>
+  <h1>LLM response review and adjudication</h1>
+  <p class="lede">Two assignment types. In an LLM response review, a model has critiqued an economics task and proposed an alternate version; the reviewer decides whether the critique is right, whether the original task stands, and whether the alternate is valid and better. In adjudication, the reviewer rules on other experts' verdicts for the same item, and a correct dissent outweighs a mistaken majority.</p>
+  <div class="spec">
+    <div><b>Review verdicts</b>Feedback correct? Task valid? Alternate valid and better?</div>
+    <div><b>Adjudication outcomes</b>Accept · Accept with edits · Needs revision · Reject</div>
+    <div><b>Rule</b>Majority opinion does not decide</div>
+  </div>
+</section>
+
+<section class="block">
+  <h2>Part 1. LLM response review</h2>
+  <div class="panel">
+    <h3>Section 1 · Original task</h3>
+    <p class="stem">A closed economy has C = 100 + 0.8(Y − T), T = 100, I = 200 − 20r and G = 150. Real money demand is L = 0.5Y − 25r and the real money supply is M/P = 500. Government purchases rise by 30. By how much does equilibrium output rise? <b>Key: 50.</b></p>
+  </div>
+  <div class="panel">
+    <h3>Section 2 · LLM-generated feedback</h3>
+    <p>"The task is invalid. The price level P is never given, so the real money supply cannot be computed and the LM curve is undefined. Error modes: (1) missing price level; (2) solvers may assume P = 1 arbitrarily."</p>
+  </div>
+  <div class="panel">
+    <h3>Section 3 · Alternate task</h3>
+    <p>Same as Section 1, but the money market reads: "Money demand is L = 0.5Y − 25r. The nominal money supply is M = 1,000 and the price level is P = 2." Key unchanged: 50.</p>
+  </div>
+
+  <div class="panel">
+    <p class="q">Does the LLM feedback make the original task invalid?</p>
+    <span class="verdict">No — the feedback is incorrect, and the original task is valid as written</span>
+    <p>The task gives the real money supply directly, M/P = 500, so P is not needed. The LM curve is 500 = 0.5Y − 25r, or Y = 1,000 + 50r. The IS curve is Y = 5(220 + G) − 100r. With G = 150: r = 17/3, Y = 3,850/3. With G = 180: r = 20/3, Y = 4,000/3. Output rises by exactly 50, matching the key (multiplier 5/3 against a simple multiplier of 5, the gap being crowding out). Neither listed error mode exists: no price level is required and no solver has to assume P = 1.</p>
+
+    <p class="q">Is the alternate task an improvement?</p>
+    <span class="verdict">No</span>
+    <p>It fixes a problem that did not exist and adds one that did not. The original states money demand and money supply in the same real units. The alternate gives nominal M and P but leaves money demand unlabeled. A solver who reads L as nominal sets 1,000 = 0.5Y − 25r, and the equilibrium interest rate becomes −1 before the policy change, a negative rate the original task never produces.</p>
+
+    <p class="q">Is the alternate task valid, and does it address all error modes in Section 2?</p>
+    <span class="verdict">Yes, valid</span>
+    <p>The asked quantity survives the ambiguity. In this linear model the output change does not depend on the money supply. Read as real balances of 500, Y rises from 3,850/3 to 4,000/3; read as 1,000, Y rises from 1,950 to 2,000. Either way ΔY = 50, so the key is still uniquely correct and the listed error modes are addressed, though they were never real. I would still ask the author to label money demand as real, because any question on the level of r or Y would break.</p>
+  </div>
+</section>
+
+<section class="block">
+  <h2>Part 2. Adjudication</h2>
+  <div class="panel">
+    <h3>Item under adjudication (constructed)</h3>
+    <p class="stem">A monopolist faces inverse demand P = 60 − 2Q and constant marginal cost 12. The government levies a tax of $8 per unit, collected from consumers. Which statement about the post-tax equilibrium is correct?</p>
+    <p>Options include <b>C:</b> "Consumers pay a gross price of $40 per unit" (key) and <b>G:</b> "The monopolist receives $32 per unit."</p>
+  </div>
+  <div class="panel">
+    <h3>Reviewer verdicts</h3>
+    <div class="tablewrap"><table class="score">
+      <tr><th>Reviewer</th><th>Verdict</th><th>Note</th></tr>
+      <tr><td>R1</td><td>Accept</td><td>"Solved: Q = 10, P = 40. Key correct."</td></tr>
+      <tr><td>R2</td><td>Accept with edits</td><td>"Correct; tighten wording of option E."</td></tr>
+      <tr><td>R3</td><td>Needs revision</td><td>"G is also true: the firm nets 40 − 8 = 32. Two correct options."</td></tr>
+    </table></div>
+  </div>
+  <div class="panel">
+    <h3>Adjudication</h3>
+    <span class="verdict">Needs revision — R3 upheld</span>
+    <p><b>Independent solution.</b> The firm's net inverse demand is 52 − 2Q, so MR = 52 − 4Q = 12 gives Q = 10. Consumers pay 60 − 20 = 40; the firm receives 40 − 8 = 32. Before the tax, Q = 12 and P = 36, so consumers bear $4 of the $8 tax.</p>
+    <p><b>Ruling.</b> Options C and G are both true statements about the same equilibrium, so the item has two correct answers and fails the single-best-answer standard. R1 and R2 verified the key but did not test the distractors. R3 is correct. The two-to-one majority does not change the outcome.</p>
+    <p><b>Feedback to reviewers.</b> R1, R2: a correct key is necessary but not sufficient; every distractor must be checked for being true. R3: accurate and specific; flag for strong review. <b>Instruction to author:</b> change G to a false statement built on a real error, for example "The monopolist receives $36 per unit, because a tax collected from consumers does not affect the seller."</p>
+  </div>
+  <p class="disclaim">Tasks, feedback and reviews were constructed for this portfolio. They are not client data.</p>
+</section>
+</main>
+<footer><div class="wrap">Original work by Dr. Sarabjeet Kaur Bedi, written for this portfolio. Client work is confidential and is not reproduced here.</div></footer>
+</body></html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pairwise text evaluation sample — Dr. Sarabjeet Kaur Bedi</title>
+<meta name="description" content="Side-by-side judgment of two model responses to an economics prompt.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pairwise text evaluation sample — Dr. Sarabjeet Kaur Bedi">
+<meta property="og:description" content="Side-by-side judgment of two model responses to an economics prompt.">
+<meta property="og:url" content="https://sksaggi01-debug.github.io/work-samples/pairwise-text.html">
+<meta property="og:image" content="https://sksaggi01-debug.github.io/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://sksaggi01-debug.github.io/work-samples/pairwise-text.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="name" href="../">Dr. Sarabjeet Kaur Bedi</a>
+<nav><a href="../#work">Work samples</a><a href="../#games">Teaching</a><a href="../#contact">Contact</a></nav>
+</div></header>
+<main class="wrap">
+<p class="crumb"><a href="../#work">Work samples</a> / Pairwise text evaluation</p>
+<section class="hero" style="padding-top:14px">
+  <span class="co">AI model evaluation · Pairwise text comparison</span>
+  <h1>Pairwise evaluation: two model answers to one economics question</h1>
+  <p class="lede">The assignment type: read a user prompt and two anonymous model completions, then fill a fixed judging form. Correctness and instruction-following decide the verdict first; hallucination next; style last. Every verdict needs a written case for the winner and a separate case against the loser.</p>
+  <div class="spec">
+    <div><b>Priority order</b>Correctness → instructions → hallucination → style</div>
+    <div><b>Verdicts</b>A, B or Tie per question</div>
+    <div><b>Checks</b>Recompute every number; test each claim</div>
+  </div>
+</section>
+
+<section class="block">
+  <h2>1. The prompt</h2>
+  <div class="panel"><p class="stem">"My city council wants to cap rents at 20% below the current market rent. Using supply and demand, explain what happens in the short run and the long run, and give a simple numerical example. Keep it under 250 words."</p></div>
+  <h2 style="margin-top:22px">2. The two completions</h2>
+  <p class="sub">Both constructed for this sample. A: 212 words. B: 199 words.</p>
+  <div class="two">
+    <div class="resp"><h4>COMPLETION A</h4>
+<p><b>Rent Control: Short Run vs. Long Run</b></p>
+<p>A rent cap set below the market rent is a binding price ceiling. Because the legal rent is under equilibrium, the quantity of apartments demanded rises and the quantity supplied falls, creating a shortage.</p>
+<p><b>Short run.</b> In the short run the housing stock is fixed, so supply is inelastic. Suppose the market rent is $1,500 and 10,000 units are rented. A 20% cap sets rent at $1,200. With a demand elasticity of 0.4, quantity demanded rises 8% to 10,800. With a short-run supply elasticity of 0.1, quantity supplied falls 2% to 9,800. The shortage is 1,000 units.</p>
+<p><b>Long run.</b> Over time, landlords&#x27; supply becomes less elastic because buildings are already built and cannot easily be converted. With a long-run supply elasticity of 0.8, quantity supplied falls 16% to 8,400, and the shortage grows to 1,600 units.</p>
+<p><b>Other effects.</b></p>
+<ul>
+<li>Landlords cut maintenance, so quality declines.</li>
+<li>Waiting lists and key money (side payments) appear.</li>
+<li>Tenants who already hold rent-controlled units move less, which misallocates housing.</li>
+<li>New construction slows as developers expect lower returns.</li>
+</ul>
+<p><b>Bottom line.</b> Rent control helps sitting tenants in the short run, but the shortage widens over time and the housing stock deteriorates. Most economists therefore prefer housing vouchers or zoning reform that increases supply.</p>    </div><div class="resp"><h4>COMPLETION B</h4>
+<p>A cap 20% below the market rent is a binding price ceiling: the legal rent is under the equilibrium rent, so more people want apartments than landlords offer.</p>
+<p>Example. Market rent is $1,500 and 10,000 units are rented. The cap is $1,200, a 20% cut. Assume demand elasticity 0.4.</p>
+<p>Short run: quantity demanded rises 0.4 × 20% = 8%, to 10,800. The building stock is fixed, so supply is inelastic, say 0.1: quantity supplied falls 2%, to 9,800. Shortage = 10,800 − 9,800 = 1,000 units.</p>
+<p>Long run: owners can convert units to condos, skip new construction and let buildings age out, so supply becomes more elastic, say 0.8. Quantity supplied falls 16%, to 8,400. Shortage = 10,800 − 8,400 = 2,400 units.</p>
+<p>So the shortage more than doubles over time even though the cap never changes. The reason is that supply responds more when owners have time to adjust, while demand at $1,200 stays at 10,800.</p>
+<p>Who gains and loses: tenants who already have a capped unit pay $300 less a month; people searching for a unit face a smaller stock and longer searches.</p>
+<p>(These elasticities are illustrative, chosen to show the direction of the effects, not estimates for your city.)</p>    </div>
+  </div>
+</section>
+
+<section class="block">
+  <h2>3. The completed judgment</h2>
+
+  <div class="panel">
+    <p class="q">1. Which completion is better? (all factors)</p>
+    <span class="verdict">B</span>
+    <p><b>Why B is better than A.</b> B gets every number right and explains the time dimension in the correct direction. It states that supply "becomes more elastic" in the long run because owners can convert units, skip construction and let buildings age out, and it carries that through: supply falls 16% to 8,400 and the shortage is 10,800 − 8,400 = 2,400. It also shows why the shortage grows while the cap is unchanged: demand at $1,200 stays at 10,800 while supply keeps adjusting. B flags that its elasticities are illustrative rather than estimates for the user's city.</p>
+    <p><b>Why A is not better than B.</b> A makes two errors on the central point of the question. It says long-run supply "becomes less elastic," which is backwards, and then uses a long-run elasticity of 0.8, eight times its short-run value of 0.1, which contradicts its own sentence. It then reports a long-run shortage of 1,600 when its own figures give 10,800 − 8,400 = 2,400. A user relying on A learns the wrong mechanism and the wrong magnitude. A's broader list of side effects does not offset errors in the part the user asked for.</p>
+
+    <p class="q">2. Which completion is better? (correctness, instructions, hallucination)</p>
+    <span class="verdict">B</span>
+    <p><b>Main reason:</b> A reverses the long-run supply elasticity and miscomputes the long-run shortage (1,600 vs 2,400). B has no factual or arithmetic errors.</p>
+
+    <p class="q">3–4. If the user were time-constrained, which response best meets their needs?</p>
+    <span class="verdict">B</span>
+    <p>B reaches the numbers in its second paragraph and states the takeaway in one sentence ("the shortage more than doubles over time even though the cap never changes"). A's headings scan well, but a reader skimming it takes away a wrong long-run figure. <b>Decisive factor:</b> the fast read of B is also the correct read.</p>
+
+    <p class="q">5. What is missing from both?</p>
+    <p>Neither mentions that a cap reduces landlords' incentive to maintain units, so the effective quantity of housing falls further than the unit count shows (A lists maintenance cuts but does not link it to the shortage). Neither shows the diagram the prompt implies with "using supply and demand": a one-line description of the ceiling below equilibrium, with the gap between Qd and Qs labelled, would help. Neither notes that the long-run demand response may also grow as people move to the city for cheaper rent, widening the shortage further.</p>
+
+    <p class="q">6. What checks did I perform?</p>
+    <p>Recomputed every figure: 0.4 × 20% = 8% → 10,800; 0.1 × 20% = 2% → 9,800; 0.8 × 20% = 16% → 8,400; shortages 1,000 and 2,400; 2,400 / 1,000 = 2.4, which confirms B's "more than doubles." Checked the direction of the long-run supply elasticity against the standard textbook treatment of housing supply. Counted words against the 250 limit (A 212, B 199). Checked both for invented statistics: neither cites a real study, and B labels its elasticities as illustrative.</p>
+  </div>
+
+  <div class="panel">
+    <h3>Dimension verdicts</h3>
+    <div class="tablewrap"><table class="score">
+      <tr><th>Dimension</th><th>Verdict</th><th>Reason</th></tr>
+      <tr><td>Factual accuracy</td><td>B</td><td>A reverses the long-run supply elasticity.</td></tr>
+      <tr><td>Reasoning accuracy</td><td>B</td><td>A's 1,600 does not follow from its own 10,800 and 8,400.</td></tr>
+      <tr><td>Instruction-following</td><td>Tie</td><td>Both explain short and long run, give an example, and stay under 250 words.</td></tr>
+      <tr><td>Relevance to intent</td><td>B</td><td>B answers the council's question: how the shortage changes over time.</td></tr>
+      <tr><td>Usefulness</td><td>B</td><td>B's figures can be repeated at a council meeting; A's cannot.</td></tr>
+      <tr><td>Thoroughness</td><td>A</td><td>A covers maintenance, key money, mobility and construction; B covers only quantities and who gains.</td></tr>
+      <tr><td>Clarity</td><td>B</td><td>A's clear formatting delivers a wrong statement; B is plain and correct.</td></tr>
+      <tr><td>Evidence and derivation</td><td>B</td><td>B shows each subtraction; A skips the long-run one and gets it wrong.</td></tr>
+      <tr><td>Structure</td><td>A</td><td>A's headings and bullets are easier to scan.</td></tr>
+      <tr><td>Refuses part of the question?</td><td>No / No</td><td>Neither declines any part.</td></tr>
+      <tr><td>Claims actions it cannot take?</td><td>No / No</td><td>Neither claims to have looked up city data.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="panel">
+    <h3>Rubric scores (1–5)</h3>
+    <div class="tablewrap"><table class="score">
+      <tr><th>Criterion</th><th>A</th><th>B</th></tr>
+      <tr><td>Conceptual accuracy</td><td>2</td><td>5</td></tr>
+      <tr><td>Mathematical correctness</td><td>2</td><td>5</td></tr>
+      <tr><td>Logical consistency</td><td>2</td><td>5</td></tr>
+      <tr><td>Instruction-following</td><td>5</td><td>5</td></tr>
+      <tr><td>Depth</td><td>4</td><td>3</td></tr>
+      <tr><td>Presentation</td><td>5</td><td>4</td></tr>
+    </table></div>
+  </div>
+  <p class="disclaim">Prompt and completions constructed for this portfolio. They are not client data.</p>
+</section>
+</main>
+<footer><div class="wrap">Original work by Dr. Sarabjeet Kaur Bedi, written for this portfolio. Client work is confidential and is not reproduced here.</div></footer>
+</body></html>
