@@ -18,6 +18,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <link rel="stylesheet" href="assets/site.css">
+<style>
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 0}
+.cta a{display:inline-block;padding:10px 18px;border-radius:6px;font-weight:600;font-size:15px;text-decoration:none}
+.btn-p{background:var(--accent);color:#fff}
+.btn-s{border:1px solid var(--accent);color:var(--accent);background:var(--surface)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.step{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:16px}
+.step b{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-wash);color:var(--accent);font-family:var(--mono);margin-bottom:8px}
+.step p{margin:4px 0 0;font-size:14.5px;color:var(--soft)}
+@media (prefers-color-scheme:dark){.btn-p{color:#0d1a20}}
+</style>
 </head>
 <body>
 <header class="top">
@@ -25,6 +36,7 @@
     <a class="name" href="./">Dr. Sarabjeet Kaur Bedi</a>
     <nav>
       <a href="#work">Work samples</a>
+      <a href="#method">Method</a>
       <a href="#games">Teaching</a>
       <a href="resume.html">Resume</a>
       <a href="#contact">Contact</a>
@@ -34,27 +46,43 @@
 
 <main class="wrap">
   <section class="hero">
-    <div class="eyebrow">Economist · AI evaluator · Educator</div>
-    <h1>Graduate-level economics, applied to training and testing frontier AI models.</h1>
+    <div class="eyebrow">Economist · AI model evaluator · Educator</div>
+    <h1>Graduate-level economics for training and testing frontier AI models.</h1>
     <p class="lede">Ph.D. in Economics with 17+ years of teaching. I write and review expert economics problems for AI model training and benchmarking at Mercor and Snorkel, and I build interactive teaching tools for my Principles of Micro and Macro courses at Austin Community College.</p>
+    <div class="cta">
+      <a class="btn-p" href="#work">See the work samples</a>
+      <a class="btn-s" href="resume.html">Resume</a>
+      <a class="btn-s" href="mailto:sarabjeet.bedi@austincc.edu">Email me</a>
+    </div>
     <div class="facts">
-      <div class="fact"><b>Ph.D.</b><span>Economics, CSJM University, 2008</span></div>
-      <div class="fact"><b>17+ years</b><span>Teaching micro, macro, international &amp; managerial economics</span></div>
-      <div class="fact"><b>100+</b><span>Approved graduate-level LLM benchmark questions</span></div>
-      <div class="fact"><b>5</b><span>Assignment types shown end to end in the work samples</span></div>
+      <div class="fact"><b>100+</b><span>Approved graduate-level benchmark questions at Snorkel</span></div>
+      <div class="fact"><b>5</b><span>Assignment types, each shown end to end in a worked sample</span></div>
+      <div class="fact"><b>31</b><span>Numerical checks behind the samples, reproducible in one script</span></div>
+      <div class="fact"><b>Ph.D.</b><span>Economics, 2008 · 17+ years teaching micro, macro, trade and managerial economics</span></div>
+    </div>
+  </section>
+
+  <section class="block" id="method">
+    <h2>How I evaluate</h2>
+    <p class="sub">The same four rules run through every sample on this site.</p>
+    <div class="steps">
+      <div class="step"><b>1</b><h3>Solve before reading the key</h3><p>Every task, peer item and model answer is worked independently first, so the key cannot anchor the judgment.</p></div>
+      <div class="step"><b>2</b><h3>Verify with exact arithmetic</h3><p>Numbers are recomputed with exact fractions, and with simulation where a closed form could hide an error.</p></div>
+      <div class="step"><b>3</b><h3>Test every option, not just the key</h3><p>Each distractor is checked for being accidentally true. Two correct options sink an item even when the key is right.</p></div>
+      <div class="step"><b>4</b><h3>Name the first wrong step</h3><p>A verdict states where the reasoning first breaks and what that does to the final answer, not only that it is wrong.</p></div>
     </div>
   </section>
 
   <section class="block" id="work">
     <h2>Work samples: AI model training &amp; evaluation</h2>
-    <p class="sub">One detailed sample for each type of assignment I do. Client items are confidential, so each sample was written for this portfolio in the same format as the real work.</p>
+    <p class="sub">One detailed sample for each type of assignment I do. Client items are confidential, so each sample was written for this portfolio in the same format as the real work. More: <a href="ai-evaluation/">three short problems with planted traps</a>.</p>
     <div class="cards">
       <div class="card"><div class="meta">Task authoring</div><h3>Single-verifiable-answer task</h3><p>Prompt, concept tags, chain of reasoning, answer format, targeted failure modes and a grading rubric.</p><a class="go" href="work-samples/task-authoring.html">Open →</a></div>
       <div class="card"><div class="meta">Pairwise text evaluation</div><h3>Two model answers, judged side by side</h3><p>The full judging form with verdicts, checks performed, dimension ratings and rubric scores.</p><a class="go" href="work-samples/pairwise-text.html">Open →</a></div>
       <div class="card"><div class="meta">Pairwise image evaluation</div><h3>Two generated images, one prompt</h3><p>Prefer A / Prefer B / Both good / Both bad, with a rationale and criterion checklist.</p><a class="go" href="work-samples/pairwise-image.html">Open →</a></div>
       <div class="card"><div class="meta">Benchmark question writing + peer review</div><h3>Ten-option benchmark item and a peer review</h3><p>Stem, options, rationale, citations and calibration; then a review that sends a flawed item back.</p><a class="go" href="work-samples/benchmark-question.html">Open →</a></div>
       <div class="card"><div class="meta">LLM response review + adjudication</div><h3>Ruling on a model's critique and on three reviewers</h3><p>Task validity, alternate-task quality, and an adjudication where a correct dissent wins.</p><a class="go" href="work-samples/llm-review-adjudication.html">Open →</a></div>
-      <div class="card"><div class="meta">Method samples</div><h3>Three short problems with planted traps</h3><p>Marginal excess burden, Stackelberg vs Cournot welfare and the Solow golden rule, plus an annotated review of a model response.</p><a class="go" href="ai-evaluation/">Open →</a></div>
+      <div class="card"><div class="meta">Verification code · Python</div><h3>One script reproduces every number</h3><p>31 checks across all five samples: exact fractions, the planted wrong answers, and a 400,000-draw simulation. Standard library only.</p><a class="go" href="https://github.com/sksaggi01-debug/sksaggi01-debug.github.io/blob/main/docs/work-samples/verify.py">View verify.py →</a></div>
     </div>
 
     <div class="role" style="margin-top:22px">
