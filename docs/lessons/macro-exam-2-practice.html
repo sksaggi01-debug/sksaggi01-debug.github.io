@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECON 2301 Practice Exam 2 · Dr. Sarabjeet Bedi</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#1d2433;--mute:#5b6578;--line:#d9d4c7;--brand:#7a1f2b;--brand2:#f2c14e;--ok:#17703a;--okbg:#e5f4ea;--bad:#a42424;--badbg:#fbe9e9;--info:#fff7df}
+@media (prefers-color-scheme:dark){:root{--bg:#14171f;--card:#1d222d;--ink:#eceff5;--mute:#a7b0c2;--line:#323a4a;--brand:#e58a96;--brand2:#f2c14e;--ok:#6fd195;--okbg:#17301f;--bad:#ff8f8f;--badbg:#3a1c1c;--info:#2b2615}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;line-height:1.5;font-size:17px}
+header.top{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.bar{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between}
+.bar h1{font-size:1.05rem;margin:0;font-weight:700;letter-spacing:.2px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-family:"Courier New",monospace;font-size:.92rem}
+.stats b{color:var(--brand2)}
+.prog{height:5px;background:rgba(255,255,255,.25)}
+.prog i{display:block;height:100%;width:0;background:var(--brand2);transition:width .25s}
+main{max-width:860px;margin:0 auto;padding:18px 16px 70px}
+.intro{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--brand2);border-radius:10px;padding:16px 18px;margin-bottom:18px}
+.intro h2{margin:.1rem 0 .4rem;font-size:1.3rem}
+.intro p{margin:.35rem 0;color:var(--mute)}
+.intro .by{color:var(--ink);font-weight:700}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+button.ctl{font:inherit;font-size:.9rem;border:1px solid var(--brand);background:transparent;color:var(--brand);padding:7px 13px;border-radius:8px;cursor:pointer}
+button.ctl:hover,button.ctl:focus-visible{background:var(--brand);color:#fff;outline:none}
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 16px;scroll-margin-top:90px}
+.qh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.qn{font-weight:700;color:var(--brand)}
+.tag{font-size:.74rem;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-family:Arial,sans-serif}
+.stem{margin:.2rem 0 .6rem;font-size:1.02rem}
+.fig{margin:.4rem auto .8rem;max-width:520px}.fig svg{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:6px}
+table.t{border-collapse:collapse;margin:.4rem 0 .8rem;font-size:.95rem;max-width:100%}
+table.t th,table.t td{border:1px solid var(--line);padding:5px 12px;text-align:left}
+table.t th{background:rgba(122,31,43,.09)}
+table.t td.n{text-align:right;font-family:"Courier New",monospace}
+.opts{display:grid;gap:7px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:9px;padding:9px 12px;cursor:pointer}
+.opt:hover:not([disabled]),.opt:focus-visible{border-color:var(--brand);outline:none;background:rgba(122,31,43,.06)}
+.opt .L{font-family:Arial,sans-serif;font-weight:700;min-width:1.4em;color:var(--brand)}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.fb{display:none;margin-top:10px;border-radius:9px;padding:10px 13px;font-size:.96rem}
+.fb.show{display:block}
+.fb.ok{background:var(--okbg);border-left:5px solid var(--ok)}
+.fb.no{background:var(--badbg);border-left:5px solid var(--bad)}
+.fb.rv{background:var(--info);border-left:5px solid var(--brand2)}
+.fb b.v{display:block;margin-bottom:2px}
+#result{display:none;background:var(--card);border:2px solid var(--brand);border-radius:12px;padding:18px 20px;margin:20px 0}
+#result.show{display:block}
+#result h2{margin:.1rem 0 .3rem}
+.big{font-size:2.2rem;font-weight:700;color:var(--brand)}
+.tb{width:100%;border-collapse:collapse;margin-top:10px;font-size:.95rem}
+.tb td,.tb th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+.meter{height:9px;background:var(--line);border-radius:6px;overflow:hidden;min-width:90px}.meter i{display:block;height:100%;background:var(--ok)}
+.warn{display:none;background:var(--info);border:1px solid var(--brand2);border-radius:8px;padding:9px 12px;margin-bottom:14px}.warn.show{display:block}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:.88rem;text-align:center}
+@media print{header.top,.btns,.fb:not(.show){display:none}.q{break-inside:avoid;border-color:#999}body{background:#fff}}
+@media (max-width:560px){body{font-size:16px}.bar h1{font-size:.95rem}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <h1>ECON 2301 · Practice Exam 2</h1>
+    <div class="stats"><span>Answered <b id="sAns">0</b>/30</span><span>Score <b id="sScore">0</b></span><span>Time <b id="sTime">50:00</b></span></div>
+  </div>
+  <div class="prog"><i id="pbar"></i></div>
+</header>
+<main>
+  <section class="intro">
+    <h2>GDP, jobs &amp; prices: your warm-up round</h2>
+    <p>30 multiple-choice questions, 1 point each, 50 minutes, matching the topics and order of Exam 2. <span class="by">Dr.&nbsp;Sarabjeet&nbsp;Bedi</span> · Austin Community College · Principles of Macroeconomics</p>
+    <p>Tap an answer to lock it in. You get instant feedback and a short explanation that names the trap. The clock starts on your first answer. Your progress saves in this browser, so you can close the tab and come back.</p>
+    <p>This is practice only. It is a parallel form with new numbers, not the real exam.</p>
+    <div class="btns">
+      <button class="ctl" id="bPause">Pause timer</button>
+      <button class="ctl" id="bReveal">Reveal unanswered</button>
+      <button class="ctl" id="bReset">Start over</button>
+      <button class="ctl" onclick="window.print()">Print</button>
+    </div>
+  </section>
+  <div class="warn" id="timeUp"></div>
+  <div id="list"></div>
+  <section id="result" aria-live="polite"></section>
+</main>
+<footer>Created for students of Dr. Sarabjeet Bedi · ECON 2301 Principles of Macroeconomics · Austin Community College</footer>
+<script>
+const DATA = {"q": [{"n": 1, "topic": "GDP measurement", "stem": "Counting only final goods and services in GDP is meant to avoid", "options": ["counting goods that were produced in earlier years.", "counting goods that are sold to foreign buyers.", "counting the value of used goods.", "double counting the value of intermediate goods and services."], "answer": 3, "why": "The flour a bakery buys is already inside the price of the bread. Counting both the flour and the bread counts the same production twice. Choice A is handled by a different rule (GDP counts only output produced in the current year).", "extra": {}}, {"n": 2, "topic": "GDP measurement", "stem": "Two methods of measuring GDP are", "options": ["the expenditure approach and the income approach.", "the consumption approach and the investment approach.", "the nominal approach and the real approach.", "the export approach and the import approach."], "answer": 0, "why": "Every dollar spent on final output is a dollar of income to someone, so total expenditure equals total income. The other pairs are not measurement methods.", "extra": {}}, {"n": 3, "topic": "Labor market", "stem": "A recent graduate who has just entered the job market and is searching for a first job adds to", "options": ["cyclical unemployment.", "structural unemployment.", "frictional unemployment.", "no type of unemployment, because the graduate is not yet in the labor force."], "answer": 2, "why": "Frictional unemployment is the time spent searching for a job, including a first job. D is wrong because anyone actively looking for work is in the labor force.", "extra": {}}, {"n": 4, "topic": "Business cycle", "stem": "Potential GDP is the level of real GDP that", "options": ["the economy produces during a recession.", "the economy produces at full employment, when unemployment equals the natural rate.", "the economy produces at the peak of a business cycle.", "is measured in the prices of the current year."], "answer": 1, "why": "Potential GDP is real GDP at full employment. Actual real GDP can sit above it (peak) or below it (recession), so A and C describe other phases of the cycle. D describes nominal GDP.", "extra": {}}, {"n": 5, "topic": "Business cycle", "stem": "Which type of unemployment is at its highest at the trough of a business cycle?", "options": ["frictional unemployment", "structural unemployment", "the natural unemployment rate", "cyclical unemployment"], "answer": 3, "why": "Cyclical unemployment comes from the business cycle and is highest at the trough. Frictional and structural unemployment make up the natural rate and exist in every phase of the cycle.", "extra": {}}, {"n": 6, "topic": "GDP measurement", "stem": "Which component is the largest share of U.S. GDP?", "options": ["personal consumption expenditures", "gross private domestic investment", "government expenditure on goods and services", "net exports"], "answer": 0, "why": "Personal consumption expenditures are roughly two-thirds of U.S. GDP, far more than any other component.", "extra": {}}, {"n": 7, "topic": "GDP measurement", "stem": "Nominal GDP measures the value of a year's final goods and services using", "options": ["base-year prices.", "the prices of the immediately previous year.", "the prices that would exist at full employment.", "that year's current prices."], "answer": 3, "why": "Nominal GDP uses current-year prices, so it rises when prices rise. Fixed base-year prices give real GDP.", "extra": {}}, {"n": 8, "topic": "Labor market", "stem": "The working-age population is the number of people who are", "options": ["employed or looking for work.", "16 years of age or older and not in jail, a hospital, or another institution.", "working full time and at least 16 years of age.", "between 16 and 65 years of age."], "answer": 1, "why": "The definition has a lower age limit of 16, no upper limit, and no job requirement. A is the labor force; C and D add conditions that are not part of the definition.", "extra": {}}, {"n": 9, "topic": "Labor market", "stem": "The unemployment rate is the percentage of the ___ that is unemployed.", "options": ["labor force", "working-age population", "employed workers", "total population"], "answer": 0, "why": "Unemployment rate = unemployed ÷ labor force × 100. Dividing by the working-age population gives a smaller, different number.", "extra": {}}, {"n": 10, "topic": "GDP measurement", "stem": "Real GDP differs from nominal GDP because real GDP", "options": ["includes only goods and leaves out services.", "leaves out the value of exports.", "is valued at the prices of a fixed base year, so a change in prices does not change it.", "is valued at the current year's prices."], "answer": 2, "why": "Real GDP holds prices at base-year levels, so it changes only when the quantities produced change. D is the definition of nominal GDP.", "extra": {}}, {"n": 11, "topic": "Labor market", "stem": "At full employment, the unemployment rate equals", "options": ["zero.", "the cyclical unemployment rate.", "the labor force participation rate.", "the natural unemployment rate."], "answer": 3, "why": "Full employment means no cyclical unemployment, not zero unemployment. Frictional plus structural unemployment remains, and that is the natural rate.", "extra": {}}, {"n": 12, "topic": "Prices & inflation", "stem": "If the inflation rate falls from 5 percent to 3 percent, the price level is", "options": ["falling.", "still rising, but more slowly.", "constant.", "rising more quickly."], "answer": 1, "why": "The inflation rate is the rate of change of the price level. A positive inflation rate, even a falling one, means prices are still rising. The price level falls only if the inflation rate is negative.", "extra": {}}, {"n": 13, "topic": "Labor market", "stem": "The labor force participation rate is the percentage of the working-age population that is", "options": ["employed.", "unemployed.", "either employed or unemployed and looking for work.", "discouraged."], "answer": 2, "why": "Participation rate = labor force ÷ working-age population, and the labor force is employed plus unemployed. A is the employment-to-population ratio.", "extra": {}}, {"n": 14, "topic": "Prices & inflation", "stem": "If the CPI was 128.0 at the end of last year and 134.4 at the end of this year, the inflation rate over the year was", "options": ["105.0 percent.", "6.4 percent.", "5.0 percent.", "4.8 percent."], "answer": 2, "why": "(134.4 − 128.0) ÷ 128.0 × 100 = 5.0%. Trap answers: 6.4 is the change in index points; 105.0 is the ratio × 100; 4.8 divides by the new CPI instead of the old one.", "extra": {}}, {"n": 15, "topic": "Business cycle", "stem": "In the above figure, which point represents the economy at the trough of the business cycle?", "options": ["point T", "point S", "point U", "point R"], "answer": 0, "why": "The trough is the lowest point, where real GDP is farthest below potential GDP. R is the peak. S and U lie on the potential GDP line (S as GDP falls, U as it rises).", "extra": {"figure": "bc", "above": true}}, {"n": 16, "topic": "Business cycle", "stem": "In the above figure, which point represents the over use of resources?", "options": ["point S", "point T", "point U", "point R"], "answer": 3, "why": "Over use of resources means real GDP above potential GDP. R is the only labeled point above the potential line. T is below it (under use), and S and U are on it.", "extra": {"figure": "bc", "above": true}}, {"n": 17, "topic": "GDP measurement", "stem": "Net exports equal", "options": ["imports minus exports.", "exports minus imports.", "exports plus imports.", "government purchases minus taxes."], "answer": 1, "why": "Net exports = exports − imports. When imports exceed exports, net exports are negative and subtract from GDP.", "extra": {}}, {"n": 18, "topic": "GDP measurement", "stem": "Using the information in the table, calculate gross domestic product.", "options": ["$775", "$805", "$850", "$895"], "answer": 1, "why": "Expenditure approach: GDP = C + I + G + NX = 520 + 140 + 190 + (−45) = 805. Depreciation and transfer payments are not expenditure components. 775 subtracts depreciation; 850 ignores net exports; 895 adds net exports instead of subtracting them.", "extra": {"table": {"header": ["Component", "Amount (dollars)"], "rows": [["Personal consumption expenditure", "520"], ["Gross private domestic investment", "140"], ["Government expenditure on goods and services", "190"], ["Net exports", "−45"], ["Depreciation", "30"], ["Transfer payments", "80"]]}}}, {"n": 19, "topic": "GDP measurement", "stem": "Using the data in the table above, gross domestic product equals", "options": ["$2,570.", "$2,390.", "$2,180.", "$1,770."], "answer": 0, "why": "Income approach: compensation 1,500 + proprietors' income 220 + rental income 60 + corporate profits 310 + net interest 90 = 2,180 (national income). Add indirect taxes less subsidies (180) and depreciation (210): 2,570. 2,390 leaves out indirect taxes; 2,180 leaves out both; 1,770 adds only the three expenditure items listed (1,350 + 480 − 60).", "extra": {"table": {"header": ["Item", "Amount (dollars)"], "rows": [["Corporate profits", "$310"], ["Net interest", "90"], ["Indirect taxes less subsidies", "180"], ["Depreciation", "210"], ["Compensation of employees", "1,500"], ["Proprietors' income", "220"], ["Rental income", "60"], ["Personal consumption expenditures", "1,350"], ["Government expenditure on goods and services", "480"], ["Net exports of goods and services", "−60"]]}, "above": true}}, {"n": 20, "topic": "Labor market", "stem": "In the below table, the working-age population is", "options": ["180 million.", "200 million.", "210 million.", "250 million."], "answer": 3, "why": "The working-age population is the row labeled population (16 years and over): 250 million. 200 is the labor force, 180 is employment, and 210 adds discouraged workers to the labor force.", "extra": {"table": {"header": ["Category", "Number (millions)"], "rows": [["Discouraged workers", "10"], ["Unemployed workers", "20"], ["Employed workers", "180"], ["Population (16 years and over)", "250"]]}}}, {"n": 21, "topic": "Labor market", "stem": "In the below table, the size of the labor force is", "options": ["250 million.", "210 million.", "200 million.", "180 million."], "answer": 2, "why": "Labor force = employed + unemployed = 180 + 20 = 200 million. Discouraged workers are not looking for work, so they are not in the labor force. 210 counts them anyway.", "extra": {"table": {"header": ["Category", "Number (millions)"], "rows": [["Discouraged workers", "10"], ["Unemployed workers", "20"], ["Employed workers", "180"], ["Population (16 years and over)", "250"]]}}}, {"n": 22, "topic": "Labor market", "stem": "In the table, the unemployment rate is", "options": ["8 percent.", "10 percent.", "11 percent.", "15 percent."], "answer": 1, "why": "Unemployment rate = 20 ÷ 200 × 100 = 10%. 8 divides by the working-age population; 11 divides by employment; 15 counts discouraged workers as unemployed ((20 + 10) ÷ 200).", "extra": {"table": {"header": ["Category", "Number (millions)"], "rows": [["Discouraged workers", "10"], ["Unemployed workers", "20"], ["Employed workers", "180"], ["Population (16 years and over)", "250"]]}}}, {"n": 23, "topic": "Labor market", "stem": "In the table, the labor force participation rate is", "options": ["90 percent.", "84 percent.", "80 percent.", "72 percent."], "answer": 2, "why": "Participation rate = labor force ÷ working-age population = 200 ÷ 250 × 100 = 80%. 90 is employment ÷ labor force; 84 adds discouraged workers to the labor force; 72 is the employment-to-population ratio.", "extra": {"table": {"header": ["Category", "Number (millions)"], "rows": [["Discouraged workers", "10"], ["Unemployed workers", "20"], ["Employed workers", "180"], ["Population (16 years and over)", "250"]]}}}, {"n": 24, "topic": "Labor market", "stem": "In the table, the employment-to-population ratio is", "options": ["72 percent.", "75 percent.", "80 percent.", "90 percent."], "answer": 0, "why": "Employment-to-population ratio = employment ÷ working-age population = 180 ÷ 250 × 100 = 72%. 80 is the participation rate; 90 is employment ÷ labor force; 75 wrongly removes discouraged workers from the denominator (180 ÷ 240).", "extra": {"table": {"header": ["Category", "Number (millions)"], "rows": [["Discouraged workers", "10"], ["Unemployed workers", "20"], ["Employed workers", "180"], ["Population (16 years and over)", "250"]]}}}, {"n": 25, "topic": "Prices & inflation", "stem": "If 2015 is the reference base period, what is the price index for the CPI basket of goods for 2024 in the above table?", "options": ["100.0 because the price of pizza rose and the price of movie rentals fell", "75.0", "102.3", "125.0"], "answer": 2, "why": "Cost of the basket in 2015: 20 × $12 + 50 × $4 = $440. In 2024: 20 × $15 + 50 × $3 = $450. CPI = 450 ÷ 440 × 100 = 102.3. The index uses the whole basket, so the pizza increase is partly offset by the rental decrease. 125.0 uses pizza only and 75.0 uses rentals only.", "extra": {"table": {"header": ["", "CPI basket quantity", "2015 price", "2024 price"], "rows": [["Pizzas", "20 pizzas", "$12 per pizza", "$15 per pizza"], ["Movie rentals", "50 rentals", "$4 per rental", "$3 per rental"]]}, "above": true}}, {"n": 26, "topic": "Prices & inflation", "stem": "The information in the table above gives the 2023 reference base period CPI basket and prices used to construct the CPI for a small nation. It also has the 2024 prices. What is the value of the CPI for the reference base period, 2023?", "options": ["80", "100", "120", "125"], "answer": 1, "why": "The CPI in the base period is always 100, because the basket cost is divided by itself. 125 is the 2024 CPI (150 ÷ 120 × 100), 120 is the 2023 basket cost in dollars, and 80 inverts the ratio (120 ÷ 150).", "extra": {"table": {"header": ["Item", "Quantity", "2023 price", "2024 price"], "rows": [["Concert tickets", "2", "$40.00", "$50.00"], ["Pretzels", "5", "$4.00", "$5.00"], ["Bottles of water", "10", "$2.00", "$2.50"]]}, "above": true}}, {"n": 27, "topic": "Prices & inflation", "stem": "If the CPI was 125.0 at the beginning of the year and 130.0 at the end of the year, the inflation rate over the year was", "options": ["3.8 percent.", "4.0 percent.", "5.0 percent.", "104.0 percent."], "answer": 1, "why": "(130.0 − 125.0) ÷ 125.0 × 100 = 4.0%. 3.8 divides by the new CPI; 5.0 is the change in index points; 104.0 is the ratio × 100.", "extra": {}}, {"n": 28, "topic": "Growth & wages", "stem": "The best definition of economic growth is", "options": ["a sustained expansion of production possibilities, measured as the increase in real GDP over a given period.", "a sustained expansion of production possibilities, measured as the increase in nominal GDP over a given period.", "an increase in real GDP as the economy recovers from a recession.", "a sustained rise in the price level over a given period."], "answer": 0, "why": "Growth is an outward shift of production possibilities (potential GDP), measured by growth in real GDP. Nominal GDP can rise from inflation alone. Recovering from a recession moves the economy toward potential GDP but does not expand it. D describes inflation.", "extra": {}}, {"n": 29, "topic": "Growth & wages", "stem": "Suppose that in 2023 a country has a population of 5 million and real GDP of $10 billion. In 2024, the population is 5.5 million and real GDP is $10.45 billion. The growth rate of real GDP per person is", "options": ["positive.", "zero.", "negative.", "$1,900."], "answer": 2, "why": "Real GDP per person: 2023 = $10 billion ÷ 5 million = $2,000. 2024 = $10.45 billion ÷ 5.5 million = $1,900. Population grew 10% while real GDP grew 4.5%, so output per person fell about 5%. $1,900 is a level, not a growth rate.", "extra": {}}, {"n": 30, "topic": "Growth & wages", "stem": "If the price level rises by 4 percent and workers' money wage rates rise by 1 percent, then the", "options": ["real wage rate will rise.", "quantity of labor demanded will decrease.", "quantity of labor demanded will not change because money wages rose.", "quantity of labor demanded will increase."], "answer": 3, "why": "Real wage = money wage ÷ price level. Prices are up 4% and money wages only 1%, so the real wage falls by about 3%. At a lower real wage, firms move down the labor demand curve and demand more labor.", "extra": {}}], "figs": {"bc": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 560 340\" width=\"560\" height=\"340\" font-family=\"Georgia, 'Times New Roman', serif\" role=\"img\" aria-label=\"Business cycle figure: real GDP wavers around a rising potential GDP line; points R, S, T, U are marked.\">\n<rect width=\"560\" height=\"340\" fill=\"#fff\"/>\n<line x1=\"70\" y1=\"24\" x2=\"70\" y2=\"276\" stroke=\"#222\" stroke-width=\"1.6\"/>\n<line x1=\"70\" y1=\"276\" x2=\"526\" y2=\"276\" stroke=\"#222\" stroke-width=\"1.6\"/>\n<line x1=\"65\" y1=\"244.5\" x2=\"70\" y2=\"244.5\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<line x1=\"65\" y1=\"181.5\" x2=\"70\" y2=\"181.5\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<line x1=\"65\" y1=\"118.5\" x2=\"70\" y2=\"118.5\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<line x1=\"65\" y1=\"55.5\" x2=\"70\" y2=\"55.5\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<line x1=\"70.0\" y1=\"276\" x2=\"70.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"70.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2010<\/text>\n<line x1=\"145.0\" y1=\"276\" x2=\"145.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"145.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2012<\/text>\n<line x1=\"220.0\" y1=\"276\" x2=\"220.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"220.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2014<\/text>\n<line x1=\"295.0\" y1=\"276\" x2=\"295.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"295.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2016<\/text>\n<line x1=\"370.0\" y1=\"276\" x2=\"370.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"370.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2018<\/text>\n<line x1=\"445.0\" y1=\"276\" x2=\"445.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"445.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2020<\/text>\n<line x1=\"520.0\" y1=\"276\" x2=\"520.0\" y2=\"281\" stroke=\"#222\" stroke-width=\"1.2\"/>\n<text x=\"520.0\" y=\"296\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">2022<\/text>\n<text x=\"295.0\" y=\"316\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">Time<\/text>\n<text transform=\"translate(20,150.0) rotate(-90)\" font-size=\"13\" text-anchor=\"middle\" fill=\"#222\">Real GDP (trillions of 2017 dollars)<\/text>\n<line x1=\"70.0\" y1=\"206.7\" x2=\"520.0\" y2=\"70.6\" stroke=\"#222\" stroke-width=\"2.2\"/>\n<text x=\"103.8\" y=\"214.6\" font-size=\"13\" text-anchor=\"start\" fill=\"#222\">Potential GDP<\/text>\n<path d=\"M70.0,215.5 L71.9,213.2 L73.7,210.9 L75.6,208.5 L77.5,206.2 L79.4,203.9 L81.2,201.5 L83.1,199.2 L85.0,196.9 L86.9,194.6 L88.7,192.3 L90.6,190.0 L92.5,187.7 L94.4,185.5 L96.2,183.3 L98.1,181.1 L100.0,179.0 L101.9,176.9 L103.7,174.8 L105.6,172.8 L107.5,170.8 L109.4,168.9 L111.2,167.0 L113.1,165.2 L115.0,163.4 L116.9,161.7 L118.7,160.1 L120.6,158.5 L122.5,157.0 L124.4,155.6 L126.2,154.2 L128.1,152.9 L130.0,151.7 L131.9,150.5 L133.7,149.5 L135.6,148.5 L137.5,147.5 L139.4,146.7 L141.2,145.9 L143.1,145.3 L145.0,144.6 L146.9,144.1 L148.7,143.7 L150.6,143.3 L152.5,143.0 L154.4,142.8 L156.2,142.7 L158.1,142.6 L160.0,142.6 L161.9,142.7 L163.7,142.9 L165.6,143.1 L167.5,143.4 L169.4,143.8 L171.2,144.2 L173.1,144.7 L175.0,145.3 L176.9,145.9 L178.7,146.6 L180.6,147.3 L182.5,148.1 L184.4,149.0 L186.2,149.9 L188.1,150.8 L190.0,151.8 L191.9,152.8 L193.7,153.8 L195.6,154.9 L197.5,156.0 L199.4,157.1 L201.2,158.2 L203.1,159.4 L205.0,160.6 L206.9,161.8 L208.7,163.0 L210.6,164.2 L212.5,165.4 L214.4,166.6 L216.2,167.8 L218.1,168.9 L220.0,170.1 L221.9,171.2 L223.7,172.4 L225.6,173.5 L227.5,174.5 L229.4,175.6 L231.2,176.6 L233.1,177.6 L235.0,178.5 L236.9,179.4 L238.7,180.2 L240.6,181.0 L242.5,181.7 L244.4,182.4 L246.2,183.1 L248.1,183.6 L250.0,184.1 L251.9,184.6 L253.7,184.9 L255.6,185.2 L257.5,185.5 L259.4,185.6 L261.2,185.7 L263.1,185.7 L265.0,185.7 L266.9,185.6 L268.7,185.3 L270.6,185.0 L272.5,184.7 L274.4,184.2 L276.2,183.7 L278.1,183.1 L280.0,182.4 L281.9,181.6 L283.7,180.8 L285.6,179.9 L287.5,178.9 L289.4,177.8 L291.2,176.7 L293.1,175.4 L295.0,174.1 L296.9,172.8 L298.7,171.3 L300.6,169.8 L302.5,168.2 L304.4,166.6 L306.2,164.9 L308.1,163.2 L310.0,161.3 L311.9,159.5 L313.7,157.5 L315.6,155.6 L317.5,153.5 L319.4,151.5 L321.2,149.4 L323.1,147.2 L325.0,145.1 L326.9,142.9 L328.7,140.6 L330.6,138.4 L332.5,136.1 L334.4,133.8 L336.2,131.5 L338.1,129.1 L340.0,126.8 L341.9,124.5 L343.7,122.2 L345.6,119.8 L347.5,117.5 L349.4,115.2 L351.2,112.9 L353.1,110.6 L355.0,108.3 L356.9,106.1 L358.7,103.9 L360.6,101.7 L362.5,99.6 L364.4,97.5 L366.2,95.4 L368.1,93.4 L370.0,91.4 L371.9,89.5 L373.7,87.6 L375.6,85.8 L377.5,84.1 L379.4,82.4 L381.2,80.7 L383.1,79.1 L385.0,77.6 L386.9,76.2 L388.7,74.8 L390.6,73.5 L392.5,72.3 L394.4,71.2 L396.2,70.1 L398.1,69.1 L400.0,68.2 L401.9,67.3 L403.7,66.6 L405.6,65.9 L407.5,65.3 L409.4,64.7 L411.2,64.3 L413.1,63.9 L415.0,63.6 L416.9,63.4 L418.7,63.3 L420.6,63.2 L422.5,63.2 L424.4,63.3 L426.2,63.5 L428.1,63.7 L430.0,64.0 L431.9,64.4 L433.7,64.8 L435.6,65.4 L437.5,65.9 L439.4,66.5 L441.2,67.2 L443.1,68.0 L445.0,68.8 L446.9,69.6 L448.7,70.5 L450.6,71.4 L452.5,72.4 L454.4,73.4 L456.2,74.4 L458.1,75.5 L460.0,76.6 L461.9,77.7 L463.7,78.9 L465.6,80.0 L467.5,81.2 L469.4,82.4 L471.2,83.6 L473.1,84.8 L475.0,86.0 L476.9,87.2 L478.7,88.4 L480.6,89.6 L482.5,90.7 L484.4,91.9 L486.2,93.0 L488.1,94.1 L490.0,95.2 L491.9,96.2 L493.7,97.2 L495.6,98.2 L497.5,99.1 L499.4,100.0 L501.2,100.8 L503.1,101.6 L505.0,102.4 L506.9,103.0 L508.7,103.7 L510.6,104.2 L512.5,104.7 L514.4,105.2 L516.2,105.6 L518.1,105.9 L520.0,106.1\" fill=\"none\" stroke=\"#111\" stroke-width=\"2.6\" stroke-linejoin=\"round\"/>\n<text x=\"524.0\" y=\"126.1\" font-size=\"13\" text-anchor=\"end\" fill=\"#222\">Real GDP<\/text>\n<circle cx=\"158.6\" cy=\"142.6\" r=\"5\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"2\"/>\n<text x=\"154.6\" y=\"128.6\" font-size=\"15\" font-style=\"italic\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#111\">R<\/text>\n<circle cx=\"210.6\" cy=\"164.2\" r=\"5\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"2\"/>\n<text x=\"198.6\" y=\"188.2\" font-size=\"15\" font-style=\"italic\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#111\">S<\/text>\n<circle cx=\"262.6\" cy=\"185.7\" r=\"5\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"2\"/>\n<text x=\"262.6\" y=\"207.7\" font-size=\"15\" font-style=\"italic\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#111\">T<\/text>\n<circle cx=\"341.9\" cy=\"124.5\" r=\"5\" fill=\"#fff\" stroke=\"#111\" stroke-width=\"2\"/>\n<text x=\"325.9\" y=\"116.5\" font-size=\"15\" font-style=\"italic\" font-weight=\"bold\" text-anchor=\"middle\" fill=\"#111\">U<\/text>\n<\/svg>"}, "name": "Dr. Sarabjeet Bedi"};
+const Q = DATA.q, LETTERS = "ABCD", TOTAL = Q.length, LIMIT = 50*60;
+const KEY = "econ2301-practice-exam2-v1";
+let S = {a:new Array(TOTAL).fill(null), rev:new Array(TOTAL).fill(false), start:null, used:0, paused:false, buzzer:null};
+try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); if(o&&Array.isArray(o.a)&&o.a.length===TOTAL) S=Object.assign(S,o);}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+function el(tag,cls,txt){const e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e;}
+function build(){
+  const list=document.getElementById("list"); list.innerHTML="";
+  Q.forEach((q,qi)=>{
+    const c=el("article","q"); c.id="q"+q.n;
+    const h=el("div","qh"); h.appendChild(el("span","qn","Question "+q.n)); h.appendChild(el("span","tag",q.topic)); c.appendChild(h);
+    const parts=[];
+    if(q.extra.figure){const f=el("div","fig"); f.innerHTML=DATA.figs[q.extra.figure]; parts.push(f);}
+    if(q.extra.table){
+      const t=el("table","t"); const th=el("tr"); q.extra.table.header.forEach(x=>th.appendChild(el("th",null,x))); t.appendChild(th);
+      q.extra.table.rows.forEach(r=>{const tr=el("tr"); r.forEach((x,i)=>tr.appendChild(el("td",i>0?"n":"",x))); t.appendChild(tr);}); parts.push(t);
+    }
+    const stem=el("p","stem",q.stem);
+    if(q.extra.above){parts.forEach(p=>c.appendChild(p)); c.appendChild(stem);} else {c.appendChild(stem); parts.forEach(p=>c.appendChild(p));}
+    const o=el("div","opts"); o.setAttribute("role","group"); o.setAttribute("aria-label","Answer choices for question "+q.n);
+    q.options.forEach((txt,i)=>{
+      const b=el("button","opt"); b.type="button"; b.dataset.q=qi; b.dataset.i=i;
+      b.appendChild(el("span","L",LETTERS[i]+".")); b.appendChild(el("span",null,txt));
+      b.addEventListener("click",()=>choose(qi,i)); o.appendChild(b);
+    });
+    c.appendChild(o); c.appendChild(el("div","fb")); list.appendChild(c);
+  });
+}
+function paint(qi){
+  const q=Q[qi], c=document.getElementById("q"+q.n), btns=c.querySelectorAll(".opt"), fb=c.querySelector(".fb");
+  const a=S.a[qi], rv=S.rev[qi];
+  btns.forEach((b,i)=>{b.disabled=(a!==null||rv); b.classList.remove("right","wrong");
+    if(a!==null){ if(i===q.answer)b.classList.add("right"); else if(i===a)b.classList.add("wrong"); }
+    else if(rv && i===q.answer) b.classList.add("right");});
+  fb.className="fb"; fb.innerHTML="";
+  if(a!==null||rv){
+    fb.classList.add("show", rv&&a===null?"rv":(a===q.answer?"ok":"no"));
+    const v=el("b","v", rv&&a===null ? "Revealed (not scored). Correct answer: "+LETTERS[q.answer] : (a===q.answer ? "Correct." : "Not quite. The answer is "+LETTERS[q.answer]+"."));
+    fb.appendChild(v); fb.appendChild(document.createTextNode(q.why));
+  }
+}
+function score(){return S.a.reduce((s,a,i)=>s+(a===Q[i].answer?1:0),0);}
+function answered(){return S.a.filter(a=>a!==null).length;}
+function fmt(sec){sec=Math.max(0,sec);const m=Math.floor(sec/60),s=sec%60;return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
+function elapsed(){return S.used + (S.start && !S.paused ? Math.floor((Date.now()-S.start)/1000) : 0);}
+function header(){
+  document.getElementById("sAns").textContent=answered();
+  document.getElementById("sScore").textContent=score();
+  document.getElementById("pbar").style.width=(100*(answered()+S.rev.filter((r,i)=>r&&S.a[i]===null).length)/TOTAL)+"%";
+  document.getElementById("sTime").textContent=fmt(LIMIT-elapsed());
+}
+function choose(qi,i){
+  if(S.a[qi]!==null||S.rev[qi])return;
+  if(!S.start && !S.paused && S.used===0){S.start=Date.now();}
+  S.a[qi]=i; paint(qi); save(); header(); maybeDone();
+}
+function topicTable(){
+  const T={}; Q.forEach((q,i)=>{T[q.topic]=T[q.topic]||{n:0,r:0}; T[q.topic].n++; if(S.a[i]===q.answer)T[q.topic].r++;});
+  return T;
+}
+function maybeDone(){
+  const done=Q.every((q,i)=>S.a[i]!==null||S.rev[i]);
+  const R=document.getElementById("result");
+  if(!done){R.classList.remove("show");return;}
+  const sc=score(), pct=Math.round(100*sc/TOTAL);
+  const quip = pct>=90?"Exam-ready. Go collect those points.":pct>=75?"Solid. Review the misses below and you are there.":pct>=60?"Getting there. Re-read the explanations on the questions you missed.":"Good thing this one does not count. Redo the explanations, then try again.";
+  R.innerHTML=""; R.appendChild(el("h2",null,"Your results"));
+  R.appendChild(el("div","big",sc+" / "+TOTAL+"  ("+pct+"%)"));
+  R.appendChild(el("p",null,quip+" Time used: "+fmt(Math.min(elapsed(),99*60))+" of 50:00."));
+  const t=el("table","tb"); const hd=el("tr"); ["Topic","Right","Share"].forEach(x=>hd.appendChild(el("th",null,x))); t.appendChild(hd);
+  const T=topicTable(); Object.keys(T).forEach(k=>{
+    const r=el("tr"); r.appendChild(el("td",null,k)); r.appendChild(el("td",null,T[k].r+" / "+T[k].n));
+    const td=el("td"); const m=el("div","meter"); const f=el("i"); f.style.width=(100*T[k].r/T[k].n)+"%"; m.appendChild(f); td.appendChild(m); r.appendChild(td); t.appendChild(r);});
+  R.appendChild(t);
+  const miss=Q.filter((q,i)=>S.a[i]!==q.answer).map(q=>q.n);
+  R.appendChild(el("p",null, miss.length? "Review these: "+miss.map(n=>"Q"+n).join(", ") : "No misses. Nice."));
+  R.classList.add("show");
+}
+function tick(){
+  header();
+  if(S.start && !S.paused && !S.buzzer && elapsed()>=LIMIT){
+    S.buzzer=score(); save();
+    const w=document.getElementById("timeUp"); w.textContent="Time is up. Your score at the buzzer: "+S.buzzer+" / "+TOTAL+". You can keep answering to learn from the explanations.";
+    w.classList.add("show");
+  }
+}
+document.getElementById("bPause").addEventListener("click",function(){
+  if(!S.start && S.used===0){return;}
+  if(S.paused){S.paused=false;S.start=Date.now();this.textContent="Pause timer";}
+  else{S.used=elapsed();S.start=null;S.paused=true;this.textContent="Resume timer";}
+  save();header();
+});
+document.getElementById("bReveal").addEventListener("click",()=>{
+  Q.forEach((q,i)=>{if(S.a[i]===null)S.rev[i]=true;}); Q.forEach((q,i)=>paint(i)); save(); header(); maybeDone();
+});
+document.getElementById("bReset").addEventListener("click",()=>{
+  if(!confirm("Start over? Your answers and timer will be cleared."))return;
+  S={a:new Array(TOTAL).fill(null),rev:new Array(TOTAL).fill(false),start:null,used:0,paused:false,buzzer:null};
+  save(); build(); Q.forEach((q,i)=>paint(i)); document.getElementById("timeUp").classList.remove("show");
+  document.getElementById("bPause").textContent="Pause timer"; header(); maybeDone(); window.scrollTo(0,0);
+});
+build(); Q.forEach((q,i)=>paint(i));
+if(S.paused) document.getElementById("bPause").textContent="Resume timer";
+header(); maybeDone(); setInterval(tick,1000);
+</script>
+</body>
+</html>
